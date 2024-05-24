@@ -34,7 +34,7 @@ void write_register32(CPU *cpu, uint8_t reg_index, uint32_t value) {
     }
 }
 
-uint64_t read_memory(const CPU *cpu, uint32_t address) {
+uint64_t read_memory(const CPU *cpu, uint64_t address) {
     if (address < MEMORY_SIZE) {
         return cpu->memory[address];
     } else {
