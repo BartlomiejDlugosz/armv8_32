@@ -2,9 +2,11 @@
 #include <stdio.h>
 #include <stdlib.h>
 
+// Reads the binary file with the given file name
 void readBinaryToMemory(int argc, char **argv, CPU *cpu) {
   FILE *input_file;
 
+  // Ensures that there are enough arguments provided
   if (argc >= 1) {
     input_file = fopen(argv[0], "rb");
     if (input_file == NULL) {
@@ -14,6 +16,7 @@ void readBinaryToMemory(int argc, char **argv, CPU *cpu) {
     exit(1);
   }
 
+  // Reads the entire file into memory
   fread(cpu->memory, MEMORY_SIZE, 1, input_file);
 
   fclose(input_file);
