@@ -21,6 +21,7 @@ void readBinaryToMemory(int argc, char **argv, CPU *cpu) {
 
 int main(int argc, char **argv) {
   CPU cpu;
+  initialise_cpu(&cpu);
   readBinaryToMemory(argc, argv, &cpu);
 
   return EXIT_SUCCESS;
