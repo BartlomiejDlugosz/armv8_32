@@ -20,3 +20,4 @@ typedef struct {
     uint8_t memory[MEMORY_SIZE]; // Memory
 } CPU;
 
+void initialise_cpu(CPU *cpu);
