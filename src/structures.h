@@ -19,3 +19,20 @@ typedef struct {
     PSTATE pstate; // Program state register
     uint8_t memory[MEMORY_SIZE]; // Memory
 } CPU;
+
+
+void initialise_cpu(CPU *cpu);
+
+uint64_t read_register64(const CPU *cpu, uint8_t reg_index);
+
+uint32_t read_register32(const CPU* cpu, uint8_t reg_index);
+
+void write_register64(CPU *cpu, uint8_t reg_index, uint64_t value);
+
+void write_register32(CPU *cpu, uint8_t reg_index, uint32_t value);
+
+uint32_t read_memory(const CPU *cpu, uint32_t address);
+
+void write_memory(CPU *cpu, uint32_t address, uint32_t value);
+
+void print_cpu_state(const CPU *cpu);
