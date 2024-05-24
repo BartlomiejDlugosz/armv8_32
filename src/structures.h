@@ -1,5 +1,4 @@
 #include <stdint.h>
-#include <string.h>
 
 #define NUM_REGISTERS 31
 #define MEMORY_SIZE (2 * 1024 * 1024) // 2MB
@@ -20,8 +19,3 @@ typedef struct {
     PSTATE pstate; // Program state register
     uint8_t memory[MEMORY_SIZE]; // Memory
 } CPU;
-
-void initialise_cpu(CPU *cpu) {
-    memset(cpu, 0, sizeof(CPU));
-    cpu->pstate.Z = 1; // INITIAL PSTATE value with Z flag set
-}
