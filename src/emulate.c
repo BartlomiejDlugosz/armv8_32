@@ -1,16 +1,17 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdint.h>
+#include <structures.h>
 
 int main(int argc, char **argv) {
   extern uint32_t current_instr;
-  extern struct CPU;
+  extern struct CPU cpu;
   extern branchExecute(int);
   extern dataProcessing(int, bool);
   extern loadStore (int);
-  current_instr = CPU->memory[CPU->PC]
+  current_instr = read_memory(cpu, cpu->PC)
   while (current_instr != 0x8a000000) {
-    current_instr = CPU->memory[CPU->PC]
+    current_instr = read_memory(cpu, cpu->PC)
     switch(current_instr & 0x1e000000) {
       case 0x10000000:
         // fall thru immediate DP
@@ -34,7 +35,7 @@ int main(int argc, char **argv) {
         branchExecute(current_instr);
         break;
     }
-    CPU->PC += 4;
+    cpu->PC += 4;
   }
   
   return EXIT_SUCCESS;
