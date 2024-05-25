@@ -1,5 +1,6 @@
 #include "structures.h"
 #include <string.h>
+#include <stdio.h>
 
 void initialise_cpu(CPU *cpu) {
     memset(cpu, 0, sizeof(CPU));
