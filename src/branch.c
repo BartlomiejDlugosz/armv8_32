@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include "structures.h"
+#include <stdbool.h>
 
 extern CPU cpu;
 extern read_register64(CPU, uint8_t)
@@ -16,8 +17,46 @@ void branchExecute(uint64_t current_instr) {
                 simm19 = simm19 | 0xFFFFFFFFFFF00000;
             }
             switch (current_instr & 0xF) {
-
+                case 0:
+                    if (cpu->PSTATE->Z == 1) {
+                        cpu->PC += simm19;
+                    }
+                    break;
+                case 1:
+                    if (cpu->PSTATE->Z == 0) {
+                        cpu->PC += simm19;
+                    }
+                    break;
+                case 10:
+                    if (cpu->PSTATE->N == cpu->PSTATE->V) {
+                        cpu->PC += simm19;
+                    }
+                    break;
+                case 11:
+                    if (cpu->PSTATE->N != cpu->PSTATE->V) {
+                        cpu->PC += simm19;
+                    }
+                    break;
+                case 12:
+                    if (cpu->PSTATE->Z == 0 && cpu->PSTATE->N == cpu->PSTATE->V) {
+                        cpu->PC += simm19;
+                    }
+                    break;
+                case 13:
+                    if !(cpu->PSTATE->Z == 0 && cpu->PSTATE->N == cpu->PSTATE->V) {
+                        cpu->PC += simm19;
+                    }
+                    break;
+                case 14:
+                    cpu->PC += simm19;
+                    break;
             }
         }
+    } else {
+        uint64_t simm26 = (current_instr & 0x3FFFFFF) << 2;
+        if (simm26 & 0x08000000 = 0x08000000) {
+            simm26 = simm26 | 0xFFFFFFF000000000;
+        }
+        cpu->PC += simm26;
     }
 }
