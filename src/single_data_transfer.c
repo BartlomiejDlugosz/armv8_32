@@ -1,32 +1,31 @@
 #include "single_data_transfer.h"
-#include "structures.h"
 #include <stdint.h>
-#include <stdio.h>
 
- void single_data_transfer(CPU *cpu, uint64_t *target_address, union single_data_transfer_instruction instr) {
-    uint64_t xn_value = read_register64(cpu, instr.data.xn);
+ void single_data_transfer(CPU *cpu, uint64_t *target_address, union single_data_transfer_instruction instr, union single_data_transfer_data data) {
+    uint64_t xn_value = read_register64(cpu, data.xn);
+    union single_data_transfer_data_offset offset = (union single_data_transfer_data_offset) {.bits = data.offset};
 
     if (instr.U == 1) {
         // Unsigned Immediate Offset
         // If sf == 1 (64 bit) then multiply by 8
         // else multiply by 4
-        uint64_t uoffset = instr.sf ? instr.data.offset * 8 : instr.data.offset * 4;
+        uint64_t uoffset = instr.sf ? data.offset * 8 : data.offset * 4;
         *target_address = xn_value + uoffset;
-    } else if (instr.data.type == 0) {
+    } else if (offset.type == 0) {
         // Pre / Post Indexed
-        if (instr.data.I == 1) {
+        if (offset.I == 1) {
             // Pre-Indexed
-            *target_address = xn_value + instr.data.simm9;
-            write_register64(cpu, instr.data.xn, *target_address);
+            *target_address = xn_value + offset.simm9;
+            write_register64(cpu, data.xn, *target_address);
         } else {
             // Post Indexed
             *target_address = xn_value;
-            write_register64(cpu, instr.data.xn, *target_address + instr.data.simm9);
+            write_register64(cpu, data.xn, *target_address + offset.simm9);
         }
     } else{
         // Register Offset
         // Manually extract bits to avoid to many nested union declarations
-        uint64_t xm = (instr.data.simm9 >> 6) & 0x1F;
+        uint64_t xm = (offset.bits >> 6) & 0x1F;
         uint64_t xm_value = read_register64(cpu, xm);
         *target_address = xn_value + xm_value;
     }
@@ -35,21 +34,22 @@
 void single_data_transfer_init(CPU *cpu, uint32_t instruction) {
     // Initialize instr to the instruction
     union single_data_transfer_instruction instr = (union single_data_transfer_instruction) {.bits = instruction};
+    union single_data_transfer_data data = (union single_data_transfer_data) {.bits = instr.data};
 
     uint64_t target_address;
 
     if (instr.type == 1) {
         // Single Data Transfer
-        single_data_transfer(cpu, &target_address, instr);
+        single_data_transfer(cpu, &target_address, instr, data);
 
     } else {
         // Load Literal
-        uint64_t PC_value = read_PC(cpu);
-        int64_t offset = instr.data.bits * 4;
+        uint64_t PC_value = 0;//read_PC(cpu);
+        int64_t offset = instr.data * 4;
         target_address = PC_value + offset;
     }
 
-    if (instr.type == 0 || instr.data.L == 1) {
+    if (instr.type == 0 || data.L == 1) {
         // Load if Load Literal, or load flag set
         if (instr.sf == 1) {
             // 64 bit
