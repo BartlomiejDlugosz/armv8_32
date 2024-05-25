@@ -19,4 +19,3 @@ typedef struct {
     PSTATE pstate; // Program state register
     uint8_t memory[MEMORY_SIZE]; // Memory
 } CPU;
-
