@@ -35,17 +35,23 @@ void write_register32(CPU *cpu, uint8_t reg_index, uint32_t value) {
     }
 }
 
-uint32_t read_memory(const CPU *cpu, uint32_t address) {
-    if (address < MEMORY_SIZE) {
-        return cpu->memory[address];
+uint64_t read_memory(const CPU *cpu, uint32_t address, uint8_t num_bytes) {
+    if (address + num_bytes - 1 < MEMORY_SIZE && num_bytes <= 8) {
+        uint64_t value = 0;
+        for (uint8_t i = 0; i < num_bytes; i++) {
+            value |= ((uint64_t)cpu->memory[address + i]) << (8 * i);
+        }
+        return value;
     } else {
         return 0;
     }
 }
 
-void write_memory(CPU *cpu, uint32_t address, uint32_t value) {
-    if (address < MEMORY_SIZE) {
-        cpu->memory[address] = value;
+void write_memory(CPU *cpu, uint32_t address, uint64_t value, uint8_t num_bytes) {
+    if (address + num_bytes - 1 < MEMORY_SIZE & num_bytes <= 8) {
+        for (uint8_t i = 0; i < num_bytes; i++) {
+            cpu->memory[address + i] = (value >> (8 * i)) & 0xFF;
+        }
     }
 }
 
