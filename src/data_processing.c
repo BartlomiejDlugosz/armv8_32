@@ -2,11 +2,7 @@
 #include <stdbool.h>
 #include <stdint.h>
 #include "data_processing.h"
-#include <limits.h> // for INT_MAX, although I should probably hardcode the values for the architecture
-
-int main() {
-	return 0;
-}
+//#include <limits.h> // for INT_MAX, although I should probably hardcode the values for the architecture
 
 // Checking for unsigned overflow
 // from https://stackoverflow.com/questions/199333/how-do-i-detect-unsigned-integer-overflow
@@ -30,6 +26,7 @@ int main() {
 #define uadd_overflow_64 (rn_contents > ULONG_MAX - op2) // `rn + op2` will produce a carry (unsigned)
 #define usub_overflow_64 (rn_contents < op2)             // `rn - op2` will produce a borrow (unsigned)
 // TODO: define MAX/MIN manually, since they are dependent on platform!
+
 
 // Handle immediate instructions
 void perform_data_processing_immediate(
