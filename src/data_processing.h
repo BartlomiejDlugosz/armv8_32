@@ -1,6 +1,5 @@
 #include <stdint.h>
-#include "../structures.h"
-
+#include "structures.h"
 
 union arithmetic_immediate_operand
 {
@@ -21,7 +20,7 @@ union wide_move_operand
 	unsigned bits : 18;
 };
 
-union single_data_processing_data_immediate {
+union data_processing_data_immediate {
     struct {
         unsigned operand: 18;
         unsigned opi: 3;
@@ -29,7 +28,28 @@ union single_data_processing_data_immediate {
     unsigned bits : 21;
 };
 
-union single_data_processing_data_register {
+
+union multiply_operand
+{
+	struct {
+		unsigned ra : 5;
+		unsigned x : 1;
+	};
+	unsigned bits : 6;
+};
+
+union arithmetic_logic_opr
+{
+	struct {
+		unsigned type: 1;
+		unsigned shift : 2;
+		unsigned maybe_N : 1;
+	};
+	unsigned bits : 4;
+};
+
+
+union data_processing_data_register {
     struct {
         unsigned rn : 5;
         unsigned operand : 6;
