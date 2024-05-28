@@ -53,14 +53,14 @@ void single_data_transfer_init(CPU *cpu, uint32_t instruction) {
         // Load if Load Literal, or load flag set
         if (instr.sf == 1) {
             // 64 bit
-            write_register64(cpu, instr.rt, read_memory(cpu, target_address));
+            write_register64(cpu, instr.rt, read_memory(cpu, target_address, 8));
         } else {
             // 32 bit
-            write_register32(cpu, instr.rt, read_memory(cpu, target_address));
+            write_register32(cpu, instr.rt, read_memory(cpu, target_address, 4));
         }
     } else {
         // Chooses if we use 64 bit or 32 bit value
         uint64_t register_value = instr.sf ? read_register64(cpu, instr.rt) : read_register32(cpu, instr.rt);
-        write_memory(cpu, target_address, register_value);
+        write_memory(cpu, target_address, register_value, instr.sf ? 8 : 4);
     }
 }
