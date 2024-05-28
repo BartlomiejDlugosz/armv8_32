@@ -22,16 +22,16 @@ union wide_move_operand {
 
 union data_processing_data_immediate {
     struct {
-        unsigned operand : 18;
         unsigned opi : 3;
+        unsigned operand : 18;
     };
     unsigned bits : 21;
 };
 
 union multiply_operand {
     struct {
-        unsigned ra : 5;
         unsigned x : 1;
+        unsigned ra : 5;
     };
     unsigned bits : 6;
 };
@@ -47,11 +47,11 @@ union arithmetic_logic_opr {
 
 union data_processing_data_register {
     struct {
-        unsigned rn : 5;
-        unsigned operand : 6;
-        unsigned rm : 5;
-        unsigned opr : 4;
         unsigned const_1 : 1;
+        unsigned opr : 4;
+        unsigned rm : 5;
+        unsigned operand : 6;
+        unsigned rn : 5;
     };
     unsigned bits : 21;
 };
@@ -61,12 +61,12 @@ union data_processing_data_register {
 // instructions, as defined above
 union data_processing_instruction {
     struct {
-        unsigned rd : 5;
-        unsigned data : 21;
-        unsigned : 2;
-        unsigned maybe_M : 1;
-        unsigned opc : 2;
         unsigned sf : 1;
+        unsigned opc : 2;
+        unsigned maybe_M : 1;
+        unsigned : 2;
+        unsigned data : 21;
+        unsigned rd : 5;
     };
     uint32_t bits;
 };
