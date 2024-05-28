@@ -1,3 +1,4 @@
 #include <stdint.h>
 #include "structures.h"
-void branchExecute(uint64_t current_instr, CPU *cpu);
+#pragma once
+void branchExecute(CPU *cpu, uint64_t current_instr);

@@ -1,6 +1,7 @@
 #include "structures.h"
 #include "data_processing.h"
 #include "single_data_transfer.h"
+#include "branch.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
