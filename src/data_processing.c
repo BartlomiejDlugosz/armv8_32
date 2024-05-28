@@ -1,13 +1,10 @@
 #include "data_processing.h"
-
 #include <stdbool.h>
 #include <stdint.h>
 #include <stdio.h>
-// #include <limits.h> // for INT_MAX, although I should probably hardcode the
-// values for the architecture
+#include <limits.h> // potential source of issues, in which case we can manually define limits 
 
-// Checking for unsigned overflow
-// from
+// Checking for unsigned overflow from
 // https://stackoverflow.com/questions/199333/how-do-i-detect-unsigned-integer-overflow
 // if (x > 0 && a > INT_MAX - x) // `a + x` would overflow (1)
 // if (x < 0 && a < INT_MIN - x) // `a + x` would underflow (2)
@@ -17,7 +14,7 @@
 // since this is given. This also means that case
 // (2) and (3) above are not possible.
 // Hence, addition cannot underflow and subtraction cannot overflow
-//
+
 #define add_overflow_32 \
     (rn_contents > INT_MAX - op2)  // `rn + op2` will overflow (signed)
 #define sub_overflow_32 \
@@ -41,31 +38,6 @@
 // TODO: define MAX/MIN manually, since they are dependent on platform!
 
 // Handle immediate instructions
-void perform_data_processing_immediate(
-    CPU *cpu, union data_processing_instruction instr,
-    union data_processing_data_immediate data) {
-    if (data.opi == 2) {
-        union arithmetic_immediate_operand operand =
-            (union arithmetic_immediate_operand){.bits = instr.data};
-        if (instr.sf == 1) {
-            arithmetic_immediate_64(cpu, instr, data, operand);
-        } else {
-            arithmetic_immediate_32(cpu, instr, data, operand);
-        }
-    } else if (data.opi == 5) {
-        union wide_move_operand operand =
-            (union wide_move_operand){.bits = instr.data};
-        if (instr.sf == 1) {
-            wide_move_64(cpu, instr, data, operand);
-        } else {
-            wide_move_32(cpu, instr, data, operand);
-        }
-    } else {
-        printf("undefined instruction\n");
-    }
-    return;
-}
-
 uint64_t arithmetic_helper_64(CPU *cpu, unsigned opc, uint64_t rn_contents,
                               uint64_t op2) {
     uint64_t result;
@@ -260,37 +232,6 @@ void wide_move_32(CPU *cpu, union data_processing_instruction instr,
 
 // Handle register instructions
 
-void perform_data_processing_register(
-    CPU *cpu, union data_processing_instruction instr,
-    union data_processing_data_register data) {
-    if (instr.maybe_M == 1) {
-        union multiply_operand operand =
-            (union multiply_operand){.bits = data.operand};
-
-        if (instr.sf == 1) {
-            multiply_64(cpu, instr, data, operand);
-        } else {
-            multiply_32(cpu, instr, data, operand);
-        }
-    } else {
-        union arithmetic_logic_opr opr =
-            (union arithmetic_logic_opr){.bits = data.opr};
-        if (opr.type == 1) {
-            if (instr.sf == 1) {
-                arithmetic_register_64(cpu, instr, data, opr);
-            } else {
-                arithmetic_register_64(cpu, instr, data, opr);
-            }
-        } else {
-            if (instr.sf == 1) {
-                logic_64(cpu, instr, data, opr);
-            } else {
-                logic_32(cpu, instr, data, opr);
-            }
-        }
-    }
-    return;
-}
 
 void arithmetic_register_64(CPU *cpu, union data_processing_instruction instr,
                             union data_processing_data_register data,
@@ -503,6 +444,64 @@ void multiply_32(CPU *cpu, union data_processing_instruction instr,
 }
 
 // End of register instructions
+
+
+void perform_data_processing_immediate(
+    CPU *cpu, union data_processing_instruction instr,
+    union data_processing_data_immediate data) {
+    if (data.opi == 2) {
+        union arithmetic_immediate_operand operand =
+            (union arithmetic_immediate_operand){.bits = instr.data};
+        if (instr.sf == 1) {
+            arithmetic_immediate_64(cpu, instr, data, operand);
+        } else {
+            arithmetic_immediate_32(cpu, instr, data, operand);
+        }
+    } else if (data.opi == 5) {
+        union wide_move_operand operand =
+            (union wide_move_operand){.bits = instr.data};
+        if (instr.sf == 1) {
+            wide_move_64(cpu, instr, data, operand);
+        } else {
+            wide_move_32(cpu, instr, data, operand);
+        }
+    } else {
+        printf("undefined instruction\n");
+    }
+    return;
+}
+
+void perform_data_processing_register(
+    CPU *cpu, union data_processing_instruction instr,
+    union data_processing_data_register data) {
+    if (instr.maybe_M == 1) {
+        union multiply_operand operand =
+            (union multiply_operand){.bits = data.operand};
+
+        if (instr.sf == 1) {
+            multiply_64(cpu, instr, data, operand);
+        } else {
+            multiply_32(cpu, instr, data, operand);
+        }
+    } else {
+        union arithmetic_logic_opr opr =
+            (union arithmetic_logic_opr){.bits = data.opr};
+        if (opr.type == 1) {
+            if (instr.sf == 1) {
+                arithmetic_register_64(cpu, instr, data, opr);
+            } else {
+                arithmetic_register_64(cpu, instr, data, opr);
+            }
+        } else {
+            if (instr.sf == 1) {
+                logic_64(cpu, instr, data, opr);
+            } else {
+                logic_32(cpu, instr, data, opr);
+            }
+        }
+    }
+    return;
+}
 
 void data_processing_init(CPU *cpu, uint32_t instruction, bool is_immediate) {
     union data_processing_instruction instr =
