@@ -1,4 +1,5 @@
 #include <stdint.h>
+#include <stdbool.h>
 
 #include "structures.h"
 
@@ -71,9 +72,6 @@ union data_processing_instruction {
 };
 
 // Handle immediate instructions
-void perform_data_processing_immediate(
-    CPU *cpu, union data_processing_instruction instr,
-    union data_processing_data_immediate data);
 
 uint64_t arithmetic_helper_64(CPU *cpu, unsigned opc, uint64_t rn_contents,
                               uint64_t op2);
@@ -101,10 +99,6 @@ void wide_move_32(CPU *cpu, union data_processing_instruction instr,
 
 // Handle register instructions
 
-void perform_data_processing_register(CPU *cpu,
-                                      union data_processing_instruction instr,
-                                      union data_processing_data_register data);
-
 void arithmetic_register_64(CPU *cpu, union data_processing_instruction instr,
                             union data_processing_data_register data,
                             union arithmetic_logic_opr opr);
@@ -129,18 +123,14 @@ void multiply_32(CPU *cpu, union data_processing_instruction instr,
                  union data_processing_data_register data,
                  union multiply_operand operand);
 
-// End of register instructions
 
-void data_processing_init(CPU *cpu, uint32_t instruction, bool is_immediate) {
-    union data_processing_instruction instr =
-        (union data_processing_instruction){.bits = instruction};
-    if (is_immediate) {
-        union data_processing_data_immediate data =
-            (union data_processing_data_immediate){.bits = instr.data};
-        perform_data_processing_immediate(cpu, instr, data);
-    } else {
-        union data_processing_data_register data =
-            (union data_processing_data_register){.bits = instr.data};
-        perform_data_processing_register(cpu, instr, data);
-    }
-};
+// End of register instructions
+void perform_data_processing_immediate(
+    CPU *cpu, union data_processing_instruction instr,
+    union data_processing_data_immediate data);
+
+void perform_data_processing_register(CPU *cpu,
+                                      union data_processing_instruction instr,
+                                      union data_processing_data_register data);
+
+void data_processing_init(CPU *cpu, uint32_t instruction, bool is_immediate);
