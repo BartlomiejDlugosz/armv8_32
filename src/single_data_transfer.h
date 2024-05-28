@@ -1,5 +1,6 @@
 #include <stdint.h>
 #include "structures.h"
+#pragma once
 
 union single_data_transfer_data_offset {
     struct {

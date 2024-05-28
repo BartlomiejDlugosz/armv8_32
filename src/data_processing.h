@@ -1,6 +1,6 @@
 #include <stdint.h>
 #include <stdbool.h>
-
+#pragma once
 #include "structures.h"
 
 union arithmetic_immediate_operand {
