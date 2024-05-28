@@ -1,7 +1,8 @@
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdint.h>
-#include <structures.h>
+#include "structures.h"
+#include "structures.c"
 
 int main(int argc, char **argv) {
   uint32_t current_instr = read_memory(&cpu, cpu->PC, 4);
@@ -27,7 +28,7 @@ int main(int argc, char **argv) {
       case 0x14000000:
         // fall thru to branch execute
       case 0x16000000:
-        branchExecute(current_instr, &cpu);
+        branchExecute(&cpu, current_instr);
         break;
     }
     cpu->PC += 4;
