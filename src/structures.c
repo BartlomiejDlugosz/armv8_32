@@ -68,7 +68,7 @@ void print_cpu_state(const CPU *cpu) {
             cpu->pstate.V ? 'V' : '-');
     printf("Non-zero memory:\n");
     for (uint32_t addr = 0; addr < MEMORY_SIZE; addr += 4) {
-        uint32_t value = read_memory(cpu, addr, 1);
+        uint32_t value = read_memory(cpu, addr, 4);
         if (value != 0) {
             printf("0x%08x: 0x%08x\n", addr, value);
         }
