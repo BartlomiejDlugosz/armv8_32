@@ -1,10 +1,10 @@
 #include "structures.h"
+#include "data_processing.h"
+#include "single_data_transfer.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include <stdint.h>
-#include "structures.h"
-#include "structures.c"
 #include <inttypes.h>
 
 // Reads the binary file with the given file name

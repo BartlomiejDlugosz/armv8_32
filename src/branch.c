@@ -1,6 +1,6 @@
 #include <stdlib.h>
 #include <stdint.h>
-#include <structures.h>
+#include "structures.h"
 #include <stdbool.h>
 #include <stdio.h>
 #define addsimm19 (*cpu).PC += simm19
@@ -16,7 +16,7 @@ void branchExecute(uint64_t current_instr, CPU *cpu) {
             {
                 printf("eroor: xzr encoding for branch instruction");
             } else {
-                (*cpu).PC = read_register64(*cpu, xn);
+                (*cpu).PC = read_register64(&cpu, xn);
             }
         } else {
             // conditional branching
