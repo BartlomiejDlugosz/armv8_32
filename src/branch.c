@@ -1,6 +1,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include "structures.h"
+#include "branch.c"
 #include <stdbool.h>
 #include <stdio.h>
 #define addsimm19 (*cpu).PC += simm19
