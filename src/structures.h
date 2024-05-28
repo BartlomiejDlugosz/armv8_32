@@ -1,5 +1,8 @@
 #include <stdint.h>
 
+#ifndef STRUCTURES
+#define STRUCTURES
+
 #define NUM_REGISTERS 31
 #define MEMORY_SIZE (2 * 1024 * 1024) // 2MB
 
@@ -35,3 +38,4 @@ uint64_t read_memory(const CPU *cpu, uint32_t address, uint8_t num_bytes);
 void write_memory(CPU *cpu, uint32_t address, uint64_t value, uint8_t num_bytes);
 
 void print_cpu_state(const CPU *cpu);
+#endif
