@@ -36,4 +36,3 @@ uint64_t read_memory(const CPU *cpu, uint32_t address, uint8_t num_bytes);
 void write_memory(CPU *cpu, uint32_t address, uint64_t value, uint8_t num_bytes);
 
 void print_cpu_state(const CPU *cpu);
-// End STRUCTURES_H
