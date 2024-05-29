@@ -49,7 +49,6 @@ int main(int argc, char **argv) {
   readBinaryToMemory(argc, argv, &cpu);
   uint32_t current_instr = read_memory(&cpu, cpu.PC, 4);
   while (current_instr != 0x8a000000) {
-    current_instr = read_memory(&cpu, cpu.PC, 4);
     switch(current_instr & 0x1e000000) {
       case 0x10000000:
         // fall thru immediate DP
@@ -74,6 +73,7 @@ int main(int argc, char **argv) {
         break;
     }
     cpu.PC += 4;
+    current_instr = read_memory(&cpu, cpu.PC, 4);
   }
   writeCPUState(argc, argv, &cpu);
   return EXIT_SUCCESS;
