@@ -5,53 +5,53 @@
 
 union arithmetic_immediate_operand {
     struct {
-        unsigned sh : 1;
-        unsigned imm12 : 12;
         unsigned rn : 5;
+        unsigned imm12 : 12;
+        unsigned sh : 1;
     };
     unsigned bits : 18;
 };
 
 union wide_move_operand {
     struct {
-        unsigned hw : 2;
         unsigned imm16 : 16;
+        unsigned hw : 2;
     };
     unsigned bits : 18;
 };
 
 union data_processing_data_immediate {
     struct {
-        unsigned opi : 3;
         unsigned operand : 18;
+        unsigned opi : 3;
     };
     unsigned bits : 21;
 };
 
 union multiply_operand {
     struct {
-        unsigned x : 1;
         unsigned ra : 5;
+        unsigned x : 1;
     };
     unsigned bits : 6;
 };
 
 union arithmetic_logic_opr {
     struct {
-        unsigned type : 1;
-        unsigned shift : 2;
         unsigned maybe_N : 1;
+        unsigned shift : 2;
+        unsigned type : 1;
     };
     unsigned bits : 4;
 };
 
 union data_processing_data_register {
     struct {
-        unsigned const_1 : 1;
-        unsigned opr : 4;
-        unsigned rm : 5;
-        unsigned operand : 6;
         unsigned rn : 5;
+        unsigned operand : 6;
+        unsigned rm : 5;
+        unsigned opr : 4;
+        unsigned const_1 : 1;
     };
     unsigned bits : 21;
 };
@@ -61,14 +61,14 @@ union data_processing_data_register {
 // instructions, as defined above
 union data_processing_instruction {
     struct {
-        unsigned sf : 1;
-        unsigned opc : 2;
-        unsigned maybe_M : 1;
-        unsigned : 2;
-        unsigned data : 21;
         unsigned rd : 5;
+        unsigned data : 21;
+        unsigned : 2;
+        unsigned maybe_M : 1;
+        unsigned opc : 2;
+        unsigned sf : 1;
     };
-    uint32_t bits;
+    unsigned bits : 32;
 };
 
 // Handle immediate instructions
