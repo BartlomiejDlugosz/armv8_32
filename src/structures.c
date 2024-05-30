@@ -13,9 +13,10 @@ void initialise_cpu(CPU *cpu) {
 uint64_t read_register64(const CPU *cpu, uint8_t reg_index) {
     if (reg_index < NUM_REGISTERS) {
         return cpu->registers[reg_index];
+    } else if (reg_index == 31) {
+        return 0; // ZR always returns 0
     } else {
         PRINT_INVALID_REGISTER_INDEX(reg_index);
-        return 0;
     }
 }
 
@@ -23,9 +24,10 @@ uint64_t read_register64(const CPU *cpu, uint8_t reg_index) {
 uint32_t read_register32(const CPU* cpu, uint8_t reg_index) {
     if (reg_index < NUM_REGISTERS) {
         return (uint32_t)(cpu->registers[reg_index] & 0xFFFFFFFF); // Masks the lower 32 bits
+    } else if (reg_index == 31) {
+        return 0; // ZR always returns 0
     } else {
         PRINT_INVALID_REGISTER_INDEX(reg_index);
-        return 0;
     }
 }
 
@@ -33,7 +35,7 @@ uint32_t read_register32(const CPU* cpu, uint8_t reg_index) {
 void write_register64(CPU *cpu, uint8_t reg_index, uint64_t value) {
     if (reg_index < NUM_REGISTERS) {
         cpu->registers[reg_index] = value;
-    } else {
+    } else if (reg_index != 31) { // Writes to ZR are ignored
         PRINT_INVALID_REGISTER_INDEX(reg_index);
     }
 }
@@ -42,7 +44,7 @@ void write_register64(CPU *cpu, uint8_t reg_index, uint64_t value) {
 void write_register32(CPU *cpu, uint8_t reg_index, uint32_t value) {
     if (reg_index < NUM_REGISTERS) {
         cpu->registers[reg_index] = (uint64_t)value;
-    } else {
+    } else if (reg_index != 31) { // Writes to ZR are ignored
         PRINT_INVALID_REGISTER_INDEX(reg_index);
     }
 }
