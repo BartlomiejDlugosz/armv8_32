@@ -40,6 +40,8 @@
 #define usub_underflow_64 \
     (rn_contents < op2)  // `rn - op2` will produce a borrow (unsigned)
 // TODO: define MAX/MIN manually, since they are dependent on platform!
+//
+//
 
 // Handle immediate instructions
 uint64_t arithmetic_helper_64(CPU *cpu, unsigned opc, uint64_t rn_contents,
@@ -433,7 +435,8 @@ void multiply_64(CPU *cpu, union data_processing_instruction instr,
     if (operand.x == 1) {
         rnrm = -rnrm;
     }
-    result = read_register64(cpu, operand.ra) + ((unsigned)rnrm);
+
+    result = read_register64(cpu, operand.ra) + ((uint64_t) rnrm);
     write_register64(cpu, instr.rd, result);
     return;
 }
@@ -447,7 +450,7 @@ void multiply_32(CPU *cpu, union data_processing_instruction instr,
         rnrm = -rnrm;
     }
 
-    uint32_t result = read_register32(cpu, operand.ra) + ((unsigned)rnrm);
+    uint32_t result = read_register32(cpu, operand.ra) + ((uint32_t) rnrm);
     write_register32(cpu, instr.rd, result);
     return;
 }
