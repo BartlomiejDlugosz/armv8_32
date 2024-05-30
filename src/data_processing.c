@@ -77,7 +77,6 @@ uint64_t arithmetic_helper_64(CPU *cpu, unsigned opc, uint64_t rn_contents,
 
 uint32_t arithmetic_helper_32(CPU *cpu, unsigned opc, uint32_t rn_contents,
                               uint32_t op2) {
-	print_cpu_state(cpu);
     uint32_t result;
     switch (opc) {
         case 0b00:  // add
@@ -124,7 +123,13 @@ void arithmetic_immediate_64(CPU *cpu, union data_processing_instruction instr,
 
     if (instr.rd == 0b11111 && (instr.opc == 0b00 || instr.opc == 0b10)) {
         // rd encodes the stack pointer, not handled
-        printf("error: reached a case we are not handling!\n"); printf("error: rn is stack pointer!\n"); return; }; uint64_t rn_contents = read_register64(cpu, operand.rn); uint64_t result = arithmetic_helper_64(cpu, instr.opc, rn_contents, op2);
+        printf("error: reached a case we are not handling!\n"); 
+	printf("error: rn is stack pointer!\n"); 
+	return; 
+    } 
+
+    uint64_t rn_contents = read_register64(cpu, operand.rn); 
+    uint64_t result = arithmetic_helper_64(cpu, instr.opc, rn_contents, op2);
     write_register64(cpu, instr.rd, result);
     return;
 }
@@ -148,7 +153,7 @@ void arithmetic_immediate_32(CPU *cpu, union data_processing_instruction instr,
         printf("error: reached a case we are not handling!\n");
         printf("error: rn is stack pointer!\n");
         return;
-    };
+    }
 
     uint32_t rn_contents = read_register32(cpu, operand.rn);
     uint32_t result = arithmetic_helper_32(cpu, instr.opc, rn_contents, op2);
