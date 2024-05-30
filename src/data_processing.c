@@ -3,6 +3,9 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <limits.h> // potential source of issues, in which case we can manually define limits 
+//#define INT_MAX ((uint32_t)(-1))
+//#define INT_MIN ((int32_t)(INT_MAX) + 1)
+//#define UINT_MAX ((uint32_t)(-1))
 
 // Checking for unsigned overflow from
 // https://stackoverflow.com/questions/199333/how-do-i-detect-unsigned-integer-overflow
@@ -177,8 +180,8 @@ void wide_move_64(CPU *cpu, union data_processing_instruction instr,
         case 0b11:
             // keep_mask: 16 bits set to one where imm16 is to be inserted
             uint64_t keep_mask = 0xFFFF << shift;
-            current_rd = current_rd && (~keep_mask);  // clear bits
-            result = current_rd || op;  // set bits using shifted imm16
+            current_rd = current_rd & (~keep_mask);  // clear bits
+            result = current_rd | op;  // set bits using shifted imm16
             break;
         default:
             printf("something went wrong in opc case!\n");
@@ -216,8 +219,8 @@ void wide_move_32(CPU *cpu, union data_processing_instruction instr,
         case 0b11:
             // keep_mask: 16 bits set to one where imm16 is to be inserted
             uint32_t keep_mask = 0xFFFF << shift;
-            current_rd = current_rd && (~keep_mask);  // clear bits
-            result = current_rd || op;  // set bits using shifted imm16
+            current_rd = current_rd & (~keep_mask);  // clear bits
+            result = current_rd | op;  // set bits using shifted imm16
             break;
         default:
             printf("something went wrong in opc case!\n");
