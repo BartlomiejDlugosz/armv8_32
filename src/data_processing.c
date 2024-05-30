@@ -3,11 +3,15 @@
 #include <stdint.h>
 #include <stdio.h>
 #include <limits.h> // potential source of issues, in which case we can manually define limits 
+//#define INT_MAX ((uint32_t)(-1))
+//#define INT_MIN ((int32_t)(INT_MAX) + 1)
+//#define UINT_MAX ((uint32_t)(-1))
 
 // Checking for unsigned overflow from
 // https://stackoverflow.com/questions/199333/how-do-i-detect-unsigned-integer-overflow
 // if (x > 0 && a > INT_MAX - x) // `a + x` would overflow (1)
 // if (x < 0 && a < INT_MIN - x) // `a + x` would underflow (2)
+//
 // if (x < 0 && a > INT_MAX + x) // `a - x` would overflow (3)
 // if (x > 0 && a < INT_MIN + x) // `a - x` would underflow (4)
 // the check for x > 0 (or in our case op2 > 0) is ommitted
@@ -17,29 +21,30 @@
 
 #define add_overflow_32 \
     (rn_contents > INT_MAX - op2)  // `rn + op2` will overflow (signed)
-#define sub_overflow_32 \
-    (rn_contents < INT_MIN + op2)  // `rn - op2` will underflow (signed)
+#define sub_underflow_32 \
+    ((int32_t) rn_contents < (int32_t) (INT_MIN + op2))  // `rn - op2` will underflow (signed)
 #define uadd_overflow_32 \
     (rn_contents >       \
      UINT_MAX - op2)  // `rn + op2` will produce a carry (unsigned)
-#define usub_overflow_32 \
+#define usub_underflow_32 \
     (rn_contents < op2)  // `rn - op2` will produce a borrow (unsigned)
 
 // we need to adapt the MAX/MIN values for 64-bit
 #define add_overflow_64 \
     (rn_contents > LONG_MAX - op2)  // `rn + op2` will overflow (signed)
-#define sub_overflow_64 \
-    (rn_contents < LONG_MIN + op2)  // `rn - op2` will underflow (signed)
+#define sub_underflow_64 \
+    ((int64_t) rn_contents < (int64_t) (LONG_MIN + op2))  // `rn - op2` will underflow (signed)
 #define uadd_overflow_64 \
     (rn_contents >       \
      ULONG_MAX - op2)  // `rn + op2` will produce a carry (unsigned)
-#define usub_overflow_64 \
+#define usub_underflow_64 \
     (rn_contents < op2)  // `rn - op2` will produce a borrow (unsigned)
 // TODO: define MAX/MIN manually, since they are dependent on platform!
 
 // Handle immediate instructions
 uint64_t arithmetic_helper_64(CPU *cpu, unsigned opc, uint64_t rn_contents,
                               uint64_t op2) {
+
     uint64_t result;
     switch (opc) {
         case 0b00:  // add
@@ -61,8 +66,8 @@ uint64_t arithmetic_helper_64(CPU *cpu, unsigned opc, uint64_t rn_contents,
             (*cpu).pstate.N =
                 (uint8_t)(result >> 63);  // extract MSB (sign bit)
             (*cpu).pstate.Z = (uint8_t)(result == 0 ? 1 : 0);
-            (*cpu).pstate.C = (uint8_t)(usub_overflow_64 ? 1 : 0);
-            (*cpu).pstate.V = (uint8_t)(sub_overflow_64 ? 1 : 0);
+            (*cpu).pstate.C = (uint8_t)(usub_underflow_64 ? 0 : 1);
+            (*cpu).pstate.V = (uint8_t)(sub_underflow_64 ? 1 : 0);
             break;
         default:
             printf("Something has gone wrong in opc case!\n");
@@ -93,8 +98,8 @@ uint32_t arithmetic_helper_32(CPU *cpu, unsigned opc, uint32_t rn_contents,
             (*cpu).pstate.N =
                 (uint8_t)(result >> 31);  // extract MSB (sign bit)
             (*cpu).pstate.Z = (uint8_t)(result == 0 ? 1 : 0);
-            (*cpu).pstate.C = (uint8_t)(usub_overflow_32 ? 1 : 0);
-            (*cpu).pstate.V = (uint8_t)(sub_overflow_32 ? 1 : 0);
+            (*cpu).pstate.C = (uint8_t)(usub_underflow_32 ? 0 : 1);
+            (*cpu).pstate.V = (uint8_t)(sub_underflow_32 ? 1 : 0);
             break;
         default:
             printf("Something has gone wrong in opc case!\n");
@@ -107,7 +112,7 @@ void arithmetic_immediate_64(CPU *cpu, union data_processing_instruction instr,
                              union arithmetic_immediate_operand operand) {
     // This function performs arithmetic with 64-bit registers
     uint64_t op2 =
-        (uint64_t)(operand.sh == 1 ? operand.imm12 << 12 : operand.imm12);
+        (uint64_t)(operand.sh == 1 ? ((uint64_t)operand.imm12) << 12 : operand.imm12);
 
     if (operand.rn == 0b11111) {
         // rn
@@ -118,12 +123,12 @@ void arithmetic_immediate_64(CPU *cpu, union data_processing_instruction instr,
 
     if (instr.rd == 0b11111 && (instr.opc == 0b00 || instr.opc == 0b10)) {
         // rd encodes the stack pointer, not handled
-        printf("error: reached a case we are not handling!\n");
-        printf("error: rn is stack pointer!\n");
-        return;
-    };
+        printf("error: reached a case we are not handling!\n"); 
+	printf("error: rn is stack pointer!\n"); 
+	return; 
+    } 
 
-    uint64_t rn_contents = read_register64(cpu, operand.rn);
+    uint64_t rn_contents = read_register64(cpu, operand.rn); 
     uint64_t result = arithmetic_helper_64(cpu, instr.opc, rn_contents, op2);
     write_register64(cpu, instr.rd, result);
     return;
@@ -134,7 +139,7 @@ void arithmetic_immediate_32(CPU *cpu, union data_processing_instruction instr,
                              union arithmetic_immediate_operand operand) {
     // This function performs arithmetic with 32-bit registers
     uint32_t op2 =
-        (uint32_t)(operand.sh == 1 ? operand.imm12 << 12 : operand.imm12);
+        (uint32_t)(operand.sh == 1 ? ((uint64_t)operand.imm12) << 12 : operand.imm12);
 
     if (operand.rn == 0b11111) {
         // rn
@@ -148,10 +153,10 @@ void arithmetic_immediate_32(CPU *cpu, union data_processing_instruction instr,
         printf("error: reached a case we are not handling!\n");
         printf("error: rn is stack pointer!\n");
         return;
-    };
+    }
 
     uint32_t rn_contents = read_register32(cpu, operand.rn);
-    uint64_t result = arithmetic_helper_32(cpu, instr.opc, rn_contents, op2);
+    uint32_t result = arithmetic_helper_32(cpu, instr.opc, rn_contents, op2);
     write_register32(cpu, instr.rd, result);
     return;
 }
@@ -160,10 +165,9 @@ void wide_move_64(CPU *cpu, union data_processing_instruction instr,
                   union data_processing_data_immediate data,
                   union wide_move_operand operand) {
     uint64_t shift = operand.hw * 16;
-    uint64_t op = operand.imm16 << shift;
+    uint64_t op = ((uint64_t)operand.imm16) << shift;
     uint64_t result;
     uint64_t current_rd = read_register64(cpu, instr.rd);
-
     switch (instr.opc) {
         case 0b00:
             result = ~op;
@@ -176,15 +180,14 @@ void wide_move_64(CPU *cpu, union data_processing_instruction instr,
             break;
         case 0b11:
             // keep_mask: 16 bits set to one where imm16 is to be inserted
-            uint64_t keep_mask = 0xFFFF << shift;
-            current_rd = current_rd && (~keep_mask);  // clear bits
-            result = current_rd || op;  // set bits using shifted imm16
+            uint64_t keep_mask = ((uint64_t)0xFFFF) << shift;
+            current_rd = current_rd & (~keep_mask);  // clear bits
+            result = current_rd | op;  // set bits using shifted imm16
             break;
         default:
             printf("something went wrong in opc case!\n");
             break;
     }
-
     write_register64(cpu, instr.rd, result);
     return;
 }
@@ -199,7 +202,7 @@ void wide_move_32(CPU *cpu, union data_processing_instruction instr,
     }
 
     uint32_t shift = operand.hw * 16;  // pre: hw < 2
-    uint32_t op = operand.imm16 << shift;
+    uint32_t op = ((uint32_t)operand.imm16) << shift;
     uint32_t result;
     uint32_t current_rd = read_register32(cpu, instr.rd);
 
@@ -215,9 +218,9 @@ void wide_move_32(CPU *cpu, union data_processing_instruction instr,
             break;
         case 0b11:
             // keep_mask: 16 bits set to one where imm16 is to be inserted
-            uint32_t keep_mask = 0xFFFF << shift;
-            current_rd = current_rd && (~keep_mask);  // clear bits
-            result = current_rd || op;  // set bits using shifted imm16
+            uint32_t keep_mask = ((uint32_t)0xFFFF) << shift;
+            current_rd = current_rd & (~keep_mask);  // clear bits
+            result = current_rd | op;  // set bits using shifted imm16
             break;
         default:
             printf("something went wrong in opc case!\n");
@@ -352,8 +355,8 @@ void logic_64(CPU *cpu, union data_processing_instruction instr,
             (*cpu).pstate.N =
                 (uint8_t)(result >> 63);  // extract MSB (sign bit)
             (*cpu).pstate.Z = (uint8_t)(result == 0 ? 1 : 0);
-            (*cpu).pstate.C = (uint8_t)0;
-            (*cpu).pstate.V = (uint8_t)0;
+            (*cpu).pstate.C = (uint8_t) 0;
+            (*cpu).pstate.V = (uint8_t) 0;
             break;
     }
 
@@ -389,7 +392,7 @@ void logic_32(CPU *cpu, union data_processing_instruction instr,
         op2 = ~op2;
     }
 
-    uint32_t rn_contents = read_register64(cpu, data.rn);
+    uint32_t rn_contents = read_register32(cpu, data.rn);
     uint32_t result;
     switch (instr.opc) {
         case 0b00:  // and
@@ -438,7 +441,7 @@ void multiply_32(CPU *cpu, union data_processing_instruction instr,
         rnrm = -rnrm;
     }
 
-    uint32_t result = read_register64(cpu, operand.ra) + ((unsigned)rnrm);
+    uint32_t result = read_register32(cpu, operand.ra) + ((unsigned)rnrm);
     write_register32(cpu, instr.rd, result);
     return;
 }
@@ -490,7 +493,7 @@ void perform_data_processing_register(
             if (instr.sf == 1) {
                 arithmetic_register_64(cpu, instr, data, opr);
             } else {
-                arithmetic_register_64(cpu, instr, data, opr);
+                arithmetic_register_32(cpu, instr, data, opr);
             }
         } else {
             if (instr.sf == 1) {
