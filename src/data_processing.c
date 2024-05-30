@@ -62,8 +62,6 @@ uint64_t arithmetic_helper_64(CPU *cpu, unsigned opc, uint64_t rn_contents,
             result = rn_contents - op2;
             break;
         case 0b11:  // subs
-	    printf("%lx\n", LONG_MAX);
-	    printf("%lx\n", ULONG_MAX);
             result = rn_contents - op2;
             (*cpu).pstate.N =
                 (uint8_t)(result >> 63);  // extract MSB (sign bit)
@@ -97,8 +95,6 @@ uint32_t arithmetic_helper_32(CPU *cpu, unsigned opc, uint32_t rn_contents,
             result = rn_contents - op2;
             break;
         case 0b11:  // subs
-	    printf("%lx\n", INT_MAX);
-	    printf("%lx\n", UINT_MAX);
             result = rn_contents - op2;
             (*cpu).pstate.N =
                 (uint8_t)(result >> 31);  // extract MSB (sign bit)
@@ -167,7 +163,6 @@ void wide_move_64(CPU *cpu, union data_processing_instruction instr,
     uint64_t op = ((uint64_t)operand.imm16) << shift;
     uint64_t result;
     uint64_t current_rd = read_register64(cpu, instr.rd);
-    printf("shift %i op %016lx current %016lx opc %x\n", shift, op, current_rd, instr.opc); 
     switch (instr.opc) {
         case 0b00:
             result = ~op;
@@ -183,13 +178,11 @@ void wide_move_64(CPU *cpu, union data_processing_instruction instr,
             uint64_t keep_mask = ((uint64_t)0xFFFF) << shift;
             current_rd = current_rd & (~keep_mask);  // clear bits
             result = current_rd | op;  // set bits using shifted imm16
-            printf("keep mask %016lx current rd %016lx result %016lx\n", keep_mask, current_rd, result);
             break;
         default:
             printf("something went wrong in opc case!\n");
             break;
     }
-    printf("res %016lx\n", result);
     write_register64(cpu, instr.rd, result);
     return;
 }
