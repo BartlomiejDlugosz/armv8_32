@@ -164,7 +164,7 @@ void wide_move_64(CPU *cpu, union data_processing_instruction instr,
                   union data_processing_data_immediate data,
                   union wide_move_operand operand) {
     uint64_t shift = operand.hw * 16;
-    uint64_t op = operand.imm16 << shift;
+    uint64_t op = ((uint64_t)operand.imm16) << shift;
     uint64_t result;
     uint64_t current_rd = read_register64(cpu, instr.rd);
 
@@ -203,7 +203,7 @@ void wide_move_32(CPU *cpu, union data_processing_instruction instr,
     }
 
     uint32_t shift = operand.hw * 16;  // pre: hw < 2
-    uint32_t op = operand.imm16 << shift;
+    uint32_t op = ((uint64_t)operand.imm16) << shift;
     uint32_t result;
     uint32_t current_rd = read_register32(cpu, instr.rd);
 
