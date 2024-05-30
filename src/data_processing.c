@@ -23,9 +23,7 @@
     (rn_contents > INT_MAX - op2)  // `rn + op2` will overflow (signed)
 #define sub_underflow_32 \
     (rn_contents < INT_MIN + op2)  // `rn - op2` will underflow (signed)
-#define uadd_overflow_32 \
-    (rn_contents >       \
-     UINT_MAX - op2)  // `rn + op2` will produce a carry (unsigned)
+#define uadd_overflow_32 0
 #define usub_underflow_32 \
     (rn_contents < op2)  // `rn - op2` will produce a borrow (unsigned)
 
@@ -34,9 +32,7 @@
     (rn_contents > LONG_MAX - op2)  // `rn + op2` will overflow (signed)
 #define sub_underflow_64 \
     (rn_contents < LONG_MIN + op2)  // `rn - op2` will underflow (signed)
-#define uadd_overflow_64 \
-    (rn_contents >       \
-     ULONG_MAX - op2)  // `rn + op2` will produce a carry (unsigned)
+#define uadd_overflow_64 0
 #define usub_underflow_64 \
     (rn_contents < op2)  // `rn - op2` will produce a borrow (unsigned)
 // TODO: define MAX/MIN manually, since they are dependent on platform!
@@ -167,7 +163,7 @@ void wide_move_64(CPU *cpu, union data_processing_instruction instr,
     uint64_t op = ((uint64_t)operand.imm16) << shift;
     uint64_t result;
     uint64_t current_rd = read_register64(cpu, instr.rd);
-
+    printf("shift %i op %016lx current %016lx opc %x\n", shift, op, current_rd, instr.opc); 
     switch (instr.opc) {
         case 0b00:
             result = ~op;
@@ -180,15 +176,16 @@ void wide_move_64(CPU *cpu, union data_processing_instruction instr,
             break;
         case 0b11:
             // keep_mask: 16 bits set to one where imm16 is to be inserted
-            uint64_t keep_mask = 0xFFFF << shift;
+            uint64_t keep_mask = ((uint64_t)0xFFFF) << shift;
             current_rd = current_rd & (~keep_mask);  // clear bits
             result = current_rd | op;  // set bits using shifted imm16
+            printf("keep mask %016lx current rd %016lx result %016lx\n", keep_mask, current_rd, result);
             break;
         default:
             printf("something went wrong in opc case!\n");
             break;
     }
-
+    printf("res %016lx\n", result);
     write_register64(cpu, instr.rd, result);
     return;
 }
@@ -203,7 +200,7 @@ void wide_move_32(CPU *cpu, union data_processing_instruction instr,
     }
 
     uint32_t shift = operand.hw * 16;  // pre: hw < 2
-    uint32_t op = ((uint64_t)operand.imm16) << shift;
+    uint32_t op = ((uint32_t)operand.imm16) << shift;
     uint32_t result;
     uint32_t current_rd = read_register32(cpu, instr.rd);
 
@@ -219,7 +216,7 @@ void wide_move_32(CPU *cpu, union data_processing_instruction instr,
             break;
         case 0b11:
             // keep_mask: 16 bits set to one where imm16 is to be inserted
-            uint32_t keep_mask = 0xFFFF << shift;
+            uint32_t keep_mask = ((uint32_t)0xFFFF) << shift;
             current_rd = current_rd & (~keep_mask);  // clear bits
             result = current_rd | op;  // set bits using shifted imm16
             break;
