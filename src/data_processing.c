@@ -11,6 +11,7 @@
 // https://stackoverflow.com/questions/199333/how-do-i-detect-unsigned-integer-overflow
 // if (x > 0 && a > INT_MAX - x) // `a + x` would overflow (1)
 // if (x < 0 && a < INT_MIN - x) // `a + x` would underflow (2)
+//
 // if (x < 0 && a > INT_MAX + x) // `a - x` would overflow (3)
 // if (x > 0 && a < INT_MIN + x) // `a - x` would underflow (4)
 // the check for x > 0 (or in our case op2 > 0) is ommitted
@@ -43,6 +44,7 @@
 // Handle immediate instructions
 uint64_t arithmetic_helper_64(CPU *cpu, unsigned opc, uint64_t rn_contents,
                               uint64_t op2) {
+
     uint64_t result;
     switch (opc) {
         case 0b00:  // add
@@ -60,6 +62,8 @@ uint64_t arithmetic_helper_64(CPU *cpu, unsigned opc, uint64_t rn_contents,
             result = rn_contents - op2;
             break;
         case 0b11:  // subs
+	    printf("%lx\n", LONG_MAX);
+	    printf("%lx\n", ULONG_MAX);
             result = rn_contents - op2;
             (*cpu).pstate.N =
                 (uint8_t)(result >> 63);  // extract MSB (sign bit)
@@ -75,6 +79,7 @@ uint64_t arithmetic_helper_64(CPU *cpu, unsigned opc, uint64_t rn_contents,
 
 uint32_t arithmetic_helper_32(CPU *cpu, unsigned opc, uint32_t rn_contents,
                               uint32_t op2) {
+	print_cpu_state(cpu);
     uint32_t result;
     switch (opc) {
         case 0b00:  // add
@@ -92,6 +97,8 @@ uint32_t arithmetic_helper_32(CPU *cpu, unsigned opc, uint32_t rn_contents,
             result = rn_contents - op2;
             break;
         case 0b11:  // subs
+	    printf("%lx\n", INT_MAX);
+	    printf("%lx\n", UINT_MAX);
             result = rn_contents - op2;
             (*cpu).pstate.N =
                 (uint8_t)(result >> 31);  // extract MSB (sign bit)
@@ -121,13 +128,7 @@ void arithmetic_immediate_64(CPU *cpu, union data_processing_instruction instr,
 
     if (instr.rd == 0b11111 && (instr.opc == 0b00 || instr.opc == 0b10)) {
         // rd encodes the stack pointer, not handled
-        printf("error: reached a case we are not handling!\n");
-        printf("error: rn is stack pointer!\n");
-        return;
-    };
-
-    uint64_t rn_contents = read_register64(cpu, operand.rn);
-    uint64_t result = arithmetic_helper_64(cpu, instr.opc, rn_contents, op2);
+        printf("error: reached a case we are not handling!\n"); printf("error: rn is stack pointer!\n"); return; }; uint64_t rn_contents = read_register64(cpu, operand.rn); uint64_t result = arithmetic_helper_64(cpu, instr.opc, rn_contents, op2);
     write_register64(cpu, instr.rd, result);
     return;
 }
@@ -154,7 +155,7 @@ void arithmetic_immediate_32(CPU *cpu, union data_processing_instruction instr,
     };
 
     uint32_t rn_contents = read_register32(cpu, operand.rn);
-    uint64_t result = arithmetic_helper_32(cpu, instr.opc, rn_contents, op2);
+    uint32_t result = arithmetic_helper_32(cpu, instr.opc, rn_contents, op2);
     write_register32(cpu, instr.rd, result);
     return;
 }
@@ -392,7 +393,7 @@ void logic_32(CPU *cpu, union data_processing_instruction instr,
         op2 = ~op2;
     }
 
-    uint32_t rn_contents = read_register64(cpu, data.rn);
+    uint32_t rn_contents = read_register32(cpu, data.rn);
     uint32_t result;
     switch (instr.opc) {
         case 0b00:  // and
@@ -441,7 +442,7 @@ void multiply_32(CPU *cpu, union data_processing_instruction instr,
         rnrm = -rnrm;
     }
 
-    uint32_t result = read_register64(cpu, operand.ra) + ((unsigned)rnrm);
+    uint32_t result = read_register32(cpu, operand.ra) + ((unsigned)rnrm);
     write_register32(cpu, instr.rd, result);
     return;
 }
@@ -493,7 +494,7 @@ void perform_data_processing_register(
             if (instr.sf == 1) {
                 arithmetic_register_64(cpu, instr, data, opr);
             } else {
-                arithmetic_register_64(cpu, instr, data, opr);
+                arithmetic_register_32(cpu, instr, data, opr);
             }
         } else {
             if (instr.sf == 1) {
