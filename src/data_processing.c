@@ -17,23 +17,23 @@
 
 #define add_overflow_32 \
     (rn_contents > INT_MAX - op2)  // `rn + op2` will overflow (signed)
-#define sub_overflow_32 \
+#define sub_underflow_32 \
     (rn_contents < INT_MIN + op2)  // `rn - op2` will underflow (signed)
 #define uadd_overflow_32 \
     (rn_contents >       \
      UINT_MAX - op2)  // `rn + op2` will produce a carry (unsigned)
-#define usub_overflow_32 \
+#define usub_underflow_32 \
     (rn_contents < op2)  // `rn - op2` will produce a borrow (unsigned)
 
 // we need to adapt the MAX/MIN values for 64-bit
 #define add_overflow_64 \
     (rn_contents > LONG_MAX - op2)  // `rn + op2` will overflow (signed)
-#define sub_overflow_64 \
+#define sub_underflow_64 \
     (rn_contents < LONG_MIN + op2)  // `rn - op2` will underflow (signed)
 #define uadd_overflow_64 \
     (rn_contents >       \
      ULONG_MAX - op2)  // `rn + op2` will produce a carry (unsigned)
-#define usub_overflow_64 \
+#define usub_underflow_64 \
     (rn_contents < op2)  // `rn - op2` will produce a borrow (unsigned)
 // TODO: define MAX/MIN manually, since they are dependent on platform!
 
@@ -61,8 +61,8 @@ uint64_t arithmetic_helper_64(CPU *cpu, unsigned opc, uint64_t rn_contents,
             (*cpu).pstate.N =
                 (uint8_t)(result >> 63);  // extract MSB (sign bit)
             (*cpu).pstate.Z = (uint8_t)(result == 0 ? 1 : 0);
-            (*cpu).pstate.C = (uint8_t)(usub_overflow_64 ? 1 : 0);
-            (*cpu).pstate.V = (uint8_t)(sub_overflow_64 ? 1 : 0);
+            (*cpu).pstate.C = (uint8_t)(usub_underflow_64 ? 1 : 0);
+            (*cpu).pstate.V = (uint8_t)(sub_underflow_64 ? 1 : 0);
             break;
         default:
             printf("Something has gone wrong in opc case!\n");
@@ -93,8 +93,8 @@ uint32_t arithmetic_helper_32(CPU *cpu, unsigned opc, uint32_t rn_contents,
             (*cpu).pstate.N =
                 (uint8_t)(result >> 31);  // extract MSB (sign bit)
             (*cpu).pstate.Z = (uint8_t)(result == 0 ? 1 : 0);
-            (*cpu).pstate.C = (uint8_t)(usub_overflow_32 ? 1 : 0);
-            (*cpu).pstate.V = (uint8_t)(sub_overflow_32 ? 1 : 0);
+            (*cpu).pstate.C = (uint8_t)(usub_underflow_32 ? 1 : 0);
+            (*cpu).pstate.V = (uint8_t)(sub_underflow_32 ? 1 : 0);
             break;
         default:
             printf("Something has gone wrong in opc case!\n");
