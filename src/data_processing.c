@@ -117,7 +117,7 @@ void arithmetic_immediate_64(CPU *cpu, union data_processing_instruction instr,
                              union arithmetic_immediate_operand operand) {
     // This function performs arithmetic with 64-bit registers
     uint64_t op2 =
-        (uint64_t)(operand.sh == 1 ? operand.imm12 << 12 : operand.imm12);
+        (uint64_t)(operand.sh == 1 ? ((uint64_t)operand.imm12) << 12 : operand.imm12);
 
     if (operand.rn == 0b11111) {
         // rn
@@ -138,7 +138,7 @@ void arithmetic_immediate_32(CPU *cpu, union data_processing_instruction instr,
                              union arithmetic_immediate_operand operand) {
     // This function performs arithmetic with 32-bit registers
     uint32_t op2 =
-        (uint32_t)(operand.sh == 1 ? operand.imm12 << 12 : operand.imm12);
+        (uint32_t)(operand.sh == 1 ? ((uint64_t)operand.imm12) << 12 : operand.imm12);
 
     if (operand.rn == 0b11111) {
         // rn
@@ -164,10 +164,10 @@ void wide_move_64(CPU *cpu, union data_processing_instruction instr,
                   union data_processing_data_immediate data,
                   union wide_move_operand operand) {
     uint64_t shift = operand.hw * 16;
-    uint64_t op = operand.imm16 << shift;
+    uint64_t op = ((uint64_t)operand.imm16) << shift;
     uint64_t result;
     uint64_t current_rd = read_register64(cpu, instr.rd);
-
+    printf("shift %i op %016lx current %016lx opc %x\n", shift, op, current_rd, instr.opc); 
     switch (instr.opc) {
         case 0b00:
             result = ~op;
@@ -180,15 +180,16 @@ void wide_move_64(CPU *cpu, union data_processing_instruction instr,
             break;
         case 0b11:
             // keep_mask: 16 bits set to one where imm16 is to be inserted
-            uint64_t keep_mask = 0xFFFF << shift;
+            uint64_t keep_mask = ((uint64_t)0xFFFF) << shift;
             current_rd = current_rd & (~keep_mask);  // clear bits
             result = current_rd | op;  // set bits using shifted imm16
+            printf("keep mask %016lx current rd %016lx result %016lx\n", keep_mask, current_rd, result);
             break;
         default:
             printf("something went wrong in opc case!\n");
             break;
     }
-
+    printf("res %016lx\n", result);
     write_register64(cpu, instr.rd, result);
     return;
 }
@@ -203,7 +204,7 @@ void wide_move_32(CPU *cpu, union data_processing_instruction instr,
     }
 
     uint32_t shift = operand.hw * 16;  // pre: hw < 2
-    uint32_t op = operand.imm16 << shift;
+    uint32_t op = ((uint32_t)operand.imm16) << shift;
     uint32_t result;
     uint32_t current_rd = read_register32(cpu, instr.rd);
 
@@ -219,7 +220,7 @@ void wide_move_32(CPU *cpu, union data_processing_instruction instr,
             break;
         case 0b11:
             // keep_mask: 16 bits set to one where imm16 is to be inserted
-            uint32_t keep_mask = 0xFFFF << shift;
+            uint32_t keep_mask = ((uint32_t)0xFFFF) << shift;
             current_rd = current_rd & (~keep_mask);  // clear bits
             result = current_rd | op;  // set bits using shifted imm16
             break;
