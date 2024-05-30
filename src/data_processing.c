@@ -117,7 +117,7 @@ void arithmetic_immediate_64(CPU *cpu, union data_processing_instruction instr,
                              union arithmetic_immediate_operand operand) {
     // This function performs arithmetic with 64-bit registers
     uint64_t op2 =
-        (uint64_t)(operand.sh == 1 ? operand.imm12 << 12 : operand.imm12);
+        (uint64_t)(operand.sh == 1 ? ((uint64_t)operand.imm12) << 12 : operand.imm12);
 
     if (operand.rn == 0b11111) {
         // rn
@@ -138,7 +138,7 @@ void arithmetic_immediate_32(CPU *cpu, union data_processing_instruction instr,
                              union arithmetic_immediate_operand operand) {
     // This function performs arithmetic with 32-bit registers
     uint32_t op2 =
-        (uint32_t)(operand.sh == 1 ? operand.imm12 << 12 : operand.imm12);
+        (uint32_t)(operand.sh == 1 ? ((uint64_t)operand.imm12) << 12 : operand.imm12);
 
     if (operand.rn == 0b11111) {
         // rn
