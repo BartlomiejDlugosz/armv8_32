@@ -22,7 +22,7 @@
 #define add_overflow_32 \
     (rn_contents > INT_MAX - op2)  // `rn + op2` will overflow (signed)
 #define sub_underflow_32 \
-    (rn_contents < INT_MIN + op2)  // `rn - op2` will underflow (signed)
+    ((int32_t) rn_contents < (int32_t) (INT_MIN + op2))  // `rn - op2` will underflow (signed)
 #define uadd_overflow_32 \
     (rn_contents >       \
      UINT_MAX - op2)  // `rn + op2` will produce a carry (unsigned)
@@ -33,7 +33,7 @@
 #define add_overflow_64 \
     (rn_contents > LONG_MAX - op2)  // `rn + op2` will overflow (signed)
 #define sub_underflow_64 \
-    (rn_contents < LONG_MIN + op2)  // `rn - op2` will underflow (signed)
+    ((int64_t) rn_contents < (int64_t) (LONG_MIN + op2))  // `rn - op2` will underflow (signed)
 #define uadd_overflow_64 \
     (rn_contents >       \
      ULONG_MAX - op2)  // `rn + op2` will produce a carry (unsigned)
@@ -68,7 +68,7 @@ uint64_t arithmetic_helper_64(CPU *cpu, unsigned opc, uint64_t rn_contents,
             (*cpu).pstate.N =
                 (uint8_t)(result >> 63);  // extract MSB (sign bit)
             (*cpu).pstate.Z = (uint8_t)(result == 0 ? 1 : 0);
-            (*cpu).pstate.C = (uint8_t)(usub_underflow_64 ? 1 : 0);
+            (*cpu).pstate.C = (uint8_t)(usub_underflow_64 ? 0 : 1);
             (*cpu).pstate.V = (uint8_t)(sub_underflow_64 ? 1 : 0);
             break;
         default:
@@ -103,7 +103,7 @@ uint32_t arithmetic_helper_32(CPU *cpu, unsigned opc, uint32_t rn_contents,
             (*cpu).pstate.N =
                 (uint8_t)(result >> 31);  // extract MSB (sign bit)
             (*cpu).pstate.Z = (uint8_t)(result == 0 ? 1 : 0);
-            (*cpu).pstate.C = (uint8_t)(usub_underflow_32 ? 1 : 0);
+            (*cpu).pstate.C = (uint8_t)(usub_underflow_32 ? 0 : 1);
             (*cpu).pstate.V = (uint8_t)(sub_underflow_32 ? 1 : 0);
             break;
         default:
@@ -356,8 +356,8 @@ void logic_64(CPU *cpu, union data_processing_instruction instr,
             (*cpu).pstate.N =
                 (uint8_t)(result >> 63);  // extract MSB (sign bit)
             (*cpu).pstate.Z = (uint8_t)(result == 0 ? 1 : 0);
-            (*cpu).pstate.C = (uint8_t)0;
-            (*cpu).pstate.V = (uint8_t)0;
+            (*cpu).pstate.C = (uint8_t) 0;
+            (*cpu).pstate.V = (uint8_t) 0;
             break;
     }
 
