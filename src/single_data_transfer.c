@@ -44,12 +44,13 @@ void single_data_transfer_init(CPU *cpu, uint32_t instruction) {
 
     } else {
         // Load Literal
-        uint64_t PC_value = 0;//read_PC(cpu);
+        uint64_t PC_value = cpu->PC;
         int64_t offset = instr.data * 4;
         target_address = PC_value + offset;
     }
 
     if (instr.type == 0 || data.L == 1) {
+        printf("%x %x\n", instr.rt, read_memory(cpu, target_address, 8));
         // Load if Load Literal, or load flag set
         if (instr.sf == 1) {
             // 64 bit
