@@ -1,10 +1,6 @@
-#include <stdlib.h>
-#include <stdint.h>
-#include "structures.h"
-#include "branch.h"
-#include <stdbool.h>
-#include <stdio.h>
-#define addsimm19 (*cpu).PC += simm19; cpu->PC -= 4;
+#include "includes.h"
+
+#define addsimm19 cpu->PC += simm19; cpu->PC -= 4;
 
 void branchExecute(CPU *cpu, uint64_t current_instr) {
     // first check if unconditional or not
@@ -17,7 +13,7 @@ void branchExecute(CPU *cpu, uint64_t current_instr) {
             {
                 printf("error: xzr encoding for branch instruction");
             } else {
-                (*cpu).PC = read_register64(cpu, xn);
+                cpu->PC = read_register64(cpu, xn);
         cpu->PC -= 4;
             }
         } else {
@@ -29,32 +25,32 @@ void branchExecute(CPU *cpu, uint64_t current_instr) {
             }
             switch (current_instr & 0xF) {
                 case 0: // eq
-                    if ((*cpu).pstate.Z == 1) {
+                    if (cpu->pstate.Z == 1) {
                         addsimm19;
                     }
                     break;
                 case 1: // not eq
-                    if ((*cpu).pstate.Z == 0) {
+                    if (cpu->pstate.Z == 0) {
                         addsimm19;
                     }
                     break;
                 case 10:  // signed >=
-                    if ((*cpu).pstate.N == (*cpu).pstate.V) {
+                    if (cpu->pstate.N == cpu->pstate.V) {
                         addsimm19;
                     }
                     break;
                 case 11: // signed <
-                    if ((*cpu).pstate.N != (*cpu).pstate.V) {
+                    if (cpu->pstate.N != cpu->pstate.V) {
                         addsimm19;
                     }
                     break;
                 case 12: // signed <=
-                    if ((*cpu).pstate.Z == 0 && (*cpu).pstate.N == (*cpu).pstate.V) {
+                    if (cpu->pstate.Z == 0 && cpu->pstate.N == cpu->pstate.V) {
                         addsimm19;
                     }
                     break;
                 case 13: // signed >
-                    if (!((*cpu).pstate.Z == 0 && (*cpu).pstate.N == (*cpu).pstate.V)) {
+                    if (!(cpu->pstate.Z == 0 && cpu->pstate.N == cpu->pstate.V)) {
                         addsimm19;
                     }
                     break;
@@ -70,7 +66,7 @@ void branchExecute(CPU *cpu, uint64_t current_instr) {
             // sign extend
             simm26 = simm26 | 0xFFFFFFF000000000;
         }
-        (*cpu).PC += simm26;
+        cpu->PC += simm26;
         cpu->PC -= 4;
     }
 }

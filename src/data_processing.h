@@ -1,7 +1,7 @@
-#include <stdint.h>
-#include <stdbool.h>
-#pragma once
-#include "structures.h"
+#ifndef DATA_PROCESSING_H
+#define DATA_PROCESSING_H
+
+#include "includes.h"
 
 union arithmetic_immediate_operand {
     struct {
@@ -134,3 +134,5 @@ void perform_data_processing_register(CPU *cpu,
                                       union data_processing_data_register data);
 
 void data_processing_init(CPU *cpu, uint32_t instruction, bool is_immediate);
+
+#endif //DATA_PROCESSING_H

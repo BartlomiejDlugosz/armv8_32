@@ -1,8 +1,5 @@
-#include "data_processing.h"
-#include <stdbool.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <limits.h> // potential source of issues, in which case we can manually define limits 
+#include "includes.h"
+
 //#define INT_MAX ((uint32_t)(-1))
 //#define INT_MIN ((int32_t)(INT_MAX) + 1)
 //#define UINT_MAX ((uint32_t)(-1))
