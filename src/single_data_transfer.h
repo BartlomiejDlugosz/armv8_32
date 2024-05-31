@@ -28,20 +28,21 @@ union single_data_transfer_data {
 // Defines union structure for the Single Data Transfer instructions
 union single_data_transfer_instruction {
     struct {
-        unsigned rt: 5;
+        unsigned rt : 5;
         // Needs to be signed in the case of being used as a offset
         signed data : 19;
-        unsigned U: 1;
+        unsigned U : 1;
         unsigned : 5;
-        unsigned sf: 1;
-        unsigned type: 1;
+        unsigned sf : 1;
+        unsigned type : 1;
     };
     uint32_t bits;
 };
 
-
-void single_data_transfer(CPU *cpu, uint64_t *target_address, union single_data_transfer_instruction instr, union single_data_transfer_data data);
+void single_data_transfer(CPU *cpu, uint64_t *target_address,
+                          union single_data_transfer_instruction instr,
+                          union single_data_transfer_data data);
 
 void single_data_transfer_init(CPU *cpu, uint32_t instruction);
 
-#endif //SINGLE_DATA_TRANSFER_H
+#endif  // SINGLE_DATA_TRANSFER_H

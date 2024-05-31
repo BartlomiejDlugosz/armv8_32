@@ -123,7 +123,6 @@ void multiply_32(CPU *cpu, union data_processing_instruction instr,
                  union data_processing_data_register data,
                  union multiply_operand operand);
 
-
 // End of register instructions
 void perform_data_processing_immediate(
     CPU *cpu, union data_processing_instruction instr,
@@ -135,4 +134,4 @@ void perform_data_processing_register(CPU *cpu,
 
 void data_processing_init(CPU *cpu, uint32_t instruction, bool is_immediate);
 
-#endif //DATA_PROCESSING_H
+#endif  // DATA_PROCESSING_H

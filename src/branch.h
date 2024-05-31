@@ -34,4 +34,4 @@ union branch_instruction {
 
 void branchExecute(CPU *cpu, uint32_t current_instr);
 
-#endif //BRANCH_H
+#endif  // BRANCH_H

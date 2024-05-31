@@ -9,7 +9,7 @@
 // Initialise the CPU state
 void initialise_cpu(CPU *cpu) {
     memset(cpu, 0, sizeof(CPU));
-    cpu->pstate.Z = 1; // INITIAL PSTATE value with Z flag set
+    cpu->pstate.Z = 1;  // INITIAL PSTATE value with Z flag set
 }
 
 // Read a 64-bit value from a general-purpose register
@@ -17,18 +17,19 @@ uint64_t read_register64(const CPU *cpu, uint8_t reg_index) {
     if (reg_index < NUM_REGISTERS) {
         return cpu->registers[reg_index];
     } else if (reg_index == ZR_REG_INDEX) {
-        return 0; // ZR always returns 0
+        return 0;  // ZR always returns 0
     } else {
         PRINT_INVALID_REGISTER_INDEX(reg_index);
     }
 }
 
 // Read a 32-bit value from a general-purpose register
-uint32_t read_register32(const CPU* cpu, uint8_t reg_index) {
+uint32_t read_register32(const CPU *cpu, uint8_t reg_index) {
     if (reg_index < NUM_REGISTERS) {
-        return (uint32_t)(cpu->registers[reg_index] & 0xFFFFFFFF); // Masks the lower 32 bits
+        return (uint32_t)(cpu->registers[reg_index] &
+                          0xFFFFFFFF);  // Masks the lower 32 bits
     } else if (reg_index == ZR_REG_INDEX) {
-        return 0; // ZR always returns 0
+        return 0;  // ZR always returns 0
     } else {
         PRINT_INVALID_REGISTER_INDEX(reg_index);
     }
@@ -38,7 +39,7 @@ uint32_t read_register32(const CPU* cpu, uint8_t reg_index) {
 void write_register64(CPU *cpu, uint8_t reg_index, uint64_t value) {
     if (reg_index < NUM_REGISTERS) {
         cpu->registers[reg_index] = value;
-    } else if (reg_index != ZR_REG_INDEX) { // Writes to ZR are ignored
+    } else if (reg_index != ZR_REG_INDEX) {  // Writes to ZR are ignored
         PRINT_INVALID_REGISTER_INDEX(reg_index);
     }
 }
@@ -47,7 +48,7 @@ void write_register64(CPU *cpu, uint8_t reg_index, uint64_t value) {
 void write_register32(CPU *cpu, uint8_t reg_index, uint32_t value) {
     if (reg_index < NUM_REGISTERS) {
         cpu->registers[reg_index] = (uint64_t)value;
-    } else if (reg_index != ZR_REG_INDEX) { // Writes to ZR are ignored
+    } else if (reg_index != ZR_REG_INDEX) {  // Writes to ZR are ignored
         PRINT_INVALID_REGISTER_INDEX(reg_index);
     }
 }
@@ -67,7 +68,8 @@ uint64_t read_memory(const CPU *cpu, uint32_t address, uint8_t num_bytes) {
 }
 
 // Write a value to memory in little-endian format
-void write_memory(CPU *cpu, uint32_t address, uint64_t value, uint8_t num_bytes) {
+void write_memory(CPU *cpu, uint32_t address, uint64_t value,
+                  uint8_t num_bytes) {
     if (address + num_bytes - 1 < MEMORY_SIZE && num_bytes <= MAX_BYTES) {
         for (uint8_t i = 0; i < num_bytes; i++) {
             cpu->memory[address + i] = (value >> (BYTE_WIDTH * i)) & 0xFF;
@@ -87,11 +89,9 @@ void print_cpu_state(const CPU *cpu) {
     // Print program counter
     printf("PC = %016lx\n", cpu->PC);
     // Print PSTATE
-    printf("PSTATE: %c%c%c%c\n",
-            cpu->pstate.N ? 'N' : '-',
-            cpu->pstate.Z ? 'Z' : '-',
-            cpu->pstate.C ? 'C' : '-',
-            cpu->pstate.V ? 'V' : '-');
+    printf("PSTATE: %c%c%c%c\n", cpu->pstate.N ? 'N' : '-',
+           cpu->pstate.Z ? 'Z' : '-', cpu->pstate.C ? 'C' : '-',
+           cpu->pstate.V ? 'V' : '-');
     // Print non-zero memory
     printf("Non-zero memory:\n");
     for (uint32_t addr = 0; addr < MEMORY_SIZE; addr += ADDRESS_ALIGNMENT) {
