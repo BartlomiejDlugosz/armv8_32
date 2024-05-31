@@ -44,7 +44,7 @@ void single_data_transfer_init(CPU *cpu, uint32_t instruction) {
 
     } else {
         // Load Literal
-        uint64_t PC_value = 0;//read_PC(cpu);
+        uint64_t PC_value = cpu->PC;
         int64_t offset = instr.data * 4;
         target_address = PC_value + offset;
     }
