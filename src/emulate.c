@@ -1,12 +1,4 @@
-#include "structures.h"
-#include "data_processing.h"
-#include "single_data_transfer.h"
-#include "branch.h"
-#include <stdio.h>
-#include <stdlib.h>
-#include <stdbool.h>
-#include <stdint.h>
-#include <inttypes.h>
+#include "includes.h"
 
 // Reads the binary file with the given file name
 void readBinaryToMemory(int argc, char **argv, CPU *cpu) {

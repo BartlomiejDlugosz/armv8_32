@@ -1,7 +1,4 @@
-#include "structures.h"
-#include "error_handling.h"
-#include <string.h>
-#include <stdio.h>
+#include "includes.h"
 
 // Initialise the CPU state
 void initialise_cpu(CPU *cpu) {

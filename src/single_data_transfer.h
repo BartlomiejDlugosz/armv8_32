@@ -1,7 +1,9 @@
-#include <stdint.h>
-#include "structures.h"
-#pragma once
+#ifndef SINGLE_DATA_TRANSFER_H
+#define SINGLE_DATA_TRANSFER_H
 
+#include "includes.h"
+
+// Defines the inner structure for the offset
 union single_data_transfer_data_offset {
     struct {
         unsigned : 1;
@@ -27,6 +29,7 @@ union single_data_transfer_data {
 union single_data_transfer_instruction {
     struct {
         unsigned rt: 5;
+        // Needs to be signed in the case of being used as a offset
         signed data : 19;
         unsigned U: 1;
         unsigned : 5;
@@ -40,3 +43,5 @@ union single_data_transfer_instruction {
 void single_data_transfer(CPU *cpu, uint64_t *target_address, union single_data_transfer_instruction instr, union single_data_transfer_data data);
 
 void single_data_transfer_init(CPU *cpu, uint32_t instruction);
+
+#endif //SINGLE_DATA_TRANSFER_H

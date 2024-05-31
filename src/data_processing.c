@@ -1,10 +1,8 @@
-#include "data_processing.h"
-#include <stdbool.h>
-#include <stdlib.h>
-#include <stdint.h>
-#include <stdio.h>
-#include <assert.h>
-#include <limits.h> // potential source of issues, in which case we can manually define limits. However, none such issues have been found.
+#include "includes.h"
+
+//#define INT_MAX ((uint32_t)(-1))
+//#define INT_MIN ((int32_t)(INT_MAX) + 1)
+//#define UINT_MAX ((uint32_t)(-1))
 
 // Checking for unsigned overflow from
 // https://stackoverflow.com/questions/199333/how-do-i-detect-unsigned-integer-overflow
