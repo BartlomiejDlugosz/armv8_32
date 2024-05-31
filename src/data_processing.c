@@ -18,30 +18,34 @@
 // since this is given. This also means that case
 // (2) and (3) above are not possible.
 // Hence, addition cannot underflow and subtraction cannot overflow
-
-#define add_overflow_32 \
-    (rn_contents > INT_MAX - op2)  // `rn + op2` will overflow (signed)
-#define sub_underflow_32 \
-    ((int32_t) rn_contents < (int32_t) (INT_MIN + op2))  // `rn - op2` will underflow (signed)
-#define uadd_overflow_32 \
-    (rn_contents >       \
-     UINT_MAX - op2)  // `rn + op2` will produce a carry (unsigned)
-#define usub_underflow_32 \
-    (rn_contents < op2)  // `rn - op2` will produce a borrow (unsigned)
-
-// we need to adapt the MAX/MIN values for 64-bit
-#define add_overflow_64 \
-    (rn_contents > LONG_MAX - op2)  // `rn + op2` will overflow (signed)
-#define sub_underflow_64 \
-    ((int64_t) rn_contents < (int64_t) (LONG_MIN + op2))  // `rn - op2` will underflow (signed)
-#define uadd_overflow_64 \
-    (rn_contents >       \
-     ULONG_MAX - op2)  // `rn + op2` will produce a carry (unsigned)
-#define usub_underflow_64 \
-    (rn_contents < op2)  // `rn - op2` will produce a borrow (unsigned)
-// TODO: define MAX/MIN manually, since they are dependent on platform!
 //
-//
+// rn_contents, op2 are unsigned
+
+// 32
+// signed
+#define add_overflow_32 (((int32_t) op2) > 0 && ((int32_t) rn_contents) > INT_MAX - ((int32_t) op2)) // `((int32_t) rn_contents) + ((int32_t) op2)` would overflow (1)
+#define add_underflow_32 (((int32_t) op2) < 0 && ((int32_t) rn_contents) < INT_MIN - ((int32_t) op2)) // `((int32_t) rn_contents) + ((int32_t) op2)` would underflow (2)
+#define sub_overflow_32 (((int32_t) op2) < 0 && ((int32_t) rn_contents) > INT_MAX + ((int32_t) op2)) // `((int32_t) rn_contents) - ((int32_t) op2)` would overflow (3)
+#define sub_underflow_32 (((int32_t) op2) > 0 && ((int32_t) rn_contents) < INT_MIN + ((int32_t) op2)) // `((int32_t) rn_contents) - ((int32_t) op2)` would underflow (4)
+// unsigned
+#define uadd_overflow_32 (op2 > 0 && rn_contents > (uint32_t) (UINT_MAX - op2)) // `rn_contents + op2` would overflow (1)
+//#define uadd_underflow_32 (op2 < 0 && rn_contents < UINT_MIN - op2) // `rn_contents + op2` would underflow (2)
+//#define usub_overflow_32 (op2 < 0 && rn_contents > UINT_MAX + op2) // `rn_contents - op2` would overflow (3)
+#define usub_underflow_32 (op2 > 0 && rn_contents < op2) // `rn_contents - op2` would underflow (4)
+
+
+// 64
+// signed
+#define add_overflow_64 (((int64_t) op2) > 0 && ((int64_t) rn_contents) > LONG_MAX - ((int64_t) op2)) // `((int64_t) rn_contents) + ((int64_t) op2)` would overflow (1)
+#define add_underflow_64 (((int64_t) op2) < 0 && ((int64_t) rn_contents) < LONG_MIN - ((int64_t) op2)) // `((int64_t) rn_contents) + ((int64_t) op2)` would underflow (2)
+#define sub_overflow_64 (((int64_t) op2) < 0 && ((int64_t) rn_contents) > LONG_MAX + ((int64_t) op2)) // `((int64_t) rn_contents) - ((int64_t) op2)` would overflow (3)
+#define sub_underflow_64 (((int64_t) op2) > 0 && ((int64_t) rn_contents) < LONG_MIN + ((int64_t) op2)) // `((int64_t) rn_contents) - ((int64_t) op2)` would underflow (4)
+// unsigned
+#define uadd_overflow_64 (op2 > 0 && rn_contents > (uint64_t) (ULONG_MAX - op2)) // `rn_contents + op2` would overflow (1)
+//#define uadd_underflow_64 (op2 < 0 && rn_contents < ULONG_MIN - op2) // `rn_contents + op2` would underflow (2)
+//#define usub_overflow_64 (op2 < 0 && rn_contents > ULONG_MAX + op2) // `rn_contents - op2` would overflow (3)
+#define usub_underflow_64 (op2 > 0 && rn_contents < op2) // `rn_contents - op2` would underflow (4)
+
 
 // Handle immediate instructions
 uint64_t arithmetic_helper_64(CPU *cpu, unsigned opc, uint64_t rn_contents,
@@ -58,7 +62,7 @@ uint64_t arithmetic_helper_64(CPU *cpu, unsigned opc, uint64_t rn_contents,
                 (uint8_t)(result >> 63);  // extract MSB (sign bit)
             (*cpu).pstate.Z = (uint8_t)(result == 0 ? 1 : 0);
             (*cpu).pstate.C = (uint8_t)(uadd_overflow_64 ? 1 : 0);
-            (*cpu).pstate.V = (uint8_t)(add_overflow_64 ? 1 : 0);
+            (*cpu).pstate.V = (uint8_t)(add_overflow_64 || add_underflow_64 ? 1 : 0);
             break;
         case 0b10:  // sub
             result = rn_contents - op2;
@@ -69,7 +73,7 @@ uint64_t arithmetic_helper_64(CPU *cpu, unsigned opc, uint64_t rn_contents,
                 (uint8_t)(result >> 63);  // extract MSB (sign bit)
             (*cpu).pstate.Z = (uint8_t)(result == 0 ? 1 : 0);
             (*cpu).pstate.C = (uint8_t)(usub_underflow_64 ? 0 : 1);
-            (*cpu).pstate.V = (uint8_t)(sub_underflow_64 ? 1 : 0);
+            (*cpu).pstate.V = (uint8_t)(sub_underflow_64 || sub_overflow_64 ? 1 : 0);
             break;
         default:
             printf("Something has gone wrong in opc case!\n");
@@ -90,7 +94,7 @@ uint32_t arithmetic_helper_32(CPU *cpu, unsigned opc, uint32_t rn_contents,
                 (uint8_t)(result >> 31);  // extract MSB (sign bit)
             (*cpu).pstate.Z = (uint8_t)(result == 0 ? 1 : 0);
             (*cpu).pstate.C = (uint8_t)(uadd_overflow_32 ? 1 : 0);
-            (*cpu).pstate.V = (uint8_t)(add_overflow_32 ? 1 : 0);
+            (*cpu).pstate.V = (uint8_t)(add_overflow_32 || add_underflow_32 ? 1 : 0);
             break;
         case 0b10:  // sub
             result = rn_contents - op2;
@@ -101,7 +105,7 @@ uint32_t arithmetic_helper_32(CPU *cpu, unsigned opc, uint32_t rn_contents,
                 (uint8_t)(result >> 31);  // extract MSB (sign bit)
             (*cpu).pstate.Z = (uint8_t)(result == 0 ? 1 : 0);
             (*cpu).pstate.C = (uint8_t)(usub_underflow_32 ? 0 : 1);
-            (*cpu).pstate.V = (uint8_t)(sub_underflow_32 ? 1 : 0);
+            (*cpu).pstate.V = (uint8_t)(sub_underflow_32 || sub_overflow_32 ? 1 : 0);
             break;
         default:
             printf("Something has gone wrong in opc case!\n");

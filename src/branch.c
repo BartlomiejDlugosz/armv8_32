@@ -4,7 +4,7 @@
 #include "branch.h"
 #include <stdbool.h>
 #include <stdio.h>
-#define addsimm19 (*cpu).PC += simm19
+#define addsimm19 (*cpu).PC += simm19; cpu->PC -= 4;
 
 void branchExecute(CPU *cpu, uint64_t current_instr) {
     // first check if unconditional or not
@@ -18,6 +18,7 @@ void branchExecute(CPU *cpu, uint64_t current_instr) {
                 printf("error: xzr encoding for branch instruction");
             } else {
                 (*cpu).PC = read_register64(cpu, xn);
+        cpu->PC -= 4;
             }
         } else {
             // conditional branching
@@ -70,7 +71,6 @@ void branchExecute(CPU *cpu, uint64_t current_instr) {
             simm26 = simm26 | 0xFFFFFFF000000000;
         }
         (*cpu).PC += simm26;
+        cpu->PC -= 4;
     }
-    // Account for 4 bit increment in main loop
-    (*cpu).PC -= 4;
 }
