@@ -27,7 +27,7 @@ union single_data_transfer_data {
 union single_data_transfer_instruction {
     struct {
         unsigned rt: 5;
-        unsigned data : 19;
+        signed data : 19;
         unsigned U: 1;
         unsigned : 5;
         unsigned sf: 1;
