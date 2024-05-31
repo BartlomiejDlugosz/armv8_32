@@ -71,4 +71,6 @@ void branchExecute(CPU *cpu, uint64_t current_instr) {
         }
         (*cpu).PC += simm26;
     }
+    // Account for 4 bit increment in main loop
+    (*cpu).PC -= 4;
 }
