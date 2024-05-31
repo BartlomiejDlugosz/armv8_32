@@ -1,5 +1,5 @@
-#ifndef STRUCTURES_H
-#define STRUCTURES_H
+#ifndef MEMORY_FUNCTIONS_H
+#define MEMORY_FUNCTIONS_H
 
 #include "includes.h"
 
@@ -48,4 +48,4 @@ void write_memory(CPU *cpu, uint32_t address, uint64_t value,
 
 void print_cpu_state(const CPU *cpu);
 
-#endif  // STRUCTURES_H
+#endif  // MEMORY_FUNCTIONS_H

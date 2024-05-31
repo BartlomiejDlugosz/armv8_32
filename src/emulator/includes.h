@@ -9,7 +9,7 @@
 #include <assert.h>
 #include <limits.h>
 
-#include "structures.h"
+#include "memory_functions.h"
 #include "branch.h"
 #include "data_processing.h"
 #include "single_data_transfer.h"
