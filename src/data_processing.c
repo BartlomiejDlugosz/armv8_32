@@ -41,6 +41,10 @@
 #define uadd_overflow_64 (op2 > 0 && rn_contents > (uint64_t) (ULONG_MAX - op2)) // `rn_contents + op2` would overflow (1)
 #define usub_underflow_64 (op2 > 0 && rn_contents < op2) // `rn_contents - op2` would underflow (4)
 
+#define extract_msb_shift_64 63
+#define extract_msb_shift_32 31
+
+#define stack_pointer_encoding 0b11111
 
 // Handle immediate instructions
 uint64_t arithmetic_helper_64(CPU *cpu, unsigned opc, uint64_t rn_contents,
@@ -52,7 +56,7 @@ uint64_t arithmetic_helper_64(CPU *cpu, unsigned opc, uint64_t rn_contents,
             break;
         case 0b01:  // adds
             result = rn_contents + op2;
-            cpu->pstate.N = (uint8_t)(result >> 63);  // extract MSB (sign bit)
+            cpu->pstate.N = (uint8_t)(result >> extract_msb_shift_64);  // extract MSB (sign bit)
             cpu->pstate.Z = (uint8_t)(result == 0 ? 1 : 0);
             cpu->pstate.C = (uint8_t)(uadd_overflow_64 ? 1 : 0);
             cpu->pstate.V = (uint8_t)(add_overflow_64 || add_underflow_64 ? 1 : 0);
@@ -62,14 +66,14 @@ uint64_t arithmetic_helper_64(CPU *cpu, unsigned opc, uint64_t rn_contents,
             break;
         case 0b11:  // subs
             result = rn_contents - op2;
-            cpu->pstate.N = (uint8_t)(result >> 63);  // extract MSB (sign bit)
+            cpu->pstate.N = (uint8_t)(result >> extract_msb_shift_64);  // extract MSB (sign bit)
             cpu->pstate.Z = (uint8_t)(result == 0 ? 1 : 0);
             cpu->pstate.C = (uint8_t)(usub_underflow_64 ? 0 : 1);
             cpu->pstate.V = (uint8_t)(sub_underflow_64 || sub_overflow_64 ? 1 : 0);
             break;
         default:
             printf("Something has gone wrong in opc case!\n");
-	    exit(1);
+	    exit(EXIT_FAILURE);
     }
     return result;
 }
@@ -84,7 +88,7 @@ uint32_t arithmetic_helper_32(CPU *cpu, unsigned opc, uint32_t rn_contents,
         case 0b01:  // adds
             result = rn_contents + op2;
             cpu->pstate.N =
-                (uint8_t)(result >> 31);  // extract MSB (sign bit)
+                (uint8_t)(result >> extract_msb_shift_32);  // extract MSB (sign bit)
             cpu->pstate.Z = (uint8_t)(result == 0 ? 1 : 0);
             cpu->pstate.C = (uint8_t)(uadd_overflow_32 ? 1 : 0);
             cpu->pstate.V = (uint8_t)(add_overflow_32 || add_underflow_32 ? 1 : 0);
@@ -95,14 +99,14 @@ uint32_t arithmetic_helper_32(CPU *cpu, unsigned opc, uint32_t rn_contents,
         case 0b11:  // subs
             result = rn_contents - op2;
             cpu->pstate.N =
-                (uint8_t)(result >> 31);  // extract MSB (sign bit)
+                (uint8_t)(result >> extract_msb_shift_32);  // extract MSB (sign bit)
             cpu->pstate.Z = (uint8_t)(result == 0 ? 1 : 0);
             cpu->pstate.C = (uint8_t)(usub_underflow_32 ? 0 : 1);
             cpu->pstate.V = (uint8_t)(sub_underflow_32 || sub_overflow_32 ? 1 : 0);
             break;
         default:
             printf("Something has gone wrong in opc case!\n");
-	    exit(1);
+	    exit(EXIT_FAILURE);
     }
     return result;
 }
@@ -114,8 +118,8 @@ void arithmetic_immediate_64(CPU *cpu, union data_processing_instruction instr,
     uint64_t op2 =
         (uint64_t)(operand.sh == 1 ? ((uint64_t)operand.imm12) << 12 : operand.imm12);
 
-    assert(operand.rn != 0b11111); // not handling stack pointer
-    assert(instr.rd != 0b11111 || !(instr.opc == 0b00 || instr.opc == 0b10)); // not handling stack pointer
+    assert(operand.rn != stack_pointer_encoding); // not handling stack pointer
+    assert(instr.rd != stack_pointer_encoding || !(instr.opc == 0b00 || instr.opc == 0b10)); // not handling stack pointer
 
     uint64_t rn_contents = read_register64(cpu, operand.rn); 
     uint64_t result = arithmetic_helper_64(cpu, instr.opc, rn_contents, op2);
@@ -130,8 +134,8 @@ void arithmetic_immediate_32(CPU *cpu, union data_processing_instruction instr,
     uint32_t op2 =
         (uint32_t)(operand.sh == 1 ? ((uint64_t)operand.imm12) << 12 : operand.imm12);
 
-    assert(operand.rn != 0b11111); // not handling stack pointer
-    assert(instr.rd != 0b11111 || !(instr.opc == 0b00 || instr.opc == 0b10)); // not handling stack pointer
+    assert(operand.rn != stack_pointer_encoding); // not handling stack pointer
+    assert(instr.rd != stack_pointer_encoding || !(instr.opc == 0b00 || instr.opc == 0b10)); // not handling stack pointer
 
     uint32_t rn_contents = read_register32(cpu, operand.rn);
     uint32_t result = arithmetic_helper_32(cpu, instr.opc, rn_contents, op2);
@@ -161,7 +165,7 @@ void wide_move_64(CPU *cpu, union data_processing_instruction instr,
             break;
         default:
             printf("something went wrong in opc case!\n");
-	    exit(1);
+	    exit(EXIT_FAILURE);
     }
     write_register64(cpu, instr.rd, result);
     return;
@@ -224,10 +228,10 @@ void arithmetic_register_64(CPU *cpu, union data_processing_instruction instr,
             break;
         default:
             printf("error in determining shift type for op2!\n");
-	    exit(1);
+	    exit(EXIT_FAILURE);
     }
 
-    assert(instr.rd != 0b11111 || !(instr.opc == 0b00 || instr.opc == 0b10));
+    assert(instr.rd != stack_pointer_encoding || !(instr.opc == 0b00 || instr.opc == 0b10));
 
     uint64_t rn_contents = read_register64(cpu, data.rn);
     uint64_t result = arithmetic_helper_64(cpu, instr.opc, rn_contents, op2);
@@ -257,10 +261,10 @@ void arithmetic_register_32(CPU *cpu, union data_processing_instruction instr,
         //	break; shouldn't occur, fall through to default
         default:
             printf("error in determining shift type for op2!\n");
-	    exit(1);
+	    exit(EXIT_FAILURE);
     }
 
-    assert(instr.rd != 0b11111 || !(instr.opc == 0b00 || instr.opc == 0b10));
+    assert(instr.rd != stack_pointer_encoding || !(instr.opc == 0b00 || instr.opc == 0b10));
 
     uint32_t rn_contents = read_register32(cpu, data.rn);
     uint32_t result = arithmetic_helper_32(cpu, instr.opc, rn_contents, op2);
@@ -293,7 +297,7 @@ void logic_64(CPU *cpu, union data_processing_instruction instr,
 	    break; 
         default:
             printf("error in determining shift type for op2!\n");
-	    exit(1);
+	    exit(EXIT_FAILURE);
     }
 
     // check if we need to bitwise negate op2
@@ -316,7 +320,7 @@ void logic_64(CPU *cpu, union data_processing_instruction instr,
         case 0b11:  // and, setting flags
             result = rn_contents & op2;
             cpu->pstate.N =
-                (uint8_t)(result >> 63);  // extract MSB (sign bit)
+                (uint8_t)(result >> extract_msb_shift_64);  // extract MSB (sign bit)
             cpu->pstate.Z = (uint8_t)(result == 0 ? 1 : 0);
             cpu->pstate.C = (uint8_t) 0;
             cpu->pstate.V = (uint8_t) 0;
@@ -352,7 +356,7 @@ void logic_32(CPU *cpu, union data_processing_instruction instr,
 	    break;
         default:
             printf("error in determining shift type for op2!\n");
-	    exit(1);
+	    exit(EXIT_FAILURE);
     }
     // check if we need to bitwise negate op2
     if (opr.maybe_N == 1) {
@@ -374,7 +378,7 @@ void logic_32(CPU *cpu, union data_processing_instruction instr,
         case 0b11:  // and, setting flags
             result = rn_contents & op2;
             cpu->pstate.N =
-                (uint8_t)(result >> 31);  // extract MSB (sign bit)
+                (uint8_t)(result >> extract_msb_shift_32);  // extract MSB (sign bit)
             cpu->pstate.Z = (uint8_t)(result == 0 ? 1 : 0);
             cpu->pstate.C = (uint8_t)0;
             cpu->pstate.V = (uint8_t)0;
@@ -438,7 +442,7 @@ void perform_data_processing_immediate(
         }
     } else {
         printf("undefined instruction\n");
-	exit(1);
+	exit(EXIT_FAILURE);
     }
     return;
 }
