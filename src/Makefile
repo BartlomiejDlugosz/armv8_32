@@ -17,4 +17,4 @@ clean:
 
 emulate2:
 	gcc -Wall emulate.c single_data_transfer.c data_processing.c branch.c structures.c -o emulate
-	cp emulate ~/armv8_testsuite/solution/
+	cp emulate ../../armv8_testsuite/solution/
