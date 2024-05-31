@@ -14,4 +14,4 @@
 #include "data_processing.h"
 #include "single_data_transfer.h"
 
-#endif //INCLUDES_H
+#endif  // INCLUDES_H
