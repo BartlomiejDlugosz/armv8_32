@@ -332,7 +332,7 @@ void logic_64(CPU *cpu, union data_processing_instruction instr,
             break;
         case 0b11:
 	    uint64_t op2_left = op2 << (64 - data.operand);
-	    uint64_t op2_right = op2 >> (64 - data.operand);
+	    uint64_t op2_right = op2 >> data.operand;
 	    op2 = op2_left | op2_right;
 	    break; 
         default:
@@ -343,6 +343,7 @@ void logic_64(CPU *cpu, union data_processing_instruction instr,
     if (opr.maybe_N == 1) {
         op2 = ~op2;
     }
+
     uint64_t rn_contents = read_register64(cpu, data.rn);
     uint64_t result;
     switch (instr.opc) {
@@ -389,7 +390,7 @@ void logic_32(CPU *cpu, union data_processing_instruction instr,
             break;
         case 0b11:
 	    uint32_t op2_left = op2 << (32 - data.operand);
-	    uint32_t op2_right = op2 >> (32 - data.operand);
+	    uint32_t op2_right = op2 >> data.operand;
 	    op2 = op2_left | op2_right;
 	    break;
         default:
