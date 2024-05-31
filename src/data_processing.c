@@ -446,6 +446,7 @@ void perform_data_processing_immediate(
 void perform_data_processing_register(
     CPU *cpu, union data_processing_instruction instr,
     union data_processing_data_register data) {
+    // utilitising early returns to avoid nested if-else
     if (instr.maybe_M == 1) {
         union multiply_operand operand =
             (union multiply_operand){.bits = data.operand};
@@ -455,36 +456,41 @@ void perform_data_processing_register(
         } else {
             multiply_32(cpu, instr, data, operand);
         }
-    } else {
-        union arithmetic_logic_opr opr =
-            (union arithmetic_logic_opr){.bits = data.opr};
-        if (opr.type == 1) {
-            if (instr.sf == 1) {
-                arithmetic_register_64(cpu, instr, data, opr);
-            } else {
-                arithmetic_register_32(cpu, instr, data, opr);
-            }
-        } else {
-            if (instr.sf == 1) {
-                logic_64(cpu, instr, data, opr);
-            } else {
-                logic_32(cpu, instr, data, opr);
-            }
-        }
+	return;
     }
+
+    union arithmetic_logic_opr opr =
+        (union arithmetic_logic_opr){.bits = data.opr};
+    if (opr.type == 1) {
+        if (instr.sf == 1) {
+            arithmetic_register_64(cpu, instr, data, opr);
+        } else {
+            arithmetic_register_32(cpu, instr, data, opr);
+        }
+        return;
+    } 
+
+    if (instr.sf == 1) {
+        logic_64(cpu, instr, data, opr);
+	return;
+    }
+
+    logic_32(cpu, instr, data, opr);
     return;
 }
 
 void data_processing_init(CPU *cpu, uint32_t instruction, bool is_immediate) {
     union data_processing_instruction instr =
         (union data_processing_instruction){.bits = instruction};
+
     if (is_immediate) {
         union data_processing_data_immediate data =
             (union data_processing_data_immediate){.bits = instr.data};
         perform_data_processing_immediate(cpu, instr, data);
-    } else {
-        union data_processing_data_register data =
-            (union data_processing_data_register){.bits = instr.data};
-        perform_data_processing_register(cpu, instr, data);
+	return;
     }
+    union data_processing_data_register data =
+        (union data_processing_data_register){.bits = instr.data};
+    perform_data_processing_register(cpu, instr, data);
+    return;
 };
