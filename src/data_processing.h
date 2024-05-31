@@ -4,71 +4,71 @@
 #include "includes.h"
 
 union arithmetic_immediate_operand {
-  struct {
-    unsigned rn : 5;
-    unsigned imm12 : 12;
-    unsigned sh : 1;
-  };
-  unsigned bits : 18;
+    struct {
+        unsigned rn : 5;
+        unsigned imm12 : 12;
+        unsigned sh : 1;
+    };
+    unsigned bits : 18;
 };
 
 union wide_move_operand {
-  struct {
-    unsigned imm16 : 16;
-    unsigned hw : 2;
-  };
-  unsigned bits : 18;
+    struct {
+        unsigned imm16 : 16;
+        unsigned hw : 2;
+    };
+    unsigned bits : 18;
 };
 
 union data_processing_data_immediate {
-  struct {
-    unsigned operand : 18;
-    unsigned opi : 3;
-  };
-  unsigned bits : 21;
+    struct {
+        unsigned operand : 18;
+        unsigned opi : 3;
+    };
+    unsigned bits : 21;
 };
 
 union multiply_operand {
-  struct {
-    unsigned ra : 5;
-    unsigned x : 1;
-  };
-  unsigned bits : 6;
+    struct {
+        unsigned ra : 5;
+        unsigned x : 1;
+    };
+    unsigned bits : 6;
 };
 
 union arithmetic_logic_opr {
-  struct {
-    unsigned maybe_N : 1;
-    unsigned shift : 2;
-    unsigned type : 1;
-  };
-  unsigned bits : 4;
+    struct {
+        unsigned maybe_N : 1;
+        unsigned shift : 2;
+        unsigned type : 1;
+    };
+    unsigned bits : 4;
 };
 
 union data_processing_data_register {
-  struct {
-    unsigned rn : 5;
-    unsigned operand : 6;
-    unsigned rm : 5;
-    unsigned opr : 4;
-    unsigned const_1 : 1;
-  };
-  unsigned bits : 21;
+    struct {
+        unsigned rn : 5;
+        unsigned operand : 6;
+        unsigned rm : 5;
+        unsigned opr : 4;
+        unsigned const_1 : 1;
+    };
+    unsigned bits : 21;
 };
 
 // Defines union structure for the Single Data Processing instructions. Note
 // that the data field in the struct varies for immediate and register based
 // instructions, as defined above
 union data_processing_instruction {
-  struct {
-    unsigned rd : 5;
-    unsigned data : 21;
-    unsigned : 2;
-    unsigned maybe_M : 1;
-    unsigned opc : 2;
-    unsigned sf : 1;
-  };
-  unsigned bits : 32;
+    struct {
+        unsigned rd : 5;
+        unsigned data : 21;
+        unsigned : 2;
+        unsigned maybe_M : 1;
+        unsigned opc : 2;
+        unsigned sf : 1;
+    };
+    unsigned bits : 32;
 };
 
 // Handle immediate instructions
