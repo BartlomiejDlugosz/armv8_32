@@ -50,7 +50,6 @@ void single_data_transfer_init(CPU *cpu, uint32_t instruction) {
     }
 
     if (instr.type == 0 || data.L == 1) {
-        printf("%x %x\n", instr.rt, read_memory(cpu, target_address, 8));
         // Load if Load Literal, or load flag set
         if (instr.sf == 1) {
             // 64 bit
