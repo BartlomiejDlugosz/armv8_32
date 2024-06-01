@@ -17,13 +17,14 @@ void single_data_transfer(CPU *cpu, uint64_t *target_address,
 
     uint64_t xn_value = read_register64(cpu, data.xn);
     single_data_transfer_data_offset offset =
-        (single_data_transfer_data_offset) {.bits = data.offset};
+        (single_data_transfer_data_offset){.bits = data.offset};
 
     if (instr.U == 1) {
         // Unsigned Immediate Offset
         // If sf == 1 (64 bit) then multiply by 8
         // else multiply by 4
-        uint64_t uoffset = instr.sf ? data.offset * OFFSET_MULTIPLIER_64 : data.offset * OFFSET_MULTIPLIER_32;
+        uint64_t uoffset = instr.sf ? data.offset * OFFSET_MULTIPLIER_64
+                                    : data.offset * OFFSET_MULTIPLIER_32;
         *target_address = xn_value + uoffset;
     } else if (offset.type == 0) {
         // Pre / Post Indexed
@@ -50,9 +51,10 @@ void single_data_transfer_init(CPU *cpu, uint32_t instruction) {
     single_data_transfer_instruction instr =
         (single_data_transfer_instruction){.bits = instruction};
     single_data_transfer_data data =
-        (single_data_transfer_data) {.bits = instr.simm19};
+        (single_data_transfer_data){.bits = instr.simm19};
 
-    // Define the final target_address which will either be read from, or written to
+    // Define the final target_address which will either be read from, or
+    // written to
     uint64_t target_address = 0;
 
     if (instr.type == 1) {
@@ -81,6 +83,7 @@ void single_data_transfer_init(CPU *cpu, uint32_t instruction) {
         // In the case of 32 bits the upper 32 bits are ignored
         uint64_t register_value = instr.sf ? read_register64(cpu, instr.rt)
                                            : read_register32(cpu, instr.rt);
-        write_memory(cpu, target_address, register_value, instr.sf ? BYTES_64 : BYTES_32);
+        write_memory(cpu, target_address, register_value,
+                     instr.sf ? BYTES_64 : BYTES_32);
     }
 }
