@@ -14,7 +14,7 @@ void branchExecute(CPU *cpu, uint32_t instruction) {
             union branch_register br_reg =
                 (union branch_register){.bits = instr.simm26};
             if (br_reg.xn == 31) {
-                printf("error: xzr encoding for branch instruction");
+                INVALID_XZR_ENCODING();
             } else {
                 cpu->PC = read_register64(cpu, br_reg.xn);
                 cpu->PC -= 4;
