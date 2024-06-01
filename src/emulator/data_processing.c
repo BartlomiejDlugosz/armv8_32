@@ -1,8 +1,8 @@
 #include "includes.h"
 
-//#define INT_MAX ((uint32_t)(-1))
-//#define INT_MIN ((int32_t)(INT_MAX) + 1)
-//#define UINT_MAX ((uint32_t)(-1))
+// #define INT_MAX ((uint32_t)(-1))
+// #define INT_MIN ((int32_t)(INT_MAX) + 1)
+// #define UINT_MAX ((uint32_t)(-1))
 
 // Checking for unsigned overflow from
 // https://stackoverflow.com/questions/199333/how-do-i-detect-unsigned-integer-overflow
