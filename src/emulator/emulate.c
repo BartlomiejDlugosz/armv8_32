@@ -1,5 +1,7 @@
 #include "includes.h"
 
+#define INSTRUCTION_BYTES 4
+
 // Reads the binary file with the given file name
 void readBinaryToMemory(int argc, char **argv, CPU *cpu) {
     FILE *input_file;
@@ -39,7 +41,8 @@ int main(int argc, char **argv) {
     CPU cpu;
     initialise_cpu(&cpu);
     readBinaryToMemory(argc, argv, &cpu);
-    uint32_t current_instr = read_memory(&cpu, cpu.PC, 4);
+
+    uint32_t current_instr = read_memory(&cpu, cpu.PC, INSTRUCTION_BYTES);
     while (current_instr != 0x8a000000) {
         switch (current_instr & 0x1e000000) {
             case 0x10000000:
@@ -64,9 +67,10 @@ int main(int argc, char **argv) {
                 branchExecute(&cpu, current_instr);
                 break;
         }
-        cpu.PC += 4;
-        current_instr = read_memory(&cpu, cpu.PC, 4);
+        cpu.PC += INSTRUCTION_BYTES;
+        current_instr = read_memory(&cpu, cpu.PC, INSTRUCTION_BYTES);
     }
+
     writeCPUState(argc, argv, &cpu);
     return EXIT_SUCCESS;
 }
