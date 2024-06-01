@@ -110,8 +110,7 @@ uint64_t arithmetic_helper_64(CPU *cpu, unsigned opc, uint64_t rn_contents,
                 (uint8_t)(sub_underflow_64 || sub_overflow_64 ? 1 : 0);
             break;
         default:
-            printf("Something has gone wrong in opc case!\n");
-            exit(EXIT_FAILURE);
+            OPC_CASE_ERROR();
     }
     return result;
 }
@@ -147,8 +146,7 @@ uint32_t arithmetic_helper_32(CPU *cpu, unsigned opc, uint32_t rn_contents,
                 (uint8_t)(sub_underflow_32 || sub_overflow_32 ? 1 : 0);
             break;
         default:
-            printf("Something has gone wrong in opc case!\n");
-            exit(EXIT_FAILURE);
+            OPC_CASE_ERROR();
     }
     return result;
 }
@@ -210,8 +208,7 @@ void wide_move_64(CPU *cpu, union data_processing_instruction instr,
             result = current_rd | op;  // set bits using shifted imm16
             break;
         default:
-            printf("something went wrong in opc case!\n");
-            exit(EXIT_FAILURE);
+            OPC_CASE_ERROR();
     }
     write_register64(cpu, instr.rd, result);
     return;
@@ -242,8 +239,7 @@ void wide_move_32(CPU *cpu, union data_processing_instruction instr,
             result = current_rd | op;  // set bits using shifted imm16
             break;
         default:
-            printf("something went wrong in opc case!\n");
-            break;
+            OPC_CASE_ERROR();
     }
 
     write_register32(cpu, instr.rd, result);
@@ -273,8 +269,7 @@ void arithmetic_register_64(CPU *cpu, union data_processing_instruction instr,
             op2 = (uint64_t)(op2_signed >> data.operand);
             break;
         default:
-            printf("error in determining shift type for op2!\n");
-            exit(EXIT_FAILURE);
+            SHIFT_TYPE_DETERMINATION_ERROR();
     }
 
     assert(instr.rd != stack_pointer_encoding ||
@@ -307,8 +302,7 @@ void arithmetic_register_32(CPU *cpu, union data_processing_instruction instr,
         // case 0b11:
         //	break; shouldn't occur, fall through to default
         default:
-            printf("error in determining shift type for op2!\n");
-            exit(EXIT_FAILURE);
+            SHIFT_TYPE_DETERMINATION_ERROR();
     }
 
     assert(instr.rd != stack_pointer_encoding ||
@@ -344,8 +338,7 @@ void logic_64(CPU *cpu, union data_processing_instruction instr,
             op2 = op2_left | op2_right;
             break;
         default:
-            printf("error in determining shift type for op2!\n");
-            exit(EXIT_FAILURE);
+            SHIFT_TYPE_DETERMINATION_ERROR();
     }
 
     // check if we need to bitwise negate op2
@@ -404,8 +397,7 @@ void logic_32(CPU *cpu, union data_processing_instruction instr,
             op2 = op2_left | op2_right;
             break;
         default:
-            printf("error in determining shift type for op2!\n");
-            exit(EXIT_FAILURE);
+            SHIFT_TYPE_DETERMINATION_ERROR();
     }
     // check if we need to bitwise negate op2
     if (opr.maybe_N == 1) {
@@ -490,8 +482,7 @@ void perform_data_processing_immediate(
             wide_move_32(cpu, instr, data, operand);
         }
     } else {
-        printf("undefined instruction\n");
-        exit(EXIT_FAILURE);
+        UNDEFINED_INSTRUCTION();
     }
     return;
 }
