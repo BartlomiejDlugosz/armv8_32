@@ -151,9 +151,9 @@ uint32_t arithmetic_helper_32(CPU *cpu, unsigned opc, uint32_t rn_contents,
     return result;
 }
 
-void arithmetic_immediate_64(CPU *cpu, union data_processing_instruction instr,
-                             union data_processing_data_immediate data,
-                             union arithmetic_immediate_operand operand) {
+void arithmetic_immediate_64(CPU *cpu, data_processing_instruction instr,
+                             data_processing_data_immediate data,
+                             arithmetic_immediate_operand operand) {
     // This function performs arithmetic with 64-bit registers
     uint64_t op2 = (uint64_t)(operand.sh == 1 ? ((uint64_t)operand.imm12) << 12
                                               : operand.imm12);
@@ -169,9 +169,9 @@ void arithmetic_immediate_64(CPU *cpu, union data_processing_instruction instr,
     return;
 }
 
-void arithmetic_immediate_32(CPU *cpu, union data_processing_instruction instr,
-                             union data_processing_data_immediate data,
-                             union arithmetic_immediate_operand operand) {
+void arithmetic_immediate_32(CPU *cpu, data_processing_instruction instr,
+                             data_processing_data_immediate data,
+                             arithmetic_immediate_operand operand) {
     // This function performs arithmetic with 32-bit registers
     uint32_t op2 = (uint32_t)(operand.sh == 1 ? ((uint64_t)operand.imm12) << 12
                                               : operand.imm12);
@@ -187,9 +187,9 @@ void arithmetic_immediate_32(CPU *cpu, union data_processing_instruction instr,
     return;
 }
 
-void wide_move_64(CPU *cpu, union data_processing_instruction instr,
-                  union data_processing_data_immediate data,
-                  union wide_move_operand operand) {
+void wide_move_64(CPU *cpu, data_processing_instruction instr,
+                  data_processing_data_immediate data,
+                  wide_move_operand operand) {
     uint64_t shift = operand.hw * 16;
     uint64_t op = ((uint64_t)operand.imm16) << shift;
     uint64_t result;
@@ -214,9 +214,9 @@ void wide_move_64(CPU *cpu, union data_processing_instruction instr,
     return;
 }
 
-void wide_move_32(CPU *cpu, union data_processing_instruction instr,
-                  union data_processing_data_immediate data,
-                  union wide_move_operand operand) {
+void wide_move_32(CPU *cpu, data_processing_instruction instr,
+                  data_processing_data_immediate data,
+                  wide_move_operand operand) {
     assert(operand.hw == 0b00 ||
            operand.hw == 0b01);  // can only shift by 0 or 16 bits
 
@@ -250,9 +250,9 @@ void wide_move_32(CPU *cpu, union data_processing_instruction instr,
 
 // Handle register instructions
 
-void arithmetic_register_64(CPU *cpu, union data_processing_instruction instr,
-                            union data_processing_data_register data,
-                            union arithmetic_logic_opr opr) {
+void arithmetic_register_64(CPU *cpu, data_processing_instruction instr,
+                            data_processing_data_register data,
+                            arithmetic_logic_opr opr) {
     uint64_t op2 = read_register64(cpu, data.rm);
     switch (opr.shift) {
         case 0b00:
@@ -281,9 +281,9 @@ void arithmetic_register_64(CPU *cpu, union data_processing_instruction instr,
     return;
 }
 
-void arithmetic_register_32(CPU *cpu, union data_processing_instruction instr,
-                            union data_processing_data_register data,
-                            union arithmetic_logic_opr opr) {
+void arithmetic_register_32(CPU *cpu, data_processing_instruction instr,
+                            data_processing_data_register data,
+                            arithmetic_logic_opr opr) {
     uint32_t op2 = read_register32(cpu, data.rm);
     switch (opr.shift) {
         case 0b00:
@@ -314,9 +314,9 @@ void arithmetic_register_32(CPU *cpu, union data_processing_instruction instr,
     return;
 }
 
-void logic_64(CPU *cpu, union data_processing_instruction instr,
-              union data_processing_data_register data,
-              union arithmetic_logic_opr opr) {
+void logic_64(CPU *cpu, data_processing_instruction instr,
+              data_processing_data_register data,
+              arithmetic_logic_opr opr) {
     uint64_t op2 = read_register64(cpu, data.rm);
     switch (opr.shift) {
         case 0b00:
@@ -373,9 +373,9 @@ void logic_64(CPU *cpu, union data_processing_instruction instr,
     return;
 }
 
-void logic_32(CPU *cpu, union data_processing_instruction instr,
-              union data_processing_data_register data,
-              union arithmetic_logic_opr opr) {
+void logic_32(CPU *cpu, data_processing_instruction instr,
+              data_processing_data_register data,
+              arithmetic_logic_opr opr) {
     uint32_t op2 = read_register32(cpu, data.rm);
     switch (opr.shift) {
         case 0b00:
@@ -431,9 +431,9 @@ void logic_32(CPU *cpu, union data_processing_instruction instr,
     return;
 }
 
-void multiply_64(CPU *cpu, union data_processing_instruction instr,
-                 union data_processing_data_register data,
-                 union multiply_operand operand) {
+void multiply_64(CPU *cpu, data_processing_instruction instr,
+                 data_processing_data_register data,
+                 multiply_operand operand) {
     uint64_t result;
     int64_t rnrm = (int64_t)(read_register64(cpu, data.rn) *
                              read_register64(cpu, data.rm));
@@ -446,9 +446,9 @@ void multiply_64(CPU *cpu, union data_processing_instruction instr,
     return;
 }
 
-void multiply_32(CPU *cpu, union data_processing_instruction instr,
-                 union data_processing_data_register data,
-                 union multiply_operand operand) {
+void multiply_32(CPU *cpu, data_processing_instruction instr,
+                 data_processing_data_register data,
+                 multiply_operand operand) {
     int32_t rnrm = (int32_t)(read_register32(cpu, data.rn) *
                              read_register32(cpu, data.rm));
     if (operand.x == 1) {
@@ -463,19 +463,19 @@ void multiply_32(CPU *cpu, union data_processing_instruction instr,
 // End of register instructions
 
 void perform_data_processing_immediate(
-    CPU *cpu, union data_processing_instruction instr,
-    union data_processing_data_immediate data) {
+    CPU *cpu, data_processing_instruction instr,
+    data_processing_data_immediate data) {
     if (data.opi == 2) {
-        union arithmetic_immediate_operand operand =
-            (union arithmetic_immediate_operand){.bits = instr.data};
+        arithmetic_immediate_operand operand =
+            (arithmetic_immediate_operand){.bits = instr.data};
         if (instr.sf == 1) {
             arithmetic_immediate_64(cpu, instr, data, operand);
         } else {
             arithmetic_immediate_32(cpu, instr, data, operand);
         }
     } else if (data.opi == 5) {
-        union wide_move_operand operand =
-            (union wide_move_operand){.bits = instr.data};
+        wide_move_operand operand =
+            (wide_move_operand){.bits = instr.data};
         if (instr.sf == 1) {
             wide_move_64(cpu, instr, data, operand);
         } else {
@@ -488,12 +488,12 @@ void perform_data_processing_immediate(
 }
 
 void perform_data_processing_register(
-    CPU *cpu, union data_processing_instruction instr,
-    union data_processing_data_register data) {
+    CPU *cpu, data_processing_instruction instr,
+    data_processing_data_register data) {
     // utilitising early returns to avoid nested if-else
     if (instr.maybe_M == 1) {
-        union multiply_operand operand =
-            (union multiply_operand){.bits = data.operand};
+        multiply_operand operand =
+            (multiply_operand){.bits = data.operand};
 
         if (instr.sf == 1) {
             multiply_64(cpu, instr, data, operand);
@@ -503,8 +503,8 @@ void perform_data_processing_register(
         return;
     }
 
-    union arithmetic_logic_opr opr =
-        (union arithmetic_logic_opr){.bits = data.opr};
+    arithmetic_logic_opr opr =
+        (arithmetic_logic_opr){.bits = data.opr};
     if (opr.type == 1) {
         if (instr.sf == 1) {
             arithmetic_register_64(cpu, instr, data, opr);
@@ -524,17 +524,17 @@ void perform_data_processing_register(
 }
 
 void data_processing_init(CPU *cpu, uint32_t instruction, bool is_immediate) {
-    union data_processing_instruction instr =
-        (union data_processing_instruction){.bits = instruction};
+    data_processing_instruction instr =
+        (data_processing_instruction){.bits = instruction};
 
     if (is_immediate) {
-        union data_processing_data_immediate data =
-            (union data_processing_data_immediate){.bits = instr.data};
+        data_processing_data_immediate data =
+            (data_processing_data_immediate){.bits = instr.data};
         perform_data_processing_immediate(cpu, instr, data);
         return;
     }
-    union data_processing_data_register data =
-        (union data_processing_data_register){.bits = instr.data};
+    data_processing_data_register data =
+        (data_processing_data_register){.bits = instr.data};
     perform_data_processing_register(cpu, instr, data);
     return;
 };
