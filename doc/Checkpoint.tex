@@ -1,30 +1,57 @@
 \documentclass[11pt]{article}
 
 \usepackage{fullpage}
-
 \begin{document}
 
-\title{ARM Checkpoint... }
-\author{TODO}
+\title{ARM Checkpoint}
+\author{Group 32}
 
 \maketitle
 
 \section{Group Organisation}
 
-Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor
-incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis
-nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-culpa qui officia deserunt mollit anim id est laborum.
+\subsection{Coordination of Work and Group Effectiveness}
+
+
+At present, our group is functioning effectively. We have established a dedicated Discord server as our primary platform for task management and coordination. This server has proven invaluable, providing a place for all the resources relating to the project.
+
+For coordination, we meet on campus to work together or connect via voice calls to assist each other and delineate individual responsibilities. Having a fresh perspective has been extremely helpful when dealing with challenging bugs or uncertainties in implementation. Since we are all new to the C programming language, sharing knowledge about conventions and best practices has also been valuable in improving our code quality.
+
+Following our initial mentor meeting, we were encouraged to experiment with pair programming. The Discord server has been particularly beneficial for this purpose and the advantages of pair programming quickly became evident. It not only enabled us to detect and rectify errors in our code more effectively but also fostered a collaborative environment for implementing new functionalities.
+
+Looking ahead, we aim to improve our Git management. We encountered a few issues due to the group’s unfamiliarity with the project work on Git, which caused some minor setbacks. However, thanks to our effective coordination, we managed to resolve these issues and minimise any negative impact. As we progress, we are committed to learning from these experiences and continually refining our strategies to ensure smoother and more efficient collaboration.
+
+
+\subsection{Task Allocation and Future Improvements}
+
+We identified the main components that needed to be implemented. These included reading files, outputting the system state, representing the system state internally, classifying binary instructions, and handling each instruction type individually. The instructions themselves fell into three categories: data processing, data transfer and literal loading, and branching.
+
+To balance the workload and leverage each person's strengths, we divided the tasks accordingly. Ishaan was enthusiastic about designing the structures for the CPU and memory as well as accompanying functions, which were crucial since all other features depended on them. Bartek, with more experience with file handling, took charge of managing the binary file. We split the tasks relating to the three categories of instructions among Stefan, Bartek, and Zeshan, respectively.
+
+However, we encountered difficulties in allocating tasks evenly. This was primarily due to the unpredictability of the workload associated with each task until it was undertaken. For example, the data processing instruction took a lot more work than the others. To address this, we will implement a system where individuals with an uneven workload can delegate some of their tasks to others, an approach we hope will prove to be useful as the project becomes more complex.
+
 
 \section{Implementation Strategies}
 
-Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor
-incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis
-nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat.
-Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu
-fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in
-culpa qui officia deserunt mollit anim id est laborum.
+
+\subsection{Structure of the Emulator}
+
+
+For the structure of our emulator, we have chosen a modular approach to manage our components. This involves a dedicated file for memory management which safeguards against accessing the memory structures directly, helping us to pinpoint issues quicker and optimise these parts of the code. The main file, emulator.c, handles both file reading and writing, as well as containing the fetch-decode-execute cycle. This file can then call one of three files handling the specific instructions relating to the opcode of the current instruction. We decided to structure the files this way, allowing each person to work on their file to prevent unnecessary git conflicts.
+
+A feature we will reuse is our union structures to represent each instruction. This approach has made it easier to see what each field represents and solve the problem of constantly having to bitmask, shift, and sign-extend. For the assembler, these structures will be crucial when creating new binary instructions since each field can be modified and the correct instruction will be automatically created. As a result, we reduce the number of bit shifts, sign extensions, and concatenation with the other fields.
+
+
+\subsection{Future Challenges and Mitigations}
+
+
+Regarding future challenges, we think debugging will be the toughest challenge. It has proven difficult to test our code since most of it relies on functions worked on by different people. Bugs can be quite hard to find when it is difficult to determine what part of the code is causing the error, and we are trying to mitigate this using a few strategies. We are going to utilise pair programming because this can help detect bugs whilst we code and improve code quality.
+
+Using modularisation, we will be able to produce more readable code and reduce the amount of repetition. This will allow us to make as few changes to the code as possible when debugging. An example case is when we needed to rename one of our C files, which was simple to do since we have a primary file, “includes.h”, where all our includes are managed. Consequently, we only needed to change the name of the C file and update the includes file. This also allowed us to reduce the amount of \verb|#ifndef| statements to our includes so they don’t overlap after compiling.
+
+Furthermore, we are learning how to use the command line and gdb to debug our code more efficiently. As we have progressed, our familiarity with coding and debugging in C has increased and this will help us mitigate future challenges more effectively.
+
+
 
 \end{document}
+
