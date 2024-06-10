@@ -63,7 +63,3 @@ void freeDynamicArray(dynamicArray arr) {
   free(arr->data);
   free(arr);
 }
-
-int main(void) {
-  return 0;
-}
