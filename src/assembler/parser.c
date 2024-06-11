@@ -8,7 +8,7 @@
 #include "dynamicString.h"
 #include "parser.h"
 
-instruction parse(char* current_line, int *current_line) {
+instruction parse(char* current_line, int *current_line_counter) {
   instruction new_instruction;
   //Regex expression for determining if label
   regex_t rx;
