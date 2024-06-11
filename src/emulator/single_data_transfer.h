@@ -35,3 +35,8 @@ void single_data_transfer(CPU *cpu, uint64_t *target_address,
                           single_data_transfer_data data);
 
 void single_data_transfer_init(CPU *cpu, uint32_t instruction);
+single_data_transfer_data_offset create_single_data_transfer_data_offset(
+    uint32_t bits);
+single_data_transfer_data create_single_data_transfer_data(uint32_t bits);
+single_data_transfer_instruction create_single_data_transfer_instruction(
+    uint32_t bits);
