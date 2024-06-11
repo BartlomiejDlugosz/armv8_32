@@ -1,3 +1,6 @@
+#ifndef PARSER_H
+#define PARSER_H
+
 #include "dynamicString.h"
 
 typedef struct {
@@ -10,3 +13,6 @@ typedef struct {
 } instruction;
 
 instruction parse(char *);
+
+// PARSER_H
+#endif
