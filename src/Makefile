@@ -18,3 +18,7 @@ clean:
 emulate2:
 	gcc -Wall emulator/*.c -o emulate
 	cp emulate ../../armv8_testsuite/solution/
+
+assemble2:
+	gcc -Wall assembler/*.c -o assemble
+	cp assemble ../../armv8_testsuite/solution/
