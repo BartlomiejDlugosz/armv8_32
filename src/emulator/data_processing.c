@@ -78,6 +78,44 @@
 
 #define stack_pointer_encoding 0b11111
 
+// shifts used to init instructions:
+// arithmetic_immediate_operand
+#define SHIFT_TO_RN 0
+#define SHIFT_TO_IMM12 5
+#define SHIFT_TO_SH 17
+
+// wide_move_operand
+#define SHIFT_TO_IMM16 0
+#define SHIFT_TO_HW 16
+
+// data_processing_data_immediate
+#define SHIFT_TO_IMMEDIATE_OPERAND 0
+#define SHIFT_TO_OPI 18
+
+// multiply_operand
+#define SHIFT_TO_RA 0
+#define SHIFT_TO_X 5
+
+// arithmetic_logic_opr
+#define SHIFT_TO_MAYBE_N 0
+#define SHIFT_TO_SHIFT 1
+#define SHIFT_TO_TYPE 3
+
+// data_processing_data_register
+#define SHIFT_TO_RN 0
+#define SHIFT_TO_REGISTER_OPERAND 5
+#define SHIFT_TO_RM 11
+#define SHIFT_TO_OPR 16
+//#define SHIFT_TO_CONST_1 20
+
+// data_processing_instruction
+#define SHIFT_TO_RD 0
+#define SHIFT_TO_DATA 5
+#define SHIFT_TO_MAYBE_M 28
+#define SHIFT_TO_OPC 29
+#define SHIFT_TO_SF 31
+
+
 // Handle immediate instructions
 uint64_t arithmetic_helper_64(CPU *cpu, unsigned opc, uint64_t rn_contents,
                               uint64_t op2) {
@@ -458,19 +496,99 @@ void multiply_32(CPU *cpu, data_processing_instruction instr,
 
 // End of register instructions
 
+
+// Generate instruction structures
+arithmetic_immediate_operand init_arithmetic_immediate_operand(uint32_t operand) {
+    arithmetic_immediate_operand new_operand;
+
+    new_operand.rn = operand >> SHIFT_TO_RN;
+    new_operand.imm12 = operand >> SHIFT_TO_IMM12;
+    new_operand.sh = operand >> SHIFT_TO_SH;
+    
+    return new_operand;
+}
+
+
+wide_move_operand init_wide_move_operand(uint32_t operand) {
+    wide_move_operand new_operand;
+
+    new_operand.imm16 = operand >> SHIFT_TO_IMM16;
+    new_operand.hw = operand >> SHIFT_TO_HW;
+
+    return new_operand;
+}
+
+
+data_processing_data_immediate init_data_processing_data_immediate(uint32_t data) {
+    data_processing_data_immediate new_data;
+
+    new_data.operand = data >> SHIFT_TO_IMMEDIATE_OPERAND;
+    new_data.opi = data >> SHIFT_TO_OPI;
+
+    return new_data;
+}
+
+
+multiply_operand init_multiply_operand(uint32_t operand) {
+    multiply_operand new_operand;
+
+    new_operand.ra = operand >> SHIFT_TO_RA;
+    new_operand.x = operand >> SHIFT_TO_X;
+
+    return new_operand;
+}
+
+
+arithmetic_logic_opr init_arithmetic_logic_opr(uint32_t opr) {
+    arithmetic_logic_opr new_opr;
+
+    new_opr.maybe_N = opr >> SHIFT_TO_MAYBE_N;
+    new_opr.shift = opr >> SHIFT_TO_SHIFT;
+    new_opr.type = opr >> SHIFT_TO_TYPE;
+
+    return new_opr;
+}
+
+
+data_processing_data_register init_data_processing_data_register(uint32_t data) {
+    data_processing_data_register new_data;
+
+    new_data.rn = data >> SHIFT_TO_RN;
+    new_data.operand = data >> SHIFT_TO_REGISTER_OPERAND;
+    new_data.rm = data >> SHIFT_TO_RM;
+    new_data.opr = data >> SHIFT_TO_OPR;
+
+    return new_data;
+}
+
+
+data_processing_instruction init_data_processing_instruction(uint32_t instruction) {
+    data_processing_instruction new_instruction;
+
+    new_instruction.rd = instruction >> SHIFT_TO_RD;
+    new_instruction.data = instruction >> SHIFT_TO_DATA;
+    new_instruction.maybe_M = instruction >> SHIFT_TO_MAYBE_M;
+    new_instruction.opc = instruction >> SHIFT_TO_OPC;
+    new_instruction.sf = instruction >> SHIFT_TO_SF;
+
+    return new_instruction;
+}
+
+
+// handle incoming instructions
+
 void perform_data_processing_immediate(CPU *cpu,
                                        data_processing_instruction instr,
                                        data_processing_data_immediate data) {
     if (data.opi == 2) {
-        arithmetic_immediate_operand operand =
-            (arithmetic_immediate_operand){.bits = instr.data};
+        arithmetic_immediate_operand operand = init_arithmetic_immediate_operand((uint32_t)instr.data);
         if (instr.sf == 1) {
             arithmetic_immediate_64(cpu, instr, data, operand);
         } else {
             arithmetic_immediate_32(cpu, instr, data, operand);
         }
     } else if (data.opi == 5) {
-        wide_move_operand operand = (wide_move_operand){.bits = instr.data};
+        wide_move_operand operand = init_wide_move_operand((uint32_t)instr.data);
         if (instr.sf == 1) {
             wide_move_64(cpu, instr, data, operand);
         } else {
@@ -487,7 +605,7 @@ void perform_data_processing_register(CPU *cpu,
                                       data_processing_data_register data) {
     // utilitising early returns to avoid nested if-else
     if (instr.maybe_M == 1) {
-        multiply_operand operand = (multiply_operand){.bits = data.operand};
+        multiply_operand operand = init_multiply_operand((uint32_t)data.operand);
 
         if (instr.sf == 1) {
             multiply_64(cpu, instr, data, operand);
@@ -497,7 +615,7 @@ void perform_data_processing_register(CPU *cpu,
         return;
     }
 
-    arithmetic_logic_opr opr = (arithmetic_logic_opr){.bits = data.opr};
+    arithmetic_logic_opr opr = init_arithmetic_logic_opr((uint32_t)data.opr);
     if (opr.type == 1) {
         if (instr.sf == 1) {
             arithmetic_register_64(cpu, instr, data, opr);
@@ -516,18 +634,16 @@ void perform_data_processing_register(CPU *cpu,
     return;
 }
 
+
 void data_processing_init(CPU *cpu, uint32_t instruction, bool is_immediate) {
-    data_processing_instruction instr =
-        (data_processing_instruction){.bits = instruction};
+    data_processing_instruction instr = init_data_processing_instruction(instruction);
 
     if (is_immediate) {
-        data_processing_data_immediate data =
-            (data_processing_data_immediate){.bits = instr.data};
+        data_processing_data_immediate data = init_data_processing_data_immediate((uint32_t)instr.data);
         perform_data_processing_immediate(cpu, instr, data);
         return;
     }
-    data_processing_data_register data =
-        (data_processing_data_register){.bits = instr.data};
+    data_processing_data_register data = init_data_processing_data_register((uint32_t)instr.data);
     perform_data_processing_register(cpu, instr, data);
-    return;
-};
+}
+
