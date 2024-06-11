@@ -496,77 +496,8 @@ void multiply_32(CPU *cpu, data_processing_instruction instr,
 
 // End of register instructions
 
-void perform_data_processing_immediate(CPU *cpu,
-                                       data_processing_instruction instr,
-                                       data_processing_data_immediate data) {
-    if (data.opi == 2) {
-        arithmetic_immediate_operand operand = init_arithmetic_immediate_operand((uint32_t)instr.data);
-        if (instr.sf == 1) {
-            arithmetic_immediate_64(cpu, instr, data, operand);
-        } else {
-            arithmetic_immediate_32(cpu, instr, data, operand);
-        }
-    } else if (data.opi == 5) {
-        wide_move_operand operand = init_wide_move_operand((uint32_t)instr.data);
-        if (instr.sf == 1) {
-            wide_move_64(cpu, instr, data, operand);
-        } else {
-            wide_move_32(cpu, instr, data, operand);
-        }
-    } else {
-        UNDEFINED_INSTRUCTION();
-    }
-    return;
-}
 
-void perform_data_processing_register(CPU *cpu,
-                                      data_processing_instruction instr,
-                                      data_processing_data_register data) {
-    // utilitising early returns to avoid nested if-else
-    if (instr.maybe_M == 1) {
-        multiply_operand operand = init_multiply_operand((uint32_t)data.operand);
-
-        if (instr.sf == 1) {
-            multiply_64(cpu, instr, data, operand);
-        } else {
-            multiply_32(cpu, instr, data, operand);
-        }
-        return;
-    }
-
-    arithmetic_logic_opr opr = init_arithmetic_logic_opr((uint32_t)data.opr);
-    if (opr.type == 1) {
-        if (instr.sf == 1) {
-            arithmetic_register_64(cpu, instr, data, opr);
-        } else {
-            arithmetic_register_32(cpu, instr, data, opr);
-        }
-        return;
-    }
-
-    if (instr.sf == 1) {
-        logic_64(cpu, instr, data, opr);
-        return;
-    }
-
-    logic_32(cpu, instr, data, opr);
-    return;
-}
-
-
-void data_processing_init(CPU *cpu, uint32_t instruction, bool is_immediate) {
-    data_processing_instruction instr = init_data_processing_instruction(instruction);
-
-    if (is_immediate) {
-        data_processing_data_immediate data = init_data_processing_data_immediate((uint32_t)instr.data);
-        perform_data_processing_immediate(cpu, instr, data);
-        return;
-    }
-    data_processing_data_register data = init_data_processing_data_register((uint32_t)instr.data);
-    perform_data_processing_register(cpu, instr, data);
-}
-
-
+// Generate instruction structures
 arithmetic_immediate_operand init_arithmetic_immediate_operand(uint32_t operand) {
     arithmetic_immediate_operand new_operand;
 
@@ -641,5 +572,78 @@ data_processing_instruction init_data_processing_instruction(uint32_t instructio
     new_instruction.sf = instruction >> SHIFT_TO_SF;
 
     return new_instruction;
+}
+
+
+// handle incoming instructions
+
+void perform_data_processing_immediate(CPU *cpu,
+                                       data_processing_instruction instr,
+                                       data_processing_data_immediate data) {
+    if (data.opi == 2) {
+        arithmetic_immediate_operand operand = init_arithmetic_immediate_operand((uint32_t)instr.data);
+        if (instr.sf == 1) {
+            arithmetic_immediate_64(cpu, instr, data, operand);
+        } else {
+            arithmetic_immediate_32(cpu, instr, data, operand);
+        }
+    } else if (data.opi == 5) {
+        wide_move_operand operand = init_wide_move_operand((uint32_t)instr.data);
+        if (instr.sf == 1) {
+            wide_move_64(cpu, instr, data, operand);
+        } else {
+            wide_move_32(cpu, instr, data, operand);
+        }
+    } else {
+        UNDEFINED_INSTRUCTION();
+    }
+    return;
+}
+
+void perform_data_processing_register(CPU *cpu,
+                                      data_processing_instruction instr,
+                                      data_processing_data_register data) {
+    // utilitising early returns to avoid nested if-else
+    if (instr.maybe_M == 1) {
+        multiply_operand operand = init_multiply_operand((uint32_t)data.operand);
+
+        if (instr.sf == 1) {
+            multiply_64(cpu, instr, data, operand);
+        } else {
+            multiply_32(cpu, instr, data, operand);
+        }
+        return;
+    }
+
+    arithmetic_logic_opr opr = init_arithmetic_logic_opr((uint32_t)data.opr);
+    if (opr.type == 1) {
+        if (instr.sf == 1) {
+            arithmetic_register_64(cpu, instr, data, opr);
+        } else {
+            arithmetic_register_32(cpu, instr, data, opr);
+        }
+        return;
+    }
+
+    if (instr.sf == 1) {
+        logic_64(cpu, instr, data, opr);
+        return;
+    }
+
+    logic_32(cpu, instr, data, opr);
+    return;
+}
+
+
+void data_processing_init(CPU *cpu, uint32_t instruction, bool is_immediate) {
+    data_processing_instruction instr = init_data_processing_instruction(instruction);
+
+    if (is_immediate) {
+        data_processing_data_immediate data = init_data_processing_data_immediate((uint32_t)instr.data);
+        perform_data_processing_immediate(cpu, instr, data);
+        return;
+    }
+    data_processing_data_register data = init_data_processing_data_register((uint32_t)instr.data);
+    perform_data_processing_register(cpu, instr, data);
 }
 
