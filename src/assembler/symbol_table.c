@@ -11,16 +11,16 @@
 
 
 symbol_table *init_symbol_table(size_t initial_size, size_t capacity) {
-  symbol_table *new_table = malloc(sizeof(struct symbol_table));
-  check_allocation(new_table);
+    symbol_table *new_table = malloc(sizeof(struct symbol_table));
+    check_allocation(new_table);
 
-  new_table->symbols = malloc(capacity * sizeof(struct symbol_entry));
-  check_allocation(new_table->symbols);
+    new_table->symbols = malloc(capacity * sizeof(struct symbol_entry));
+    check_allocation(new_table->symbols);
 
-  new_table->size = initial_size;
-  new_table->capacity = capacity;
+    new_table->size = initial_size;
+    new_table->capacity = capacity;
 
-  return new_table;
+    return new_table;
 }
 
 

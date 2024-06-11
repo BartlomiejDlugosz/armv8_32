@@ -1,6 +1,6 @@
 typedef struct symbol_entry {
-	char *label;
-	uint64_t address;
+    char *label;
+    uint64_t address;
 } symbol_entry;
 
 typedef struct symbol_table {
