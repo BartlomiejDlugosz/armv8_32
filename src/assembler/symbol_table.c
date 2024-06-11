@@ -14,7 +14,7 @@ symbol_table *init_symbol_table(size_t initial_size, size_t capacity) {
   symbol_table *new_table = malloc(sizeof(struct symbol_table));
   check_allocation(new_table);
 
-  new_table->symbols = malloc(capacity * sizeof(symbol_entry));
+  new_table->symbols = malloc(capacity * sizeof(struct symbol_entry));
   check_allocation(new_table->symbols);
 
   new_table->size = initial_size;
@@ -53,7 +53,6 @@ uint64_t find_entry(symbol_table* table, char *search_label) {
 
 
 void free_symbol_table(symbol_table *table) {
-
   free(table->symbols);
   free(table);
 }
