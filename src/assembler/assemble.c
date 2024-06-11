@@ -5,7 +5,7 @@
 
 #define LINE_LENGTH 256
 
-void first_pass(FILE* in, SymbolTable* table) {
+void first_pass(FILE* in, symbol_table* table) {
     char line[LINE_LENGTH];
     uint32_t address = 0;
     while (fgets(line, sizeof(line), in)) {
@@ -22,11 +22,12 @@ void first_pass(FILE* in, SymbolTable* table) {
     rewind(in); // Reset file pointer to beginning for the second pass
 }
 
-void second_pass(FILE* in, FILE* out, const SymbolTable* table) {
+void second_pass(FILE* in, FILE* out, const symbol_table* table) {
     char line[LINE_LENGTH];
     while(fgets(line, sizeof(line), in)) {
         instruction instr = parse(line);
-        uint32_t binary_instr = encode_instruction(&instr, table); 
+        uint32_t binary_instr = encode_instruction(&instr, table);
+         
     }
 }
 

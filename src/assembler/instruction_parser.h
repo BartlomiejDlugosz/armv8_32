@@ -11,5 +11,5 @@ typedef struct {
 } instruction;
 
 instruction parse(const char* line);
-uint32_t encode_instruction(instruction* instr, SymbolTable* table)
+uint32_t encode_instruction(instruction* instr, symbol_table* table);
 #endif // INSTRUCTION_PARSER_H
