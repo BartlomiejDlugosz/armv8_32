@@ -12,7 +12,7 @@ typedef struct {
   dynamicString operands[4];
 } instruction;
 
-instruction parse(char *);
+instruction parse(char *, int *);
 
 // PARSER_H
 #endif

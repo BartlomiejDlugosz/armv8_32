@@ -8,7 +8,7 @@
 #include "dynamicString.h"
 #include "parser.h"
 
-instruction parse(char* current_line) {
+instruction parse(char* current_line, int *current_line) {
   instruction new_instruction;
   //Regex expression for determining if label
   regex_t rx;
@@ -27,7 +27,7 @@ instruction parse(char* current_line) {
 
   int match = regexec(&rx, current_line, 0, NULL, 0);
   if (match == 0) {
-    // Matches REGEX for a label
+      // Matches REGEX for a label
 
   } else if (match == REG_NOMATCH) {
       // Instruction or empty line
