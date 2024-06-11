@@ -1,5 +1,4 @@
-#ifndef DATA_PROCESSING_H
-#define DATA_PROCESSING_H
+
 
 #include "includes.h"
 
@@ -133,5 +132,8 @@ void perform_data_processing_register(CPU *cpu,
                                       data_processing_data_register data);
 
 void data_processing_init(CPU *cpu, uint32_t instruction, bool is_immediate);
+<<<<<<< Updated upstream
 
 #endif  // DATA_PROCESSING_H
+=======
+>>>>>>> Stashed changes
