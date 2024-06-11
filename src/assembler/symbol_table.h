@@ -2,23 +2,24 @@
 #define SYMBOL_TABLE_H
 
 #include <stdint.h>
-#include <stdlib.h>
 
-typedef struct {
-    char* label;
+typedef struct symbol_entry {
+    char *label;
     uint64_t address;
-} Symbol;
+} symbol_entry;
 
-typedef struct 
-{
-    Symbol* symbols;
+typedef struct symbol_table {
+    symbol_entry **symbols;
     size_t size;
     size_t capacity;
-} SymbolTable;
+} symbol_table;
 
-SymbolTable* initalise_symbol_table();
-void free_symbol_table(SymbolTable* table);
-void add_symbol(SymbolTable *table, const char *label, uint64_t address);
-int find_symbol(const SymbolTable* table, const char* label, uint64_t* address);
+
+symbol_table *init_symbol_table(size_t initial_size, size_t capacity);
+void add_entry(symbol_table *table , char *label, uint64_t address); // automatically resizes if necessary
+uint64_t find_entry(symbol_table *table, char *search_label);
+void free_symbol_table(symbol_table *table); 
+
+static void resize_table(symbol_table* table, size_t capacity_scale_factor);
 
 #endif // SYMBOL_TABLE_H
