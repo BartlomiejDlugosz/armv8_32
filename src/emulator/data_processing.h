@@ -1,5 +1,4 @@
-#ifndef DATA_PROCESSING_H
-#define DATA_PROCESSING_H
+
 
 #include "includes.h"
 
@@ -45,7 +44,7 @@ typedef union {
     unsigned bits : 4;
 } arithmetic_logic_opr;
 
-typedef union  {
+typedef union {
     struct {
         unsigned rn : 5;
         unsigned operand : 6;
@@ -56,10 +55,10 @@ typedef union  {
     unsigned bits : 21;
 } data_processing_data_register;
 
-// Defines typedef union structure for the Single Data Processing instructions. Note
-// that the data field in the struct varies for immediate and register based
-// instructions, as defined above
-typedef union  {
+// Defines typedef union structure for the Single Data Processing instructions.
+// Note that the data field in the struct varies for immediate and register
+// based instructions, as defined above
+typedef union {
     struct {
         unsigned rd : 5;
         unsigned data : 21;
@@ -108,30 +107,24 @@ void arithmetic_register_32(CPU *cpu, data_processing_instruction instr,
                             arithmetic_logic_opr opr);
 
 void logic_64(CPU *cpu, data_processing_instruction instr,
-              data_processing_data_register data,
-              arithmetic_logic_opr opr);
+              data_processing_data_register data, arithmetic_logic_opr opr);
 
 void logic_32(CPU *cpu, data_processing_instruction instr,
-              data_processing_data_register data,
-              arithmetic_logic_opr opr);
+              data_processing_data_register data, arithmetic_logic_opr opr);
 
 void multiply_64(CPU *cpu, data_processing_instruction instr,
-                 data_processing_data_register data,
-                 multiply_operand operand);
+                 data_processing_data_register data, multiply_operand operand);
 
 void multiply_32(CPU *cpu, data_processing_instruction instr,
-                 data_processing_data_register data,
-                 multiply_operand operand);
+                 data_processing_data_register data, multiply_operand operand);
 
 // End of register instructions
-void perform_data_processing_immediate(
-    CPU *cpu, data_processing_instruction instr,
-    data_processing_data_immediate data);
+void perform_data_processing_immediate(CPU *cpu,
+                                       data_processing_instruction instr,
+                                       data_processing_data_immediate data);
 
 void perform_data_processing_register(CPU *cpu,
                                       data_processing_instruction instr,
                                       data_processing_data_register data);
 
 void data_processing_init(CPU *cpu, uint32_t instruction, bool is_immediate);
-
-#endif  // DATA_PROCESSING_H
