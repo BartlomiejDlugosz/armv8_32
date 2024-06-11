@@ -33,8 +33,6 @@ static void resize_table(symbol_table* table, size_t capacity_scale_factor) {
 
 
 // automatically resizes if necessary
-// returns a bool to indicate whether the 
-// entry was successfully added
 void add_entry(symbol_table *table , char *label, uint64_t address) {
     if (table->size >= table->capacity) {
         resize_table(table, resize_factor);
