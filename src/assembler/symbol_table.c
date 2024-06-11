@@ -24,6 +24,14 @@ symbol_table *init_symbol_table(size_t capacity) {
 }
 
 
+static void resize_table(symbol_table* table, size_t capacity_scale_factor) {
+    table->symbols = realloc(table->symbols, table->capacity * capacity_scale_factor);
+    check_allocation(table->symbols);
+
+    table->capacity *= capacity_scale_factor;
+}
+
+
 // automatically resizes if necessary
 // returns a bool to indicate whether the 
 // entry was successfully added
@@ -55,13 +63,5 @@ uint64_t find_entry(symbol_table* table, char *search_label) {
 void free_symbol_table(symbol_table *table) {
   free(table->symbols);
   free(table);
-}
-
-
-static void resize_table(symbol_table* table, size_t capacity_scale_factor) {
-    table->symbols = realloc(table->symbols, table->capacity * capacity_scale_factor);
-    check_allocation(table->symbols);
-
-    table->capacity *= capacity_scale_factor;
 }
 
