@@ -1,5 +1,4 @@
-#ifndef DATA_PROCESSING_H
-#define DATA_PROCESSING_H
+
 
 #include "includes.h"
 
@@ -87,25 +86,21 @@ void arithmetic_register_32(CPU *cpu, data_processing_instruction instr,
                             arithmetic_logic_opr opr);
 
 void logic_64(CPU *cpu, data_processing_instruction instr,
-              data_processing_data_register data,
-              arithmetic_logic_opr opr);
+              data_processing_data_register data, arithmetic_logic_opr opr);
 
 void logic_32(CPU *cpu, data_processing_instruction instr,
-              data_processing_data_register data,
-              arithmetic_logic_opr opr);
+              data_processing_data_register data, arithmetic_logic_opr opr);
 
 void multiply_64(CPU *cpu, data_processing_instruction instr,
-                 data_processing_data_register data,
-                 multiply_operand operand);
+                 data_processing_data_register data, multiply_operand operand);
 
 void multiply_32(CPU *cpu, data_processing_instruction instr,
-                 data_processing_data_register data,
-                 multiply_operand operand);
+                 data_processing_data_register data, multiply_operand operand);
 
 // End of register instructions
-void perform_data_processing_immediate(
-    CPU *cpu, data_processing_instruction instr,
-    data_processing_data_immediate data);
+void perform_data_processing_immediate(CPU *cpu,
+                                       data_processing_instruction instr,
+                                       data_processing_data_immediate data);
 
 void perform_data_processing_register(CPU *cpu,
                                       data_processing_instruction instr,

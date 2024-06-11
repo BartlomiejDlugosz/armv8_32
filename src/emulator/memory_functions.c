@@ -26,8 +26,7 @@ uint64_t read_register64(const CPU *cpu, uint8_t reg_index) {
 // Read a 32-bit value from a general-purpose register
 uint32_t read_register32(const CPU *cpu, uint8_t reg_index) {
     if (reg_index < NUM_REGISTERS) {
-        return (uint32_t)(cpu->registers[reg_index] &
-                          LOWER_32_BIT_MASK);
+        return (uint32_t)(cpu->registers[reg_index] & LOWER_32_BIT_MASK);
     } else if (reg_index == ZR_REG_INDEX) {
         return 0;  // ZR always returns 0
     } else {
@@ -89,10 +88,8 @@ void print_cpu_state(const CPU *cpu) {
     // Print program counter
     printf("PC = %016lx\n", cpu->PC);
     // Print PSTATE
-    printf("PSTATE: %c%c%c%c\n", 
-           cpu->pstate.N ? 'N' : '-',
-           cpu->pstate.Z ? 'Z' : '-', 
-           cpu->pstate.C ? 'C' : '-',
+    printf("PSTATE: %c%c%c%c\n", cpu->pstate.N ? 'N' : '-',
+           cpu->pstate.Z ? 'Z' : '-', cpu->pstate.C ? 'C' : '-',
            cpu->pstate.V ? 'V' : '-');
     // Print non-zero memory
     printf("Non-zero memory:\n");

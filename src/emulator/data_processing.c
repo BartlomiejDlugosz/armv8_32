@@ -353,8 +353,7 @@ void arithmetic_register_32(CPU *cpu, data_processing_instruction instr,
 }
 
 void logic_64(CPU *cpu, data_processing_instruction instr,
-              data_processing_data_register data,
-              arithmetic_logic_opr opr) {
+              data_processing_data_register data, arithmetic_logic_opr opr) {
     uint64_t op2 = read_register64(cpu, data.rm);
     switch (opr.shift) {
         case 0b00:
@@ -412,8 +411,7 @@ void logic_64(CPU *cpu, data_processing_instruction instr,
 }
 
 void logic_32(CPU *cpu, data_processing_instruction instr,
-              data_processing_data_register data,
-              arithmetic_logic_opr opr) {
+              data_processing_data_register data, arithmetic_logic_opr opr) {
     uint32_t op2 = read_register32(cpu, data.rm);
     switch (opr.shift) {
         case 0b00:
@@ -470,8 +468,7 @@ void logic_32(CPU *cpu, data_processing_instruction instr,
 }
 
 void multiply_64(CPU *cpu, data_processing_instruction instr,
-                 data_processing_data_register data,
-                 multiply_operand operand) {
+                 data_processing_data_register data, multiply_operand operand) {
     uint64_t result;
     int64_t rnrm = (int64_t)(read_register64(cpu, data.rn) *
                              read_register64(cpu, data.rm));
@@ -485,8 +482,7 @@ void multiply_64(CPU *cpu, data_processing_instruction instr,
 }
 
 void multiply_32(CPU *cpu, data_processing_instruction instr,
-                 data_processing_data_register data,
-                 multiply_operand operand) {
+                 data_processing_data_register data, multiply_operand operand) {
     int32_t rnrm = (int32_t)(read_register32(cpu, data.rn) *
                              read_register32(cpu, data.rm));
     if (operand.x == 1) {
@@ -500,9 +496,9 @@ void multiply_32(CPU *cpu, data_processing_instruction instr,
 
 // End of register instructions
 
-void perform_data_processing_immediate(
-    CPU *cpu, data_processing_instruction instr,
-    data_processing_data_immediate data) {
+void perform_data_processing_immediate(CPU *cpu,
+                                       data_processing_instruction instr,
+                                       data_processing_data_immediate data) {
     if (data.opi == 2) {
         arithmetic_immediate_operand operand = init_arithmetic_immediate_operand((uint32_t)instr.data);
         if (instr.sf == 1) {
@@ -523,9 +519,9 @@ void perform_data_processing_immediate(
     return;
 }
 
-void perform_data_processing_register(
-    CPU *cpu, data_processing_instruction instr,
-    data_processing_data_register data) {
+void perform_data_processing_register(CPU *cpu,
+                                      data_processing_instruction instr,
+                                      data_processing_data_register data) {
     // utilitising early returns to avoid nested if-else
     if (instr.maybe_M == 1) {
         multiply_operand operand = init_multiply_operand((uint32_t)data.operand);
