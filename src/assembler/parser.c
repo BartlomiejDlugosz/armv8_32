@@ -9,12 +9,19 @@
 #include "dynamicString.h"
 #include "parser.h"
 
+void free_instruction(instruction *instr, bool fullFree) {
+    freeDynamicString(instr->label);
+    for (int i = 0; i < 4; i++) {
+        freeDynamicString(instr->operands[i]);
+    }
+    if (fullFree) {
+        free(instr);
+    }
+}
+
 void initialize_instruction(instruction *instr, bool free_previous) {
     if (free_previous) {
-        freeDynamicString(instr->label);
-        for (int i = 0; i < 4; i++) {
-            freeDynamicString(instr->operands[i]);
-        }
+        free_instruction(instr, false);
     }
 
     instr->label = createNewDynamicString(10);
@@ -72,7 +79,13 @@ instruction *parse(char *current_line, uint64_t *current_line_counter) {
     }
 
     // Remove new line on end
-    current_line[strlen(current_line) - 1] = '\0';
+    if (strlen(current_line) > 0 && current_line[strlen(current_line) - 1] == '\n') {
+        current_line[strlen(current_line) - 1] = '\0';
+    }
+
+    if (strlen(current_line) == 0) {
+        return new_instruction;
+    }
 
     // Try to match the line with the regex
     int match = regexec(&rx, current_line, 0, NULL, 0);
@@ -114,6 +127,7 @@ instruction *parse(char *current_line, uint64_t *current_line_counter) {
         // Error occured???
         printf("ERROR OCCURED");
     }
+
     regfree(&rx);
     return new_instruction;
 }
