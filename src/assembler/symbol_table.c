@@ -45,10 +45,10 @@ void add_entry(symbol_table *table , char *label, uint64_t address) {
 }
 
 
-uint64_t find_entry(const symbol_table* table, char *search_label) {
+uint64_t find_entry(const symbol_table* table, dynamicString *search_label) {
     for (int i = 0; i < table->size; i++) {
-        if (strcmp((table->symbols[i])->label, search_label) == 0) {
-            return (table->symbols[i])->address;
+        if (strcmp(getString(table->symbols[i]->label), getString(search_label)) == 0) {
+            return table->symbols[i]->address;
         }
     }
     return UINT64_MAX; // Special value indicating entry not found
@@ -57,7 +57,7 @@ uint64_t find_entry(const symbol_table* table, char *search_label) {
 
 void free_symbol_table(symbol_table *table) {
     for (int i = 0; i < table->size; i++) {
-        free(table->symbols[i]);
+        free_dynamic_string(table->symbols[i]);
     }
     free(table->symbols);
     free(table);
