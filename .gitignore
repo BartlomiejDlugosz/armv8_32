@@ -35,7 +35,7 @@ assemble
 *.toc
 .idea/
 **/assemble.txt
-**/CMake*
-**/cmake*
+**/*CMake*
+**/*cmake*
 src/assembler/Makefile
 **/.vscode/

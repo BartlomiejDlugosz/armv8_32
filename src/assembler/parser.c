@@ -1,6 +1,5 @@
 // Assuming symbol table is defined as symbol_table
 #include <ctype.h>
-#include <stddef.h>
 #include <string.h>
 #include <regex.h>
 #include <stdio.h>
@@ -23,6 +22,20 @@ void initialize_instruction(instruction *instr, bool free_previous) {
     for (int i = 0; i < 4; i++) {
         instr->operands[i] = createNewDynamicString(10);
     }
+    instr->complete = false;
+    instr->line_number = 0;
+}
+
+void prettyPrint(instruction *instr) {
+    printf("Label: '%s'\n", getString(instr->label));
+    printf("Opcode: '%s'\n", instr->opcode);
+    printf("Operand 1: '%s'\n", getString(instr->operands[0]));
+    printf("Operand 2: '%s'\n", getString(instr->operands[1]));
+    printf("Operand 3: '%s'\n", getString(instr->operands[2]));
+    printf("Operand 4: '%s'\n", getString(instr->operands[3]));
+    printf("Complete: %i\n", instr->complete);
+    printf("Line Number: '%lu'\n", instr->line_number);
+    printf("\n");
 }
 
 instruction *parse(char *current_line, uint64_t *current_line_counter) {
@@ -39,13 +52,15 @@ instruction *parse(char *current_line, uint64_t *current_line_counter) {
             exit(1);
         }
         initialize_instruction(new_instruction, false);
+    } else if (new_instruction->complete) {
+        // If the instruction is already complete then we want to start a new one
+        initialize_instruction(new_instruction, true);
     }
     // Regex expression for determining if label
     regex_t rx;
-    int regex_compiled;
-
     // Compile the regex
-    regex_compiled = regcomp(&rx, "[A-Za-z].*:", 0);
+    int regex_compiled = regcomp(&rx, "[A-Za-z].*:", 0);
+
     if (regex_compiled != 0) {
         fprintf(stderr, "Failed to compile REGEX");
         exit(1);
@@ -55,6 +70,9 @@ instruction *parse(char *current_line, uint64_t *current_line_counter) {
     while (isspace(*current_line) != 0) {
         current_line++;
     }
+
+    // Remove new line on end
+    current_line[strlen(current_line) - 1] = '\0';
 
     // Try to match the line with the regex
     int match = regexec(&rx, current_line, 0, NULL, 0);
@@ -74,15 +92,24 @@ instruction *parse(char *current_line, uint64_t *current_line_counter) {
     } else if (match == REG_NOMATCH) {
         // Instruction or empty line
         char *tok = strtok(current_line, ", ");
+        int curr_it = 0;
 
         while (tok != NULL) {
-            printf(" %s\n", tok);
-
+            if (curr_it == 0) {
+                strcpy(new_instruction->opcode, tok);
+            } else {
+                addString(new_instruction->operands[curr_it - 1], tok);
+            }
+            // printf("TOK %s %i\n", tok, curr_it);
             tok = strtok(NULL, ", ");
+            curr_it++;
         }
 
         // Instruction is now complete and can be handled further
         new_instruction->complete = true;
+        new_instruction->line_number = *current_line_counter;
+        (*current_line_counter)++;
+        prettyPrint(new_instruction);
     } else {
         // Error occured???
         printf("ERROR OCCURED");

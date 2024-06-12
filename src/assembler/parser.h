@@ -2,6 +2,7 @@
 #define PARSER_H
 
 #include <stdbool.h>
+#include <stdint.h>
 #include "dynamicString.h"
 
 typedef struct {
@@ -14,6 +15,8 @@ typedef struct {
     // Boolean to let others know if instruction is complete, or still in
     // the process of being created
     bool complete;
+    // Stores the line number of the current instruction
+    uint64_t line_number;
 } instruction;
 
 instruction *parse(char *, uint64_t *);
