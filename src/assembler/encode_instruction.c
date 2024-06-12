@@ -73,6 +73,6 @@ uint32_t encode_instruction(instruction *instr) {
         // call
     }
 
-    printf("The opcode is not defined!\n");
-    exit(1);
+    fprintf(stderr, "The opcode is not defined!\n");
+    return 0;
 }
