@@ -9,12 +9,12 @@
 #include "dynamicString.h"
 #include "parser.h"
 
-void free_instruction(instruction *instr, bool fullFree) {
+void free_instruction(instruction *instr, bool full_free) {
     freeDynamicString(instr->label);
     for (int i = 0; i < 4; i++) {
         freeDynamicString(instr->operands[i]);
     }
-    if (fullFree) {
+    if (full_free) {
         free(instr);
     }
 }
@@ -33,16 +33,26 @@ void initialize_instruction(instruction *instr, bool free_previous) {
     instr->line_number = 0;
 }
 
-void prettyPrint(instruction *instr) {
+void pretty_print(instruction *instr) {
     printf("Label: '%s'\n", getString(instr->label));
     printf("Opcode: '%s'\n", instr->opcode);
     printf("Operand 1: '%s'\n", getString(instr->operands[0]));
     printf("Operand 2: '%s'\n", getString(instr->operands[1]));
     printf("Operand 3: '%s'\n", getString(instr->operands[2]));
     printf("Operand 4: '%s'\n", getString(instr->operands[3]));
-    printf("Complete: %i\n", instr->complete);
+    printf("Complete: '%i'\n", instr->complete);
     printf("Line Number: '%lu'\n", instr->line_number);
     printf("\n");
+}
+
+static void compile_regex(regex_t *rx) {
+    // Compile the regex
+    int regex_compiled = regcomp(rx, "[A-Za-z].*:", 0);
+
+    if (regex_compiled != 0) {
+        fprintf(stderr, "Failed to compile REGEX");
+        exit(1);
+    }
 }
 
 instruction *parse(char *current_line, uint64_t *current_line_counter) {
@@ -63,15 +73,6 @@ instruction *parse(char *current_line, uint64_t *current_line_counter) {
         // If the instruction is already complete then we want to start a new one
         initialize_instruction(new_instruction, true);
     }
-    // Regex expression for determining if label
-    regex_t rx;
-    // Compile the regex
-    int regex_compiled = regcomp(&rx, "[A-Za-z].*:", 0);
-
-    if (regex_compiled != 0) {
-        fprintf(stderr, "Failed to compile REGEX");
-        exit(1);
-    }
 
     // Remove leading whitespace
     while (isspace(*current_line) != 0) {
@@ -83,9 +84,13 @@ instruction *parse(char *current_line, uint64_t *current_line_counter) {
         current_line[strlen(current_line) - 1] = '\0';
     }
 
+    // Check if empty line
     if (strlen(current_line) == 0) {
         return new_instruction;
     }
+
+    regex_t rx;
+    compile_regex(&rx);
 
     // Try to match the line with the regex
     int match = regexec(&rx, current_line, 0, NULL, 0);
@@ -99,15 +104,14 @@ instruction *parse(char *current_line, uint64_t *current_line_counter) {
             addChar(new_instruction->label, *current_line);
             current_line++;
         }
-        // Set the label and mark the instruction as not yet complete, since
-        // opcode and operands need to be added in the next run
-        new_instruction->complete = false;
     } else if (match == REG_NOMATCH) {
         // Instruction or empty line
+        // Seperate by space and commas
         char *tok = strtok(current_line, ", ");
+        // Keep track of which iteration it is
         int curr_it = 0;
 
-        while (tok != NULL) {
+        while (tok != NULL && curr_it < 5) {
             if (curr_it == 0) {
                 strcpy(new_instruction->opcode, tok);
             } else {
@@ -122,12 +126,12 @@ instruction *parse(char *current_line, uint64_t *current_line_counter) {
         new_instruction->complete = true;
         new_instruction->line_number = *current_line_counter;
         (*current_line_counter)++;
-        prettyPrint(new_instruction);
+
     } else {
         // Error occured???
         printf("ERROR OCCURED");
     }
-
+    pretty_print(new_instruction);
     regfree(&rx);
     return new_instruction;
 }
