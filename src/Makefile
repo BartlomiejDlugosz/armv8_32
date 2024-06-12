@@ -20,5 +20,11 @@ emulate2:
 	cp emulate ../../armv8_testsuite/solution/
 
 assemble2:
-	gcc -Wall assembler/*.c -o assemble
+	gcc -Wall assembler/*.c -o assemble -ggdb3
+	valgrind --leak-check=full \
+         --show-leak-kinds=all \
+         --track-origins=yes \
+         --verbose \
+         --log-file=assemble.txt \
+         ./assemble exampleParam1
 	cp assemble ../../armv8_testsuite/solution/
