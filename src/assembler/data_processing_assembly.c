@@ -64,13 +64,13 @@ static int32_t generate_data_register_data(data_processing_data_register *data) 
 
 static uint32_t generate_data_processing_instruction(data_processing_instruction *instr, bool is_register) {
     uint32_t result = 0;
-    result |= ((uint32_t)instr->sf) << 30;
-    result |= ((uint32_t)instr->opc) << 28;
-    result |= ((uint32_t)instr->maybe_M) << 27;
+    result |= ((uint32_t)instr->sf) << 31;
+    result |= ((uint32_t)instr->opc) << 29;
+    result |= ((uint32_t)instr->maybe_M) << 28;
     if (is_register) {
-        result |= ((uint32_t)(0b10)) << 25;
+        result |= ((uint32_t)(0b10)) << 26;
     }
-    result |= ((uint32_t)instr->data) << 4;
+    result |= ((uint32_t)instr->data) << 5;
     result |= (uint32_t)instr->rd;
     return result;
 }
@@ -111,7 +111,7 @@ static uint32_t wide_move_instruction (char *opcode, char *rd, char *imm, char *
     return generate_data_processing_instruction(&dpr_instruction, false);
 }
 
-static uint32_t logical_instructions (char *opcode, char *rd, char *rn, char *rm, char *shift, bool register_64_bits) {
+static uint32_t logical_instructions (char *opcode, char *rd, char *rn, char *rm, char *shift, char *shift_amount, bool register_64_bits) {
     data_processing_data_register data;
     data_processing_instruction dpr_instruction;
     dpr_instruction.sf = register_64_bits;
@@ -134,7 +134,7 @@ static uint32_t logical_instructions (char *opcode, char *rd, char *rn, char *rm
         dpr_instruction.opc = 0b11;
     }
     if (shift[0] != '\0') {
-        data.operand = register_to_number(shift);
+        data.operand = register_to_number(shift_amount);
         if (strncmp(shift, "lsl", 3)) {
             data.opr = 0b0000;
         }
@@ -295,16 +295,16 @@ uint32_t data_processing_assembly_init(instruction *instr) {
     case 14: // orr
         // fall through
     case 15: // orn
-        result = logical_instructions (instr->opcode, getString(instr->operands[0]), getString(instr->operands[1]), getString(instr->operands[2]), getString(instr->operands[3]), register_64_bits);
+        result = logical_instructions (instr->opcode, getString(instr->operands[0]), getString(instr->operands[1]), getString(instr->operands[2]), getString(instr->operands[3]), getString(instr->operands[4]), register_64_bits);
         break;
     case 16: // tst
-        result = logical_instructions ("ands", "rzr", getString(instr->operands[0]), getString(instr->operands[1]), getString(instr->operands[2]), register_64_bits);
+        result = logical_instructions ("ands", "rzr", getString(instr->operands[0]), getString(instr->operands[1]), getString(instr->operands[2]), getString(instr->operands[3]), register_64_bits);
         break;
     case 17: // mvn
-        result = logical_instructions ("orn", getString(instr->operands[0]),"rzr", getString(instr->operands[1]), getString(instr->operands[2]), register_64_bits);
+        result = logical_instructions ("orn", getString(instr->operands[0]),"rzr", getString(instr->operands[1]), getString(instr->operands[2]), getString(instr->operands[3]), register_64_bits);
         break;
     case 18: // mov
-        result = logical_instructions ("orr", getString(instr->operands[0]),"rzr", getString(instr->operands[1]), getString(instr->operands[2]), register_64_bits);
+        result = logical_instructions ("orr", getString(instr->operands[0]),"rzr", getString(instr->operands[1]), getString(instr->operands[2]), getString(instr->operands[3]), register_64_bits);
         break;
     case 19: // movn
         // fall through
