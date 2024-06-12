@@ -50,7 +50,7 @@ uint32_t encode_branch(instruction *instr) {
         uint64_t target_literal = strtol(getString(instr->operands[0]) + 2, NULL, 16);
 
         branch_instruction final_instr =
-            (branch_instruction) {.simm26 = 4 * (target_literal - instr->line_number),
+            (branch_instruction) {.simm26 = target_literal - instr->line_number,
                                   .type = 0,
                                   .reg = 0};
         return generate_final_instr(final_instr);
@@ -77,7 +77,7 @@ uint32_t encode_branch(instruction *instr) {
         }
         uint64_t target_literal = strtol(getString(instr->operands[0]) + 2, NULL, 16);
         branch_conditional instr_cond =
-            (branch_conditional) {.cond = enc, .simm19 = 4 * (target_literal - instr->line_number)};
+            (branch_conditional) {.cond = enc, .simm19 = target_literal - instr->line_number};
         branch_instruction final_instr =
             (branch_instruction) {.simm26 = generate_cond_instr(instr_cond),
                                   .type = 1,
