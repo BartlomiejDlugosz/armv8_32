@@ -5,7 +5,7 @@
 #include "parser.h"
 #include "encode_instruction.h"
 #include "branch_encoder.h"
-#include "single_data_transfer.h"
+#include "single_data_transfer_assembly.h"
 #include "data_processing_assembly.h"
 
 #define NUM_HALTING_OPERANDS 3
