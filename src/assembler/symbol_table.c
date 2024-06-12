@@ -45,14 +45,13 @@ void add_entry(symbol_table *table , char *label, uint64_t address) {
 }
 
 
-uint64_t find_entry(symbol_table* table, char *search_label) {
+uint64_t find_entry(const symbol_table* table, char *search_label) {
     for (int i = 0; i < table->size; i++) {
         if (strcmp((table->symbols[i])->label, search_label)) {
             return (table->symbols[i])->address;
         }
     }
-    printf("tried to find entry '%s' but failed\n", search_label);
-    exit(1);
+    return UINT64_MAX; // Special value indicating entry not found
 }
 
 
