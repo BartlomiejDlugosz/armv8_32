@@ -13,7 +13,12 @@ char* remove_non_integer_characters(char *input) {
     output[j] = '\0'; // null-terminate the output string
 }
 
-uint8_t register_to_number(char *reg) {
-    uint8_t result = atoi(remove_non_integer_characters(reg));
+// Converts a register of the form "Rx" where x is an int to simply x as an int, or -1 if z register, or -2 if stack pointer
+int register_to_number(char *reg) {
+    if(strncmp(reg+1, "zr", 2) == 0)
+        return 31;
+    else if (strcmp(reg, "SP") == 0)
+        return -2;
+    int result = atoi(remove_non_integer_characters(reg));
     return result;
 }
