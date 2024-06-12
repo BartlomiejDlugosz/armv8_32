@@ -4,15 +4,39 @@
     cpu->PC += (br_cond.simm19 * 4); \
     cpu->PC -= 4;
 
+#define XN_REG_LOCATION 5
+#define SIMM19_COND_LOCATION 5
+#define TYPE_INSTR_LOCATION 30
+#define REG_INSTR_LOCATION 31
+
+branch_register create_branch_register(uint32_t bits) {
+    branch_register instr;
+    instr.xn = (bits >> XN_REG_LOCATION);
+    return instr;
+}
+
+branch_conditional create_branch_conditional(uint32_t bits) {
+    branch_conditional instr;
+    instr.cond = bits;
+    instr.simm19 = (bits >> SIMM19_COND_LOCATION);
+    return instr;
+}
+
+branch_instruction create_branch_instruction(uint32_t bits) {
+    branch_instruction instr;
+    instr.simm26 = bits;
+    instr.type = (bits >> TYPE_INSTR_LOCATION);
+    instr.reg = (bits >> REG_INSTR_LOCATION);
+    return instr;
+}
+
 void branchExecute(CPU *cpu, uint32_t instruction) {
     // first check if unconditional or not
-    union branch_instruction instr =
-        (union branch_instruction){.bits = instruction};
+    branch_instruction instr = create_branch_instruction(instruction);
     if (instr.type == 1) {
         // check for register based
         if (instr.reg == 1) {
-            union branch_register br_reg =
-                (union branch_register){.bits = instr.simm26};
+            branch_register br_reg = create_branch_register(instr.simm26);
             if (br_reg.xn == 31) {
                 INVALID_XZR_ENCODING();
             } else {
@@ -21,8 +45,8 @@ void branchExecute(CPU *cpu, uint32_t instruction) {
             }
         } else {
             // conditional branching
-            union branch_conditional br_cond =
-                (union branch_conditional){.bits = instr.simm26};
+            branch_conditional br_cond =
+                create_branch_conditional(instr.simm26);
             switch (br_cond.cond) {
                 case 0:  // eq
                     if (cpu->pstate.Z == 1) {
