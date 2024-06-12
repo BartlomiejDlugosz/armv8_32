@@ -57,7 +57,7 @@ uint64_t find_entry(const symbol_table* table, dynamicString *search_label) {
 
 void free_symbol_table(symbol_table *table) {
     for (int i = 0; i < table->size; i++) {
-        free_dynamic_string(table->symbols[i]);
+        freeDynamicString(table->symbols[i]);
     }
     free(table->symbols);
     free(table);
