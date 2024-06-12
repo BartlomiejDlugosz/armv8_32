@@ -194,7 +194,7 @@ static uint32_t arithemtic_instructions (char *opcode, char *rd, char *rn, char 
         arith_operand.rn = register_to_number(rn);
         dpi_instruction.operand = generate_arithmetic_operand(&arith_operand);
         dpr_instruction.data = generate_data_immediate_data(&dpi_instruction);
-        result = generate_data_processing_instruction(&dpr_instruction, false);
+        return generate_data_processing_instruction(&dpr_instruction, false);
     }
     else {
         if (shift[0] != '\0') {
@@ -221,9 +221,8 @@ static uint32_t arithemtic_instructions (char *opcode, char *rd, char *rn, char 
         data.rn = register_to_number(rn);
         dpr_instruction.data = generate_data_register_data(&data);
         dpr_instruction.maybe_M = 0;
-        result = generate_data_processing_instruction(&dpr_instruction, true);
+        return generate_data_processing_instruction(&dpr_instruction, true);
     }
-    return result;
 }
 
 static uint32_t multiply_instructions(char *mulopcode, char *rd, char *rm, char *rn, char *ra, bool register_64_bits) {
