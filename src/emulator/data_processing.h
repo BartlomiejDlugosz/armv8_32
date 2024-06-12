@@ -1,3 +1,6 @@
+#ifndef DATA_PROCESSING_H
+#define DATA_PROCESSING_H
+
 #include "includes.h"
 
 typedef struct {
@@ -126,3 +129,5 @@ data_processing_data_register init_data_processing_data_register(uint32_t data);
 
 
 data_processing_instruction init_data_processing_instruction(uint32_t instruction);
+
+#endif // DATA_PROCESSING_H

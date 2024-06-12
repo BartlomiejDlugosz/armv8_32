@@ -4,13 +4,13 @@
 
 #include "dynamicString.h"
 
-dynamicString createNewDynamicString(int starting_number_of_elements) {
-    dynamicString new_dynamic_string = malloc(sizeof(struct dynamicString));
+dynamicString *createNewDynamicString(int starting_number_of_elements) {
+    dynamicString *new_dynamic_string = malloc(sizeof(dynamicString));
     if (new_dynamic_string == NULL) {
         fprintf(stderr, "An error occured allocating memory");
         exit(1);
     }
-    memset(new_dynamic_string, 0, sizeof(struct dynamicString));
+    memset(new_dynamic_string, 0, sizeof(dynamicString));
 
     new_dynamic_string->data =
         malloc(starting_number_of_elements * sizeof(char));
@@ -26,7 +26,7 @@ dynamicString createNewDynamicString(int starting_number_of_elements) {
     return new_dynamic_string;
 }
 
-void resizeArray(dynamicString arr) {
+void resizeArray(dynamicString *arr) {
     arr->data = realloc(arr->data, arr->max_size * 2);
     if (arr->data == NULL) {
         fprintf(stderr, "Failed to allocate memory");
@@ -38,7 +38,7 @@ void resizeArray(dynamicString arr) {
     printf("Resized to %i\n", arr->max_size);
 }
 
-void addChar(dynamicString arr, char element) {
+void addChar(dynamicString *arr, char element) {
     if (arr->current_size + 1 >= arr->max_size) {
         // reallocate more memory
         resizeArray(arr);
@@ -46,18 +46,18 @@ void addChar(dynamicString arr, char element) {
     arr->data[arr->current_size++] = element;
 }
 
-void addString(dynamicString arr, char *str) {
+void addString(dynamicString *arr, char *str) {
     while (*str != '\0') {
         addChar(arr, *str);
         str++;
     }
 }
 
-char getChar(dynamicString arr, int index) { return arr->data[index]; }
+char getChar(dynamicString *arr, int index) { return arr->data[index]; }
 
-char *getString(dynamicString arr) { return arr->data; }
+char *getString(dynamicString *arr) { return arr->data; }
 
-void freeDynamicString(dynamicString arr) {
+void freeDynamicString(dynamicString *arr) {
     free(arr->data);
     free(arr);
 }

@@ -5,15 +5,14 @@ typedef struct dynamicString {
     char *data;
     int current_size;
     int max_size;
-} * dynamicString;
+} dynamicString;
 
-dynamicString createNewDynamicString(int);
-void resizeArray(dynamicString);
-void addChar(dynamicString, char);
-void addString(dynamicString, char *);
-char getChar(dynamicString, int);
-char *getString(dynamicString);
-void freeDynamicString(dynamicString);
+dynamicString *createNewDynamicString(int);
+void resizeArray(dynamicString *);
+void addChar(dynamicString *, char);
+void addString(dynamicString *, char *);
+char getChar(dynamicString *, int);
+char *getString(dynamicString *);
+void freeDynamicString(dynamicString *);
 
-// DYNAMIC_STRING_H
-#endif
+#endif // DYNAMIC_STRING_H
