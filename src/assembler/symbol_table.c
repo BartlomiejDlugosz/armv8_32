@@ -3,6 +3,7 @@
 #include <assert.h>
 
 #include "symbol_table.h"
+#include "dynamicString.h"
 
 #define CHECK_ALLOCATION(ptr) if (ptr == NULL) { fprintf(stderr, "An error occured allocating memory\n"); exit(1); }
 #define RESIZE_FACTOR 2
@@ -16,7 +17,7 @@ symbol_table *init_symbol_table(size_t capacity) {
     CHECK_ALLOCATION(new_table->symbols);
 
     new_table->size = 0;
-    new_table->capacity = capacity;
+    new_table->capacity = capacity_scale_factor;
 
     return new_table;
 }
@@ -26,7 +27,7 @@ static void resize_table(symbol_table* table, size_t capacity_scale_factor) {
     table->symbols = realloc(table->symbols, table->capacity * capacity_scale_factor);
     CHECK_ALLOCATION(table->symbols);
 
-    table->capacity *= CAPACITY_SCALE_FACTOR;
+    table->capacity *= capacity_s;
 }
 
 
