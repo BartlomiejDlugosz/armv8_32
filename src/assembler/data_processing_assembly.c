@@ -166,7 +166,6 @@ static uint32_t arithemtic_instructions (char *opcode, char *rd, char *rn, char 
     data_processing_instruction dpr_instruction;
     arithmetic_immediate_operand arith_operand;
     data_processing_data_immediate dpi_instruction;
-    uint32_t result;
     dpr_instruction.sf = register_64_bits;
     dpr_instruction.rd = register_to_number(rd);
     if (strcmp(opcode, ADD)) {
@@ -253,7 +252,7 @@ uint32_t data_processing_assembly_init(instruction *instr) {
     bool register_64_bits = (strncmp(getString(instr->operands[0]),"x",1) == 0);
     // getting index from pointer
     int counter = 0;
-    while (data_processing_opcodes[counter] != instr->opcode || data_processing_opcodes[counter] != NULL) {
+    while (strcmp(data_processing_opcodes[counter], instr->opcode) != 0 && data_processing_opcodes[counter] != NULL) {
         counter++;
     };
     int targetIndex = counter;
