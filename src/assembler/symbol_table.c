@@ -45,17 +45,12 @@ void add_entry(symbol_table *table , char *label, uint64_t address) {
 }
 
 
-uint64_t find_entry(symbol_table* table, char *search_label) {
+uint64_t find_entry(const symbol_table* table, char *search_label) {
     for (int i = 0; i < table->size; i++) {
         if (strcmp((table->symbols[i])->label, search_label)) {
             return (table->symbols[i])->address;
         }
     }
-    // printf("tried to find entry '%s' but failed\n", search_label);
-    // exit(1);
-    // The functionality above will cause the replace label with operand to always fail if any of the operands do not have an entry
-    // Hence, I have changed to UINT64_MAX for now since 0 cannot be used as the passes start with address as 0 and negatives are not available.
-
     return UINT64_MAX; // Special value indicating entry not found
 }
 

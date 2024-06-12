@@ -16,7 +16,7 @@ typedef struct {
     bool complete;
 } instruction;
 
-instruction *parse(char *, int *);
+instruction *parse(char *, uint64_t *);
 
 // PARSER_H
 #endif
