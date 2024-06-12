@@ -21,6 +21,10 @@ emulate2:
 
 assemble2:
 	gcc -Wall assembler/*.c -o assemble -ggdb3
+	cp assemble ../../armv8_testsuite/solution/
+
+assemble_with_valgrind:
+	gcc -Wall assembler/*.c -o assemble -ggdb3
 	valgrind --leak-check=full \
          --show-leak-kinds=all \
          --track-origins=yes \
