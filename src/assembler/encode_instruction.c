@@ -15,6 +15,7 @@ char *directive_opcodes[] = { ".int", NULL };
 
 
 // special case of is_type
+/*
 static bool is_halt(instruction *instr) { 
     if (strcmp(instr->opcode, "and") != 0) {
         return false;
@@ -28,6 +29,7 @@ static bool is_halt(instruction *instr) {
 
     return true;
 }
+*/
 
 static bool is_type(instruction *instr, char **opcodes) {
     for (int i = 0; opcodes[i] != NULL; i++) {
@@ -47,9 +49,11 @@ uint32_t encode_instruction(instruction *instr) {
     // but will be converted to little endian when writing to 
     // the binary file
     
+    /*
     if (is_halt(instr)) {
         return HALT_INSTRUCTION_BIG_ENDIAN;
     }
+    */
 
     if (is_type(instr, data_processing_opcodes)) {
         // call
