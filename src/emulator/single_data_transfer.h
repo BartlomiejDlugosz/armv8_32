@@ -1,10 +1,11 @@
-
+#ifndef SINGLE_DATA_TRANSFER_H
+#define SINGLE_DATA_TRANSFER_H
 
 #include "includes.h"
 
 // Defines the inner structure for the offset
 typedef struct {
-    unsigned : 1;
+    unsigned tenth: 1;
     unsigned I : 1;
     signed simm9 : 9;
     unsigned type : 1;
@@ -25,7 +26,7 @@ typedef struct {
     // Needs to be signed in the case of being used as a offset
     signed simm19 : 19;
     unsigned U : 1;
-    unsigned : 5;
+    unsigned opcode: 5;
     unsigned sf : 1;
     unsigned type : 1;
 } single_data_transfer_instruction;
@@ -40,3 +41,5 @@ single_data_transfer_data_offset create_single_data_transfer_data_offset(
 single_data_transfer_data create_single_data_transfer_data(uint32_t bits);
 single_data_transfer_instruction create_single_data_transfer_instruction(
     uint32_t bits);
+
+#endif //SINGLE_DATA_TRANSFER_H
