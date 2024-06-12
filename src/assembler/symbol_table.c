@@ -4,16 +4,16 @@
 
 #include "symbol_table.h"
 
-#define check_allocation(ptr) if (ptr == NULL) { fprintf(stderr, "An error occured allocating memory\n"); exit(1); }
-#define resize_factor 2
+#define CHECK_ALLOCATION(ptr) if (ptr == NULL) { fprintf(stderr, "An error occured allocating memory\n"); exit(1); }
+#define RESIZE_FACTOR 2
 
 
 symbol_table *init_symbol_table(size_t capacity) {
     symbol_table *new_table = malloc(sizeof(struct symbol_table));
-    check_allocation(new_table);
+    CHECK_ALLOCATION(new_table);
 
     new_table->symbols = malloc(capacity * sizeof(struct symbol_entry));
-    check_allocation(new_table->symbols);
+    CHECK_ALLOCATION(new_table->symbols);
 
     new_table->size = 0;
     new_table->capacity = capacity;
@@ -24,14 +24,14 @@ symbol_table *init_symbol_table(size_t capacity) {
 
 static void resize_table(symbol_table* table, size_t capacity_scale_factor) {
     table->symbols = realloc(table->symbols, table->capacity * capacity_scale_factor);
-    check_allocation(table->symbols);
+    CHECK_ALLOCATION(table->symbols);
 
-    table->capacity *= capacity_scale_factor;
+    table->capacity *= CAPACITY_SCALE_FACTOR;
 }
 
 
 // automatically resizes if necessary
-void add_entry(symbol_table *table , char *label, uint64_t address) {
+void add_entry(symbol_table *table , dynamicString *label, uint64_t address) {
     if (table->size >= table->capacity) {
         resize_table(table, resize_factor);
     }
@@ -45,10 +45,10 @@ void add_entry(symbol_table *table , char *label, uint64_t address) {
 }
 
 
-uint64_t find_entry(const symbol_table* table, char *search_label) {
+uint64_t find_entry(const symbol_table* table, dynamicString *search_label) {
     for (int i = 0; i < table->size; i++) {
-        if (strcmp((table->symbols[i])->label, search_label)) {
-            return (table->symbols[i])->address;
+        if (strcmp(getString(table->symbols[i]->label), getString(search_label)) == 0) {
+            return table->symbols[i]->address;
         }
     }
     return UINT64_MAX; // Special value indicating entry not found
@@ -56,7 +56,10 @@ uint64_t find_entry(const symbol_table* table, char *search_label) {
 
 
 void free_symbol_table(symbol_table *table) {
-  free(table->symbols);
-  free(table);
+    for (int i = 0; i < table->size; i++) {
+        freeDynamicString(table->symbols[i]);
+    }
+    free(table->symbols);
+    free(table);
 }
 
