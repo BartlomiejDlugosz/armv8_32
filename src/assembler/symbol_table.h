@@ -4,6 +4,8 @@
 #include <stdint.h>
 #include <stdlib.h>
 
+#include "dynamicString.h"
+
 typedef struct symbol_entry {
     dynamicString *label;
     uint64_t address;
