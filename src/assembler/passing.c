@@ -22,7 +22,7 @@ void first_pass(FILE* in, symbol_table* table) {
         instruction* instr = parse(line, &address);
         if (instr->complete && strlen(getString(instr->label)) > 0) { 
             // Add the symbol to the table along with its address
-            add_entry(table, getString(instr->label), address);
+            add_entry(table, instr->label, address);
         }
     }
     rewind(in); // Reset file pointer to beginning for the second pass
@@ -31,7 +31,7 @@ void first_pass(FILE* in, symbol_table* table) {
 // Replace label in operand with its address from the symbol table
 static void replace_label_with_address(instruction *instr, int index, uint64_t address) {
     char address_str[STRING_LENGTH_64BIT];
-    sprintf(address_str, "%lu", address);
+    sprintf(address_str, "0x%lx", address);
     freeDynamicString(instr->operands[index]);
     instr->operands[index] = createNewDynamicString(strlen(address_str) + 1);
     addString(instr->operands[index], address_str);
@@ -44,18 +44,20 @@ void second_pass(FILE* in, FILE* out, const symbol_table* table) {
     instruction* instr;
     while(fgets(line, sizeof(line), in)) {
         instr = parse(line, &address);
-        for (int i = 0; i < 4; i++) {
-            dynamicString *operand = instr->operands[i];
-            if (operand->current_size > 0) {
-                uint64_t entry_address = find_entry(table, getString(operand));
-                if (entry_address != UINT64_MAX) { // Check if entry exists
-                    replace_label_with_address(instr, i, entry_address);
+        if (instr->complete) {
+            for (int i = 0; i < 4; i++) {
+                dynamicString *operand = instr->operands[i];
+                if (operand->current_size > 0) {
+                    uint64_t entry_address = find_entry(table, operand);
+                    if (entry_address != UINT64_MAX) { // Check if entry exists
+                        replace_label_with_address(instr, i, entry_address);
+                    }
                 }
             }
+            uint32_t binary_instr = encode_instruction(&instr, table);
+            binary_instr = to_little_endian(binary_instr, 4);
+            fwrite(&binary_instr, sizeof(binary_instr),1 , out);
         }
-        uint32_t binary_instr; // = encode_instruction(&instr, table); Implement this function
-        binary_instr = to_little_endian(binary_instr, 4);
-        fwrite(&binary_instr, sizeof(binary_instr),1 , out);
     }
     free_instruction(instr, true);
 }
