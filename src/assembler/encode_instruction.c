@@ -5,6 +5,8 @@
 #include "parser.h"
 #include "encode_instruction.h"
 #include "branch_encoder.h"
+#include "single_data_transfer.h"
+#include "data_processing_assembly.h"
 
 #define NUM_HALTING_OPERANDS 3
 
@@ -57,20 +59,19 @@ uint32_t encode_instruction(instruction *instr) {
     */
 
     if (is_type(instr, data_processing_opcodes)) {
-        // call
+        return data_processing_assembly_init(instr);
     }
 
     if (is_type(instr, branch_opcodes)) {
-        // call
         return encode_branch(instr);
     }
 
     if (is_type(instr, single_data_transfer_opcodes)) {
-        // call
+        return single_data_transfer_to_binary(instr);
     }
 
     if (is_type(instr, directive_opcodes)) {
-        // call
+        //todo
     }
 
     printf("The opcode is not defined!\n");
