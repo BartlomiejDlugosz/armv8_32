@@ -56,7 +56,10 @@ uint64_t find_entry(const symbol_table* table, char *search_label) {
 
 
 void free_symbol_table(symbol_table *table) {
-  free(table->symbols);
-  free(table);
+    for (int i = 0; i < table->size; i++) {
+        free(table->symbols[i]);
+    }
+    free(table->symbols);
+    free(table);
 }
 

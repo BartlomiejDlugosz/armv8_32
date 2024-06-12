@@ -30,5 +30,5 @@ assemble_with_valgrind:
          --track-origins=yes \
          --verbose \
          --log-file=assemble.txt \
-         ./assemble exampleParam1
+         ./assemble ../../armv8_testsuite/test/test_cases/general/example.s test.bin
 	cp assemble ../../armv8_testsuite/solution/

@@ -16,7 +16,7 @@ static uint32_t to_little_endian(uint32_t value, uint8_t num_bytes) {
 // First pass: parse the source file and build the symbol table
 void first_pass(FILE* in, symbol_table* table) {
     char line[LINE_LENGTH];
-    uint64_t address = 0; 
+    uint64_t address = 0;
     //Address to be incremented by parser
     while (fgets(line, sizeof(line), in)) {
         instruction* instr = parse(line, &address);
@@ -29,28 +29,27 @@ void first_pass(FILE* in, symbol_table* table) {
 }
 
 // Replace label in operand with its address from the symbol table
-static void replace_label_with_address(dynamicString* operand, uint64_t address) {
+static void replace_label_with_address(instruction *instr, int index, uint64_t address) {
     char address_str[STRING_LENGTH_64BIT];
     sprintf(address_str, "%lu", address);
-    freeDynamicString(*operand);
-    *operand = createNewDynamicString(strlen(address_str) + 1);
-    addString(*operand, address_str);
+    freeDynamicString(instr->operands[index]);
+    instr->operands[index] = createNewDynamicString(strlen(address_str) + 1);
+    addString(instr->operands[index], address_str);
 }
 
 // Second pass: generate the binary output
 void second_pass(FILE* in, FILE* out, const symbol_table* table) {
     char line[LINE_LENGTH];
     uint64_t address = 0;
+    instruction* instr;
     while(fgets(line, sizeof(line), in)) {
-        instruction* instr = parse(line, &address);
-        if (instr->complete) { 
-            for (int i = 0; i < 4; i++) {
-                dynamicString operand = instr->operands[i];
-                if (operand->current_size > 0) {
-                    uint64_t entry_address = find_entry(table, getString(operand));
-                    if (entry_address != UINT64_MAX) { // Check if entry exists
-                        replace_label_with_address(&operand, entry_address);
-                    }
+        instr = parse(line, &address);
+        for (int i = 0; i < 4; i++) {
+            dynamicString *operand = instr->operands[i];
+            if (operand->current_size > 0) {
+                uint64_t entry_address = find_entry(table, getString(operand));
+                if (entry_address != UINT64_MAX) { // Check if entry exists
+                    replace_label_with_address(instr, i, entry_address);
                 }
             }
         }
@@ -58,4 +57,5 @@ void second_pass(FILE* in, FILE* out, const symbol_table* table) {
         binary_instr = to_little_endian(binary_instr, 4);
         fwrite(&binary_instr, sizeof(binary_instr),1 , out);
     }
+    free_instruction(instr, true);
 }
