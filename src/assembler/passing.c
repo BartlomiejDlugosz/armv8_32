@@ -3,6 +3,8 @@
 #include "passing.h"
 #include "parser.h"
 
+#include "encode_instruction.h"
+
 
 //Function to convert 32 bit value to little endian
 static uint32_t to_little_endian(uint32_t value, uint8_t num_bytes) {
@@ -54,7 +56,7 @@ void second_pass(FILE* in, FILE* out, const symbol_table* table) {
                     }
                 }
             }
-            uint32_t binary_instr = encode_instruction(&instr, table);
+            uint32_t binary_instr = encode_instruction(instr);
             binary_instr = to_little_endian(binary_instr, 4);
             fwrite(&binary_instr, sizeof(binary_instr),1 , out);
         }
