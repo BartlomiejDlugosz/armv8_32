@@ -47,7 +47,7 @@ void add_entry(symbol_table *table , char *label, uint64_t address) {
 
 uint64_t find_entry(const symbol_table* table, char *search_label) {
     for (int i = 0; i < table->size; i++) {
-        if (strcmp((table->symbols[i])->label, search_label)) {
+        if (strcmp((table->symbols[i])->label, search_label) == 0) {
             return (table->symbols[i])->address;
         }
     }
