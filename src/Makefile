@@ -20,7 +20,7 @@ emulate2:
 	cp emulate ../../armv8_testsuite/solution/
 
 assemble2:
-	gcc -Wall assembler/*.c -o assemble -ggdb3
+	gcc -Wall assembler/*.c -o assemble -ggdb3 -g --debug
 	cp assemble ../../armv8_testsuite/solution/
 
 assemble_with_valgrind:
