@@ -6,7 +6,7 @@
 #include "../emulator/branch.h"
 
 struct conditional_encoding {
-    char cond[2];
+    char cond[3];
     unsigned encoding : 4;
 };
 
@@ -23,7 +23,7 @@ struct conditional_encoding conditional_encodings[] =
 
 static uint32_t generate_reg_instr(branch_register instr) {
     uint32_t bin = ((uint32_t) instr.xn) << 5;
-    bin |= ((uint32_t) 0b11111) << 16;
+    bin |= ((uint32_t) 0b1000011111) << 16;
     return bin;
 }
 
@@ -36,7 +36,8 @@ static uint32_t generate_cond_instr(branch_conditional instr) {
 
 static uint32_t generate_final_instr(branch_instruction instr) {
     uint32_t bin = 0;
-    bin |= instr.simm26;
+    // Sign extension stuff
+    bin |= instr.simm26 & 0x3FFFFFF;
     bin |= ((uint32_t)0b0101) << 26;
     bin |= ((uint32_t)instr.type) << 30;
     bin |= ((uint32_t) instr.reg) << 31;

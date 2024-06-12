@@ -24,7 +24,9 @@ void first_pass(FILE* in, symbol_table* table) {
         instruction* instr = parse(line, &address);
         if (instr->complete && strlen(getString(instr->label)) > 0) { 
             // Add the symbol to the table along with its address
-            add_entry(table, instr->label, address);
+            dynamicString *lbl = createNewDynamicString(10);
+            addString(lbl, getString(instr->label));
+            add_entry(table, lbl, address);
         }
     }
     rewind(in); // Reset file pointer to beginning for the second pass
