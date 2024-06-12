@@ -4,27 +4,27 @@
 #include <string.h>
 
 static uint32_t generate_data_offset_binary(single_data_transfer_data_offset data_offset) {
-    uint32_t bin = (uint32_t)data_offset.tenth << 10;
-    bin |= (uint32_t)data_offset.I << 11;
+    uint32_t bin = ((uint32_t)data_offset.tenth) << 10;
+    bin |= ((uint32_t)data_offset.I) << 11;
     bin |= ((uint32_t)data_offset.simm9 & 0x1FF) << 20;
-    bin |= (uint32_t)data_offset.type << 21;
+    bin |= ((uint32_t)data_offset.type) << 21;
     return bin;
 }
 
 static uint32_t generate_data_binary(single_data_transfer_data data) {
-    uint32_t bin = (uint32_t)data.xn << 9;
-    bin |= (uint32_t)data.offset << 21;
-    bin |= (uint32_t)data.L << 22;
+    uint32_t bin = ((uint32_t)data.xn) << 9;
+    bin |= ((uint32_t)data.offset) << 21;
+    bin |= ((uint32_t)data.L) << 22;
     return bin;
 }
 
 static uint32_t generate_instruction_binary(single_data_transfer_instruction instr) {
     uint32_t bin = (uint32_t)instr.rt;
     bin |= ((uint32_t)instr.simm19 & 0x1F) << 23;
-    bin |= (uint32_t)instr.U << 24;
-    bin |= (uint32_t)instr.opcode << 29;
-    bin |= (uint32_t)instr.sf << 30;
-    bin |= (uint32_t)instr.type << 31; 
+    bin |= ((uint32_t)instr.U) << 24;
+    bin |= ((uint32_t)instr.opcode) << 29;
+    bin |= ((uint32_t)instr.sf) << 30;
+    bin |= ((uint32_t)instr.type) << 31; 
     return bin;
 }
 
