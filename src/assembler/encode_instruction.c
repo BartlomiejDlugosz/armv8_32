@@ -4,6 +4,7 @@
 #include <string.h>
 #include "parser.h"
 #include "encode_instruction.h"
+#include "branch_encoder.h"
 
 #define NUM_HALTING_OPERANDS 3
 
@@ -61,6 +62,7 @@ uint32_t encode_instruction(instruction *instr) {
 
     if (is_type(instr, branch_opcodes)) {
         // call
+        return encode_branch(instr);
     }
 
     if (is_type(instr, single_data_transfer_opcodes)) {

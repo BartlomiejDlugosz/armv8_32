@@ -105,6 +105,7 @@ instruction *parse(char *current_line, uint64_t *current_line_counter) {
             current_line++;
         }
     } else if (match == REG_NOMATCH) {
+        (*current_line_counter)++;
         // Instruction or empty line
         // Seperate by space and commas
         char *tok = strtok(current_line, ", ");
@@ -125,7 +126,6 @@ instruction *parse(char *current_line, uint64_t *current_line_counter) {
         // Instruction is now complete and can be handled further
         new_instruction->complete = true;
         new_instruction->line_number = *current_line_counter;
-        (*current_line_counter)++;
 
     } else {
         // Error occured???

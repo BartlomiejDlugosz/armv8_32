@@ -1,3 +1,6 @@
+#ifndef BRANCH_H
+#define BRANCH_H
+
 #include "includes.h"
 
 typedef struct {
@@ -24,3 +27,5 @@ void branchExecute(CPU *cpu, uint32_t current_instr);
 branch_register create_branch_register(uint32_t bits);
 branch_conditional create_branch_conditional(uint32_t bits);
 branch_instruction create_branch_instruction(uint32_t bits);
+
+#endif // BRANCH_H
