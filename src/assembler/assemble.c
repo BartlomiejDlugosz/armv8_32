@@ -14,6 +14,13 @@ int main(int argc, char **argv) {
         return EXIT_FAILURE;
     }
 
+    //Initalise symbol table with set initial capacity
+    symbol_table* table = init_symbol_table(INITIAL_SYMBOL_TABLE_CAPACITY);
+
+    //Perform first pass to build symbol table
+    first_pass(input_file, table);
+
+    
     //Open output file for writing
     FILE* output_file = fopen(argv[2], "wb");
     if (output_file == NULL) {
@@ -21,12 +28,6 @@ int main(int argc, char **argv) {
         fclose(input_file); // Close input file before returning
         return EXIT_FAILURE;
     }
-
-    //Initalise symbol table with set initial capacity
-    symbol_table* table = init_symbol_table(INITIAL_SYMBOL_TABLE_CAPACITY);
-
-    //Perform first pass to build symbol table
-    first_pass(input_file, table);
 
     //Perform second pass to generate binary output
     second_pass(input_file, output_file, table);
