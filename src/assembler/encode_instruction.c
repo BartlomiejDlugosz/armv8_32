@@ -5,7 +5,7 @@
 #include "parser.h"
 #include "encode_instruction.h"
 
-#define num_halting_operands 3
+#define NUM_HALTING_OPERANDS 3
 
 // all arrays are null terminated, for easy iteration when passing to functions
 char *data_processing_opcodes[] = { "add", "adds", "sub", "subs", "cmp", "cmn", "neg", "negs", "and", "ands", "bic", "bics", "eor", "eon", "orr", "orn", "tst", "mvn", "mov", "movn", "movk", "movz", "madd", "msub", "mul", "mneg", NULL };
@@ -20,7 +20,7 @@ static bool is_halt(instruction *instr) {
         return false;
     }
 
-    for (int i = 0; i < num_halting_operands; i++) {
+    for (int i = 0; i < NUM_HALTING_OPERANDS; i++) {
         if (strcmp(getString(instr->operands[0]), "x0") != 0) {
             return false;
         }
