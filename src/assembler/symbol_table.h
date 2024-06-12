@@ -5,7 +5,7 @@
 #include <stdlib.h>
 
 typedef struct symbol_entry {
-    char *label;
+    dynamicString *label;
     uint64_t address;
 } symbol_entry;
 
@@ -17,9 +17,8 @@ typedef struct symbol_table {
 
 
 symbol_table *init_symbol_table(size_t capacity);
-void add_entry(symbol_table *table , char *label, uint64_t address); // automatically resizes if necessary
-uint64_t find_entry(const symbol_table *table, char *search_label);
+void add_entry(symbol_table *table , dynamicString *label, uint64_t address); // automatically resizes if necessary
+uint64_t find_entry(const symbol_table *table, dynamicString *search_label);
 void free_symbol_table(symbol_table *table); 
-
 
 #endif // SYMBOL_TABLE_H
