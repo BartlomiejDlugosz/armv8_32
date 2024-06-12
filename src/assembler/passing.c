@@ -20,7 +20,7 @@ void first_pass(FILE* in, symbol_table* table) {
     //Address to be incremented by parser
     while (fgets(line, sizeof(line), in)) {
         instruction* instr = parse(line, &address);
-        if (strlen(getString(instr->label)) > 0) {
+        if (instr->complete && strlen(getString(instr->label)) > 0) { 
             // Add the symbol to the table along with its address
             add_entry(table, getString(instr->label), address);
         }
@@ -43,12 +43,14 @@ void second_pass(FILE* in, FILE* out, const symbol_table* table) {
     uint64_t address = 0;
     while(fgets(line, sizeof(line), in)) {
         instruction* instr = parse(line, &address);
-        for (int i = 0; i < 4; i++) {
-            dynamicString operand = (*instr).operands[i];
-            if (operand->current_size > 0) {
-                uint64_t entry_address = find_entry(table, getString(operand));
-                if (entry_address != UINT64_MAX) { // Check if entry exists
-                    replace_label_with_address(&operand, entry_address);
+        if (instr->complete) { 
+            for (int i = 0; i < 4; i++) {
+                dynamicString operand = instr->operands[i];
+                if (operand->current_size > 0) {
+                    uint64_t entry_address = find_entry(table, getString(operand));
+                    if (entry_address != UINT64_MAX) { // Check if entry exists
+                        replace_label_with_address(&operand, entry_address);
+                    }
                 }
             }
         }
