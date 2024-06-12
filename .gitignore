@@ -33,4 +33,8 @@ assemble
 *.nav
 *.toc
 .idea/
+**/assemble.txt
+**/CMake*
+**/cmake*
+src/assembler/Makefile
 **/.vscode/
