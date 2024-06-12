@@ -48,8 +48,11 @@ uint32_t single_data_transfer_to_binary(instruction* instr) {
     instr_struct.rt = atoi(&(getString(instr->operands[0])[1])); // x3
     char rt_type =  getString(instr->operands[0])[0];
     instr_struct.sf = (rt_type == 'x') ? 1 : 0;
-    char* address_mode = getString(instr->operands[1]);
-
+    dynamicString* address_mode_array = createNewDynamicString(10);
+    for (int i = 1; i < 5; i++) {
+        addString(address_mode_array, getString(instr->operands[i]));
+    }
+    char* address_mode = getString(address_mode_array);
     if (address_mode[0] == '[') {
         instr_struct.type = 1; //Single Data Transfer
         instr_struct.opcode = 0b1110;
