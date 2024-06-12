@@ -4,6 +4,7 @@
 #include <string.h>
 #include <regex.h>
 #include <stdio.h>
+#include <stdint.h>
 #include <stdlib.h>
 #include <stdbool.h>
 #include "dynamicString.h"
@@ -24,7 +25,7 @@ void initialize_instruction(instruction *instr, bool free_previous) {
     }
 }
 
-instruction *parse(char *current_line, int *current_line_counter) {
+instruction *parse(char *current_line, uint64_t *current_line_counter) {
     // static so it can be saved for following calls
     static bool initialized = false;
     static instruction *new_instruction = NULL;
