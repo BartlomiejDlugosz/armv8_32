@@ -83,14 +83,23 @@ uint32_t single_data_transfer_to_binary(instruction* instr) {
         // Unsigned Immediate Offset
         char* cur_operand =  getString( instr->operands[2]);
         if (sscanf(address_mode, "[x%d, #%x]", &reg_num, &offset) == 2 && cur_operand[strlen(cur_operand)-1] != '!') {
+            if (cur_operand[2] != 'x') {
+                sscanf(address_mode, "[x%d, #%d]", &reg_num, &offset);
+            }
             data_struct.xn = reg_num; // Register number assigned
-            data_struct.offset = (offset / ((rt_type == 'x') ? 8 : 4)) - instr->line_number; //Division dependent on rt_type
+            data_struct.offset = (offset / ((rt_type == 'x') ? 8 : 4)); //- instr->line_number; //Division dependent on rt_type
             instr_struct.U = 1;// Unsigned bit is set
         }
         // Handle the form [xn, #<simm>]!
         // Pre-Indexed
-        //Not okay 
-        else if(sscanf(address_mode, "[x%d, #%d]!", &reg_num, &offset) == 2) {
+        //8b5a40b9
+        // [x0, #0x120]'
+        // split this into two cases (one for hex and one for dec)
+        // special case with ! at the end (clean this later)
+        else if(sscanf(address_mode, "[x%d, #%x]!", &reg_num, &offset) == 2) {
+            if (cur_operand[2] != 'x') {
+                sscanf(address_mode, "[x%d, #%d]!", &reg_num, &offset);
+            }
             data_struct.xn = reg_num; // Register number assigned
             offset_struct.simm9 = offset; // Direct offset assignment
             offset_struct.I = 1; // Set I
