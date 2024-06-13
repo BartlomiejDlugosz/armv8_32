@@ -144,7 +144,7 @@ static uint32_t logical_instructions (char *opcode, char *rd, char *rn, char *rm
         else if (strncmp(shift, "asr", 3)){
             data.opr = 0b0100;
         }
-        else {
+        else if (strncmp(shift, "ror", 3)){
             data.opr = 0b0110;
         }
         if (n) {
@@ -152,7 +152,7 @@ static uint32_t logical_instructions (char *opcode, char *rd, char *rn, char *rm
         }
     }
     else {
-        data.opr = n;
+        data.opr = n; // 0011 or 0010
         data.operand = 0;
     }
     data.rm = register_to_number(rm);
