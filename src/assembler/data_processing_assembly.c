@@ -25,9 +25,9 @@
 
 static uint32_t resolve_operand(char *amount) {
     uint32_t result;
-    if (sscanf(amount+1, "%d", &result) == 1 && amount[0] == '#') { 
+    if (sscanf(amount+1, "0x%x", &result) == 1 && amount[0] == '#') {
         return result;
-    } else if (sscanf(amount+1, "%x", &result) == 1 && amount[0] == '#') {
+    } else if (sscanf(amount+1, "%d", &result) == 1 && amount[0] == '#') {
         return result;
     } else {
         return register_to_number(amount);
