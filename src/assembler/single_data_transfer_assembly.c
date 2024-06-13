@@ -77,25 +77,20 @@ uint32_t single_data_transfer_to_binary(instruction* instr) {
         instr_struct.type = 1; //Single Data Transfer
         instr_struct.opcode = 0b11100;
         int reg_num, offset, reg_m_num;
-        //Handle the form [xn]
-        // Zero Unsigned Offset
-        // given [x5, x15]
-
         //Handle the form [xn, #<imm>]
         // [x1''#0x8]'
+        // '[x1, #32]'
         // Unsigned Immediate Offset
         if (sscanf(address_mode, "[x%d, #%x]", &reg_num, &offset) == 2) {
             data_struct.xn = reg_num; // Register number assigned
-            data_struct.offset = offset / ((rt_type == 'x') ? 8 : 4); //Division dependent on rt_type
-            instr_struct.U = 1;// Unsigned bit is set
-        }
-        else if (sscanf(address_mode, "[x%d, #%d]", &reg_num, &offset) == 2) {
-            data_struct.xn = reg_num; // Register number assigned
-            data_struct.offset = offset / ((rt_type == 'x') ? 8 : 4); //Division dependent on rt_type
+            // 206400f9
+            // 201800f9
+            data_struct.offset = (offset / ((rt_type == 'x') ? 8 : 4)) - instr->line_number; //Division dependent on rt_type
             instr_struct.U = 1;// Unsigned bit is set
         }
         // Handle the form [xn, #<simm>]!
         // Pre-Indexed
+        //Not okay 
         else if(sscanf(address_mode, "[x%d, #%d]!", &reg_num, &offset) == 2) {
             data_struct.xn = reg_num; // Register number assigned
             offset_struct.simm9 = offset; // Direct offset assignment
@@ -118,6 +113,9 @@ uint32_t single_data_transfer_to_binary(instruction* instr) {
             offset_struct.type = 1;
             offset_struct.I = 1; // Set I
         } 
+        //Handle the form [xn]
+        // Zero Unsigned Offset
+        // given [x5, x15]
         else if (sscanf(address_mode, "[x%d]", &reg_num) == 1) {
             data_struct.xn = reg_num; // Register number assigned
             instr_struct.U = 1;// Unsigned bit is se
