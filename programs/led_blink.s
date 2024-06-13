@@ -12,9 +12,9 @@ delay_outer_loop:
     add x29, x29, #1000000
 delay_inner_loop:
     subs x29, x29, #1
-    bne delay_inner_loop
+    b.ne delay_inner_loop
 subs x28, x28, #1
-bne delay_outer_loop
+b.ne delay_outer_loop
 
 low:
 str w0 bit21
@@ -27,9 +27,9 @@ delay_outer_loop:
     add x29, x29, #1000000
 delay_inner_loop:
     subs x29, x29, #1
-    bne delay_inner_loop
+    b.ne delay_inner_loop
 subs x28, x28, #1
-bne delay_outer_loop
+b.ne delay_outer_loop
 
 and x0, x0, x0
 b high
