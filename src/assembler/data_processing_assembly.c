@@ -95,13 +95,13 @@ static uint32_t wide_move_instruction (char *opcode, char *rd, char *imm, char *
     dpr_instruction.maybe_M = 1;
     dpi_instruction.opi = 0b101;
     wide_operand.imm16 = register_to_number(imm);
-    if (strcmp(opcode, MOVE_WIDE_KEEP)) {
+    if (strcmp(opcode, MOVE_WIDE_KEEP) == 0) {
         dpr_instruction.opc = 0b00;
     }
-    else if (strcmp(opcode, MOVE_WIDE_ZERO)) {
+    else if (strcmp(opcode, MOVE_WIDE_ZERO) == 0) {
         dpr_instruction.opc = 0b10;
     }
-    else if (strcmp(opcode, MOVE_WIDE_NOT)) {
+    else if (strcmp(opcode, MOVE_WIDE_NOT) == 0) {
         dpr_instruction.opc = 0b11;
     }
     wide_operand.hw = register_to_number(shift);
@@ -118,16 +118,16 @@ static uint32_t logical_instructions (char *opcode, char *rd, char *rn, char *rm
     dpr_instruction.rd = register_to_number(rd);
     dpr_instruction.maybe_M = 0;
     bool n = false;
-    if (strcmp(opcode, BIT_CLEAR) || strcmp(opcode, OR_NOT) || strcmp(opcode, EXCLUSIVE_OR_NOT) || strcmp(opcode, BIT_CLEAR_SET)) {
+    if (strcmp(opcode, BIT_CLEAR) == 0 || strcmp(opcode, OR_NOT) == 0 || strcmp(opcode, EXCLUSIVE_OR_NOT) == 0 || strcmp(opcode, BIT_CLEAR_SET) == 0) {
         n = true;
     }
-    if (strcmp(opcode, AND) || strcmp(opcode, BIT_CLEAR)) {
+    if (strcmp(opcode, AND) == 0 || strcmp(opcode, BIT_CLEAR) == 0) {
         dpr_instruction.opc = 0b00;
     }
-    else if (strcmp(opcode, OR) || strcmp(opcode, OR_NOT)) {
+    else if (strcmp(opcode, OR) == 0 || strcmp(opcode, OR_NOT) == 0) {
         dpr_instruction.opc = 0b01;
     }
-    else if (strcmp(opcode, EXCLUSIVE_OR) || strcmp(opcode, EXCLUSIVE_OR_NOT)){
+    else if (strcmp(opcode, EXCLUSIVE_OR) == 0 || strcmp(opcode, EXCLUSIVE_OR_NOT) == 0){
         dpr_instruction.opc = 0b10;
     }
     else {
@@ -135,20 +135,20 @@ static uint32_t logical_instructions (char *opcode, char *rd, char *rn, char *rm
     }
     if (shift[0] != '\0') {
         data.operand = register_to_number(shift_amount);
-        if (strncmp(shift, "lsl", 3)) {
+        if (strncmp(shift, "lsl", 3) == 0) {
             data.opr = 0b0000;
         }
-        else if (strncmp(shift, "lsr", 3)) {
+        else if (strncmp(shift, "lsr", 3) == 0) {
             data.opr = 0b0010;
         }
-        else if (strncmp(shift, "asr", 3)){
+        else if (strncmp(shift, "asr", 3) == 0){
             data.opr = 0b0100;
         }
-        else if (strncmp(shift, "ror", 3)){
+        else if (strncmp(shift, "ror", 3) == 0){
             data.opr = 0b0110;
         }
         if (n) {
-            data.opr |= n;
+            data.opr = 0 | n;
         }
     }
     else {
@@ -168,13 +168,13 @@ static uint32_t arithemtic_instructions (char *opcode, char *rd, char *rn, char 
     data_processing_data_immediate dpi_instruction;
     dpr_instruction.sf = register_64_bits;
     dpr_instruction.rd = register_to_number(rd);
-    if (strcmp(opcode, ADD)) {
+    if (strcmp(opcode, ADD) == 0) {
         dpr_instruction.opc = 0b00;
     }
-    else if (strcmp(opcode, ADD_SIGNED)) {
+    else if (strcmp(opcode, ADD_SIGNED) == 0) {
         dpr_instruction.opc = 0b01;
     }
-    else if (strcmp(opcode, SUBTRACT)){
+    else if (strcmp(opcode, SUBTRACT) == 0){
         dpr_instruction.opc = 0b10;
     }
     else {
@@ -184,7 +184,7 @@ static uint32_t arithemtic_instructions (char *opcode, char *rd, char *rn, char 
         dpi_instruction.opi = 0b010;
         dpr_instruction.maybe_M = 1;
         arith_operand.imm12 = register_to_number(rm);
-        if (strcmp(shift, "lsl #12")) {
+        if (strcmp(shift, "lsl #12") == 0) {
             arith_operand.sh = 1;
         }
         else {
@@ -198,13 +198,13 @@ static uint32_t arithemtic_instructions (char *opcode, char *rd, char *rn, char 
     else {
         if (shift[0] != '\0') {
             data.operand = register_to_number(shift);
-            if (strncmp(shift, "lsl", 3)) {
+            if (strncmp(shift, "lsl", 3) == 0) {
                 data.opr = 0b1000;
             }
-            else if (strncmp(shift, "lsr", 3)) {
+            else if (strncmp(shift, "lsr", 3) == 0) {
                 data.opr = 0b1010;
             }
-            else if (strncmp(shift, "asr", 3)){
+            else if (strncmp(shift, "asr", 3) == 0){
                 data.opr = 0b1100;
             }
             else {
