@@ -11,7 +11,7 @@
 
 void free_instruction(instruction *instr, bool full_free) {
     freeDynamicString(instr->label);
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 5; i++) {
         freeDynamicString(instr->operands[i]);
     }
     if (full_free) {
@@ -26,7 +26,7 @@ void initialize_instruction(instruction *instr, bool free_previous) {
 
     instr->label = createNewDynamicString(10);
     memset(instr->opcode, 0, sizeof(instr->opcode));
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < 5; i++) {
         instr->operands[i] = createNewDynamicString(10);
     }
     instr->complete = false;
@@ -40,6 +40,7 @@ void pretty_print(instruction *instr) {
     printf("Operand 2: '%s'\n", getString(instr->operands[1]));
     printf("Operand 3: '%s'\n", getString(instr->operands[2]));
     printf("Operand 4: '%s'\n", getString(instr->operands[3]));
+    printf("Operand 5: '%s'\n", getString(instr->operands[4]));
     printf("Complete: '%i'\n", instr->complete);
     printf("Line Number: '%lu'\n", instr->line_number);
     printf("\n");
@@ -65,7 +66,7 @@ instruction *parse(char *current_line, uint64_t *current_line_counter) {
         initialized = true;
         new_instruction = malloc(sizeof(instruction));
         if (new_instruction == NULL) {
-            fprintf(stderr, "Error occured when allocating memory");
+            fprintf(stderr, "Error occurred when allocating memory");
             exit(1);
         }
         initialize_instruction(new_instruction, false);
@@ -112,7 +113,7 @@ instruction *parse(char *current_line, uint64_t *current_line_counter) {
         // Keep track of which iteration it is
         int curr_it = 0;
 
-        while (tok != NULL && curr_it < 5) {
+        while (tok != NULL && curr_it < 6) {
             if (curr_it == 0) {
                 strcpy(new_instruction->opcode, tok);
             } else {
@@ -128,8 +129,8 @@ instruction *parse(char *current_line, uint64_t *current_line_counter) {
         new_instruction->line_number = *current_line_counter;
 
     } else {
-        // Error occured???
-        printf("ERROR OCCURED");
+        // Error occurred???
+        printf("ERROR OCCURRED");
     }
     pretty_print(new_instruction);
     regfree(&rx);
