@@ -1,0 +1,3 @@
+[submodule "armv8_testsuite"]
+	path = armv8_testsuite
+	url = ../../teaching-fellows/armv8_testsuite.git
