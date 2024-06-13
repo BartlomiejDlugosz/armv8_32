@@ -47,7 +47,7 @@ uint32_t single_data_transfer_to_binary(instruction* instr) {
     // Not dealing with stack pointer case
     // Have to deal with zero register
     // MACRO for below
-    instr_struct.rt = atoi(getString(instr->operands[0])+1);
+    instr_struct.rt = atoi(getString(instr->operands[0]) + 1); // x3
     char rt_type =  getString(instr->operands[0])[0];
     instr_struct.sf = (rt_type == 'x') ? 1 : 0;
     dynamicString* address_mode_array = createNewDynamicString(10);
@@ -117,7 +117,7 @@ uint32_t single_data_transfer_to_binary(instruction* instr) {
         // Register Offset
         else if(sscanf(address_mode, "[x%d, x%d]", &reg_num, &reg_m_num) == 2) {
             data_struct.xn = reg_num;
-            offset_struct.simm9 = (reg_m_num << 4) | 0b110; // Shift 4 and mask
+            offset_struct.simm9 = ((uint32_t)reg_m_num << 4) | 0b0110; // Shift 4 and mask
             offset_struct.type = 1;
             offset_struct.I = 1; // Set I
         } 

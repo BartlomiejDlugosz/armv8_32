@@ -23,6 +23,20 @@
 #define MOVE_WIDE_ZERO "movz"
 #define MOVE_WIDE_KEEP "movk"
 
+static uint32_t resolve_operand(char *amount) {
+    uint32_t result;
+    if (sscanf(amount+1, "0x%x", &result) == 1 && amount[0] == '#') {
+        return result;
+    } else if (sscanf(amount+1, "%d", &result) == 1 && amount[0] == '#') {
+        return result;
+    } else {
+        return register_to_number(amount);
+    }
+    fprintf(stderr, "operand not resolved\n");
+    return 0;
+}
+
+
 static uint32_t generate_operand(multiply_operand *operand) {
     uint32_t result = 0;
     result |= ((uint32_t)operand->x) << 5;
@@ -77,13 +91,13 @@ static uint32_t generate_data_processing_instruction(data_processing_instruction
 
 static void madd(char *mulopcode, char *ra, multiply_operand *operand) {
     operand->x = 0;
-    operand->ra = register_to_number(ra);
+    operand->ra = resolve_operand(ra);
     return;
 }
 
 static void msub(char *mulopcode, char *ra, multiply_operand *operand) {
     operand->x = 1;
-    operand->ra = register_to_number(ra);
+    operand->ra = resolve_operand(ra);
     return;
 }
 
@@ -95,7 +109,7 @@ static uint32_t wide_move_instruction (char *opcode, char *rd, char *imm, char *
     dpr_instruction.sf = register_64_bits;
     dpr_instruction.maybe_M = 1;
     dpi_instruction.opi = 0b101;
-    wide_operand.imm16 = register_to_number(imm);
+    wide_operand.imm16 = resolve_operand(imm);
     if (strcmp(opcode, MOVE_WIDE_KEEP) == 0) {
         dpr_instruction.opc = 0b00;
     }
@@ -105,8 +119,8 @@ static uint32_t wide_move_instruction (char *opcode, char *rd, char *imm, char *
     else if (strcmp(opcode, MOVE_WIDE_NOT) == 0) {
         dpr_instruction.opc = 0b11;
     }
-    wide_operand.hw = register_to_number(shift);
-    dpr_instruction.rd = register_to_number(rd);
+    wide_operand.hw = resolve_operand(shift);
+    dpr_instruction.rd = resolve_operand(rd);
     dpi_instruction.operand = generate_wide_move_operand(&wide_operand);
     dpr_instruction.data = generate_data_immediate_data(&dpi_instruction);
     return generate_data_processing_instruction(&dpr_instruction, false);
@@ -116,7 +130,7 @@ static uint32_t logical_instructions (char *opcode, char *rd, char *rn, char *rm
     data_processing_data_register data;
     data_processing_instruction dpr_instruction;
     dpr_instruction.sf = register_64_bits;
-    dpr_instruction.rd = register_to_number(rd);
+    dpr_instruction.rd = resolve_operand(rd);
     dpr_instruction.maybe_M = 0;
     bool n = false;
     if (strcmp(opcode, BIT_CLEAR) == 0 || strcmp(opcode, OR_NOT) == 0 || strcmp(opcode, EXCLUSIVE_OR_NOT) == 0 || strcmp(opcode, BIT_CLEAR_SET) == 0) {
@@ -135,7 +149,8 @@ static uint32_t logical_instructions (char *opcode, char *rd, char *rn, char *rm
         dpr_instruction.opc = 0b11;
     }
     if (shift[0] != '\0') {
-        data.operand = register_to_number(shift_amount);
+        data.operand = resolve_operand(shift_amount);
+
         if (strncmp(shift, "lsl", 3) == 0) {
             data.opr = 0b0000;
         }
@@ -156,11 +171,14 @@ static uint32_t logical_instructions (char *opcode, char *rd, char *rn, char *rm
         data.opr = n; // 0011 or 0010
         data.operand = 0;
     }
-    data.rm = register_to_number(rm);
-    data.rn = register_to_number(rn);
+    data.rm = resolve_operand(rm);
+    data.rn = resolve_operand(rn);
     dpr_instruction.data = generate_data_register_data(&data);
     return generate_data_processing_instruction(&dpr_instruction, true);
 }
+
+
+
 
 static uint32_t arithemtic_instructions (char *opcode, char *rd, char *rn, char *rm, char *shift, char* shift_amount, bool register_64_bits) {
     data_processing_data_register data;
@@ -168,7 +186,7 @@ static uint32_t arithemtic_instructions (char *opcode, char *rd, char *rn, char 
     arithmetic_immediate_operand arith_operand;
     data_processing_data_immediate dpi_instruction;
     dpr_instruction.sf = register_64_bits;
-    dpr_instruction.rd = register_to_number(rd);
+    dpr_instruction.rd = resolve_operand(rd);
     if (strcmp(opcode, ADD) == 0) {
         dpr_instruction.opc = 0b00;
     }
@@ -184,7 +202,7 @@ static uint32_t arithemtic_instructions (char *opcode, char *rd, char *rn, char 
     if (strncmp(rm, "#",1) == 0) {
         dpi_instruction.opi = 0b010;
         dpr_instruction.maybe_M = 1;
-        arith_operand.imm12 = register_to_number(rm);
+        arith_operand.imm12 = resolve_operand(rm);
 
         if (strcmp(shift, "lsl") == 0 && strcmp(shift_amount, "#12") == 0) {
             arith_operand.sh = 1;
@@ -192,14 +210,14 @@ static uint32_t arithemtic_instructions (char *opcode, char *rd, char *rn, char 
         else {
             arith_operand.sh = 0;
         }
-        arith_operand.rn = register_to_number(rn);
+        arith_operand.rn = resolve_operand(rn);
         dpi_instruction.operand = generate_arithmetic_operand(&arith_operand);
         dpr_instruction.data = generate_data_immediate_data(&dpi_instruction);
         return generate_data_processing_instruction(&dpr_instruction, false);
     }
     else {
         if (shift[0] != '\0') {
-            data.operand = register_to_number(shift);
+            data.operand = resolve_operand(shift_amount);
             if (strncmp(shift, "lsl", 3) == 0) {
                 data.opr = 0b1000;
             }
@@ -218,8 +236,8 @@ static uint32_t arithemtic_instructions (char *opcode, char *rd, char *rn, char 
             data.operand = 0;
         }
         dpr_instruction.maybe_M = 0;
-        data.rm = register_to_number(rm);
-        data.rn = register_to_number(rn);
+        data.rm = resolve_operand(rm);
+        data.rn = resolve_operand(rn);
         dpr_instruction.data = generate_data_register_data(&data);
         dpr_instruction.maybe_M = 0;
         return generate_data_processing_instruction(&dpr_instruction, true);
@@ -238,12 +256,12 @@ static uint32_t multiply_instructions(char *mulopcode, char *rd, char *rm, char 
     }
     data.operand = generate_operand(&operand);
     data.opr = 0b1000;
-    data.rm = register_to_number(rm);
-    data.rn = register_to_number(rn);
+    data.rm = resolve_operand(rm);
+    data.rn = resolve_operand(rn);
     dp_instruction.data = generate_data_register_data(&data);
     dp_instruction.maybe_M = 0b1;
     dp_instruction.opc = 0b00;
-    dp_instruction.rd = register_to_number(rd);
+    dp_instruction.rd = resolve_operand(rd);
     dp_instruction.sf = register_64_bits;
     return generate_data_processing_instruction(&dp_instruction, 0b10);
 }
@@ -271,7 +289,7 @@ uint32_t data_processing_assembly_init(instruction *instr) {
         result = arithemtic_instructions(instr->opcode, getString(instr->operands[0]), getString(instr->operands[1]), getString(instr->operands[2]), getString(instr->operands[3]),getString(instr->operands[4]), register_64_bits);
         break;
     case 4: // cmp
-        result = arithemtic_instructions("subs", "rzr", getString(instr->operands[0]), getString(instr->operands[1]), getString(instr->operands[2]), getString(instr->operands[2]), register_64_bits);
+        result = arithemtic_instructions("subs", "rzr", getString(instr->operands[0]), getString(instr->operands[1]), getString(instr->operands[2]), getString(instr->operands[3]), register_64_bits);
         break;
     case 5: // cmn
         result = arithemtic_instructions("adds", "rzr", getString(instr->operands[0]), getString(instr->operands[1]), getString(instr->operands[2]), getString(instr->operands[3]), register_64_bits);
