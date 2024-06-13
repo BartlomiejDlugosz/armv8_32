@@ -51,8 +51,13 @@ uint32_t single_data_transfer_to_binary(instruction* instr) {
     dynamicString* address_mode_array = createNewDynamicString(10);
     for (int i = 1; i < 5; i++) {
         addString(address_mode_array, getString(instr->operands[i]));
+        if (getString(instr->operands[i]) != NULL) {
+            addString(address_mode_array, ", ");
+        }
     }
+    // remove last two characters
     char* address_mode = getString(address_mode_array);
+    address_mode[address_mode_array->current_size - 2] = '\0';
     if (address_mode[0] == '[') {
         instr_struct.type = 1; //Single Data Transfer
         instr_struct.opcode = 0b1110;
