@@ -101,7 +101,7 @@ static void msub(char *mulopcode, char *ra, multiply_operand *operand) {
     return;
 }
 
-static uint32_t wide_move_instruction (char *opcode, char *rd, char *imm, char *shift, bool register_64_bits) {
+static uint32_t wide_move_instruction (char *opcode, char *rd, char *imm, char *shift_type, char *shift_amount, bool register_64_bits) {
     wide_move_operand wide_operand;
     data_processing_instruction dpr_instruction;
     data_processing_data_immediate dpi_instruction;
@@ -110,16 +110,21 @@ static uint32_t wide_move_instruction (char *opcode, char *rd, char *imm, char *
     dpr_instruction.maybe_M = 1;
     dpi_instruction.opi = 0b101;
     wide_operand.imm16 = resolve_operand(imm);
-    if (strcmp(opcode, MOVE_WIDE_KEEP) == 0) {
+    if (strcmp(opcode, MOVE_WIDE_NOT) == 0) {
         dpr_instruction.opc = 0b00;
     }
     else if (strcmp(opcode, MOVE_WIDE_ZERO) == 0) {
         dpr_instruction.opc = 0b10;
     }
-    else if (strcmp(opcode, MOVE_WIDE_NOT) == 0) {
+    else if (strcmp(opcode, MOVE_WIDE_KEEP) == 0) {
         dpr_instruction.opc = 0b11;
     }
-    wide_operand.hw = resolve_operand(shift);
+    if (shift_amount[0] != '\0') {
+        wide_operand.hw = resolve_operand(shift_amount) / 16;
+    } else {
+        wide_operand.hw = 0;
+    }
+
     dpr_instruction.rd = resolve_operand(rd);
     dpi_instruction.operand = generate_wide_move_operand(&wide_operand);
     dpr_instruction.data = generate_data_immediate_data(&dpi_instruction);
@@ -151,6 +156,7 @@ static uint32_t logical_instructions (char *opcode, char *rd, char *rn, char *rm
     if (shift[0] != '\0') {
         data.operand = resolve_operand(shift_amount);
 
+        data.opr = 0;
         if (strncmp(shift, "lsl", 3) == 0) {
             data.opr = 0b0000;
         }
@@ -164,7 +170,7 @@ static uint32_t logical_instructions (char *opcode, char *rd, char *rn, char *rm
             data.opr = 0b0110;
         }
         if (n) {
-            data.opr = 0 | n;
+            data.opr |= n;
         }
     }
     else {
@@ -180,7 +186,7 @@ static uint32_t logical_instructions (char *opcode, char *rd, char *rn, char *rm
 
 
 
-static uint32_t arithemtic_instructions (char *opcode, char *rd, char *rn, char *rm, char *shift, char* shift_amount, bool register_64_bits) {
+static uint32_t arithmetic_instructions (char *opcode, char *rd, char *rn, char *rm, char *shift, char* shift_amount, bool register_64_bits) {
     data_processing_data_register data;
     data_processing_instruction dpr_instruction;
     arithmetic_immediate_operand arith_operand;
@@ -244,14 +250,14 @@ static uint32_t arithemtic_instructions (char *opcode, char *rd, char *rn, char 
     }
 }
 
-static uint32_t multiply_instructions(char *mulopcode, char *rd, char *rm, char *rn, char *ra, bool register_64_bits) {
+static uint32_t multiply_instructions(char *mulopcode, char *rd, char *rn, char *rm, char *ra, bool register_64_bits) {
     data_processing_data_register data;
     data_processing_instruction dp_instruction;
     multiply_operand operand;
     if (strcmp(mulopcode, MULTIPLY_ADD) == 0 || strcmp(mulopcode, MULTIPLY) == 0) {
         madd(mulopcode, ra, &operand);
     }
-    else if (strcmp(mulopcode, MULTIPLY_SUB) == 0 || strcmp(mulopcode, MULTIPLY_NEG) == 0) {
+    else if (strcmp(mulopcode, MULTIPLY_SUB) == 0 || !strcmp(mulopcode, MULTIPLY_NEG) == 0) {
         msub(mulopcode, ra, &operand);
     }
     data.operand = generate_operand(&operand);
@@ -286,19 +292,19 @@ uint32_t data_processing_assembly_init(instruction *instr) {
     case 2: // sub
         // fall through
     case 3: // subs
-        result = arithemtic_instructions(instr->opcode, getString(instr->operands[0]), getString(instr->operands[1]), getString(instr->operands[2]), getString(instr->operands[3]),getString(instr->operands[4]), register_64_bits);
+        result = arithmetic_instructions(instr->opcode, getString(instr->operands[0]), getString(instr->operands[1]), getString(instr->operands[2]), getString(instr->operands[3]),getString(instr->operands[4]), register_64_bits);
         break;
     case 4: // cmp
-        result = arithemtic_instructions("subs", "rzr", getString(instr->operands[0]), getString(instr->operands[1]), getString(instr->operands[2]), getString(instr->operands[3]), register_64_bits);
+        result = arithmetic_instructions("subs", "rzr", getString(instr->operands[0]), getString(instr->operands[1]), getString(instr->operands[2]), getString(instr->operands[3]), register_64_bits);
         break;
     case 5: // cmn
-        result = arithemtic_instructions("adds", "rzr", getString(instr->operands[0]), getString(instr->operands[1]), getString(instr->operands[2]), getString(instr->operands[3]), register_64_bits);
+        result = arithmetic_instructions("adds", "rzr", getString(instr->operands[0]), getString(instr->operands[1]), getString(instr->operands[2]), getString(instr->operands[3]), register_64_bits);
         break;
     case 6: // neg
-        result = arithemtic_instructions("sub", getString(instr->operands[0]), "rzr", getString(instr->operands[1]), getString(instr->operands[2]),getString(instr->operands[3]), register_64_bits);
+        result = arithmetic_instructions("sub", getString(instr->operands[0]), "rzr", getString(instr->operands[1]), getString(instr->operands[2]),getString(instr->operands[3]), register_64_bits);
         break;
     case 7: // negs
-        result = arithemtic_instructions("subs",  getString(instr->operands[0]), "rzr", getString(instr->operands[1]), getString(instr->operands[2]), getString(instr->operands[3]), register_64_bits);
+        result = arithmetic_instructions("subs",  getString(instr->operands[0]), "rzr", getString(instr->operands[1]), getString(instr->operands[2]), getString(instr->operands[3]), register_64_bits);
         break;
     case 8: // and
         // fall through
@@ -331,7 +337,7 @@ uint32_t data_processing_assembly_init(instruction *instr) {
     case 20: // movk
         // fall through
     case 21: // movz
-        result = wide_move_instruction (instr->opcode, getString(instr->operands[0]), getString(instr->operands[1]), getString(instr->operands[2]), register_64_bits);
+        result = wide_move_instruction (instr->opcode, getString(instr->operands[0]), getString(instr->operands[1]), getString(instr->operands[2]), getString(instr->operands[3]), register_64_bits);
         break;
     case 22: // madd
         // fall through to msub
@@ -340,7 +346,7 @@ uint32_t data_processing_assembly_init(instruction *instr) {
         break;
     case 24: // mul
         result = multiply_instructions("madd", getString(instr->operands[0]), getString(instr->operands[1]), getString(instr->operands[2]), "rzr", register_64_bits);
-        // fall through to mneg
+        break;
     case 25: // mneg
         result = multiply_instructions("msub", getString(instr->operands[0]), getString(instr->operands[1]), getString(instr->operands[2]), "rzr", register_64_bits);
         break;

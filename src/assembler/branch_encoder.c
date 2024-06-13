@@ -30,7 +30,7 @@ static uint32_t generate_reg_instr(branch_register instr) {
 static uint32_t generate_cond_instr(branch_conditional instr) {
     uint32_t bin = 0;
     bin |= instr.cond;
-    bin |= ((uint32_t) instr.simm19) << 5;
+    bin |= ((uint32_t) instr.simm19 & 0x7FFFF) << 5;
     return bin;
 }
 
@@ -67,6 +67,7 @@ uint32_t encode_branch(instruction *instr) {
         return generate_final_instr(final_instr);
     } else {
         // b.cond
+        uint64_t target_literal = strtol(getString(instr->operands[0]) + 2, NULL, 16);
         char *opc = instr->opcode;
         uint8_t enc;
         opc += 2;
@@ -76,7 +77,7 @@ uint32_t encode_branch(instruction *instr) {
                 break;
             }
         }
-        uint64_t target_literal = strtol(getString(instr->operands[0]) + 2, NULL, 16);
+
         branch_conditional instr_cond =
             (branch_conditional) {.cond = enc, .simm19 = target_literal - instr->line_number};
         branch_instruction final_instr =
