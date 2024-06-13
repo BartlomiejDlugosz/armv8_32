@@ -68,7 +68,7 @@ static uint32_t generate_data_processing_instruction(data_processing_instruction
     result |= ((uint32_t)instr->opc) << 29;
     result |= ((uint32_t)instr->maybe_M) << 28;
     if (is_register) {
-        result |= ((uint32_t)(0b10)) << 26;
+        result |= ((uint32_t)1) << 27;
     }
     result |= ((uint32_t)instr->data) << 5;
     result |= (uint32_t)instr->rd;
@@ -91,6 +91,7 @@ static uint32_t wide_move_instruction (char *opcode, char *rd, char *imm, char *
     wide_move_operand wide_operand;
     data_processing_instruction dpr_instruction;
     data_processing_data_immediate dpi_instruction;
+
     dpr_instruction.sf = register_64_bits;
     dpr_instruction.maybe_M = 1;
     dpi_instruction.opi = 0b101;
@@ -161,7 +162,7 @@ static uint32_t logical_instructions (char *opcode, char *rd, char *rn, char *rm
     return generate_data_processing_instruction(&dpr_instruction, true);
 }
 
-static uint32_t arithemtic_instructions (char *opcode, char *rd, char *rn, char *rm, char *shift, bool register_64_bits) {
+static uint32_t arithemtic_instructions (char *opcode, char *rd, char *rn, char *rm, char *shift, char* shift_amount, bool register_64_bits) {
     data_processing_data_register data;
     data_processing_instruction dpr_instruction;
     arithmetic_immediate_operand arith_operand;
@@ -184,7 +185,8 @@ static uint32_t arithemtic_instructions (char *opcode, char *rd, char *rn, char 
         dpi_instruction.opi = 0b010;
         dpr_instruction.maybe_M = 1;
         arith_operand.imm12 = register_to_number(rm);
-        if (strcmp(shift, "lsl #12") == 0) {
+
+        if (strcmp(shift, "lsl") == 0 && strcmp(shift_amount, "#12") == 0) {
             arith_operand.sh = 1;
         }
         else {
@@ -266,19 +268,19 @@ uint32_t data_processing_assembly_init(instruction *instr) {
     case 2: // sub
         // fall through
     case 3: // subs
-        result = arithemtic_instructions(instr->opcode, getString(instr->operands[0]), getString(instr->operands[1]), getString(instr->operands[2]), getString(instr->operands[3]), register_64_bits);
+        result = arithemtic_instructions(instr->opcode, getString(instr->operands[0]), getString(instr->operands[1]), getString(instr->operands[2]), getString(instr->operands[3]),getString(instr->operands[4]), register_64_bits);
         break;
     case 4: // cmp
-        result = arithemtic_instructions("subs", "rzr", getString(instr->operands[0]), getString(instr->operands[1]), getString(instr->operands[2]), register_64_bits);
+        result = arithemtic_instructions("subs", "rzr", getString(instr->operands[0]), getString(instr->operands[1]), getString(instr->operands[2]), getString(instr->operands[2]), register_64_bits);
         break;
     case 5: // cmn
-        result = arithemtic_instructions("adds", "rzr", getString(instr->operands[0]), getString(instr->operands[1]), getString(instr->operands[2]), register_64_bits);
+        result = arithemtic_instructions("adds", "rzr", getString(instr->operands[0]), getString(instr->operands[1]), getString(instr->operands[2]), getString(instr->operands[3]), register_64_bits);
         break;
     case 6: // neg
-        result = arithemtic_instructions("sub", getString(instr->operands[0]), "rzr", getString(instr->operands[1]), getString(instr->operands[2]), register_64_bits);
+        result = arithemtic_instructions("sub", getString(instr->operands[0]), "rzr", getString(instr->operands[1]), getString(instr->operands[2]),getString(instr->operands[3]), register_64_bits);
         break;
     case 7: // negs
-        result = arithemtic_instructions("subs",  getString(instr->operands[0]), "rzr", getString(instr->operands[1]), getString(instr->operands[2]), register_64_bits);
+        result = arithemtic_instructions("subs",  getString(instr->operands[0]), "rzr", getString(instr->operands[1]), getString(instr->operands[2]), getString(instr->operands[3]), register_64_bits);
         break;
     case 8: // and
         // fall through
