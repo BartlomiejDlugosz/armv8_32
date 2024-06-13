@@ -72,8 +72,27 @@ uint32_t encode_instruction(instruction *instr) {
 
     if (is_type(instr, directive_opcodes)) {
         //todo
+        
     }
 
     fprintf(stderr, "The opcode is not defined!\n");
+    return 0;
+}
+
+
+uint32_t encode_directive(instruction *instr) {
+    uint32_t encoded_n;
+    char *n = getString(instr->operands[0]);
+
+    // check if hex
+    if (sscanf(n, "%x", &encoded_n) == 1) {
+        return encoded_n;
+    }
+    // check if denary
+    if (sscanf(n, "%d", &encoded_n) == 1) {
+        return encoded_n;
+    }
+
+    fprintf(stderr, "invalid operand to .int directive!\n");
     return 0;
 }
