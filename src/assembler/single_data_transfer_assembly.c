@@ -1,5 +1,6 @@
 #include "single_data_transfer_assembly.h"
 #include "../emulator/single_data_transfer.h"
+#include "register_to_number.h"
 #include <stdio.h>
 #include <string.h>
 
@@ -46,8 +47,9 @@ uint32_t single_data_transfer_to_binary(instruction* instr) {
 
     // Not dealing with stack pointer case
     // Have to deal with zero register
+    // xzr or wzr
     // MACRO for below
-    instr_struct.rt = atoi(getString(instr->operands[0]) + 1); // x3
+    instr_struct.rt = register_to_number(getString(instr->operands[0]));
     char rt_type =  getString(instr->operands[0])[0];
     instr_struct.sf = (rt_type == 'x') ? 1 : 0;
     dynamicString* address_mode_array = createNewDynamicString(10);
