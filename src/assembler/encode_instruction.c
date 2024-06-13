@@ -51,7 +51,7 @@ uint32_t encode_directive(instruction *instr) {
 
     // .int <123499 | 0xFA223>
     // check if hex
-    if (sscanf(n, "%x", &encoded_n) == 1) {
+    if (sscanf(n, "0x%x", &encoded_n) == 1) {
         return encoded_n;
     }
     // check if denary
