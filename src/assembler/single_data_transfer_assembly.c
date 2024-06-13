@@ -30,6 +30,7 @@ static uint32_t generate_instruction_binary(single_data_transfer_instruction ins
 
 uint32_t single_data_transfer_to_binary(instruction* instr) {
     uint32_t binary_instr = 0;
+
     // Initialising instruction and data structures
     // All members of the structure are set to zero using {0}
     single_data_transfer_instruction instr_struct = {0}; 
@@ -42,6 +43,7 @@ uint32_t single_data_transfer_to_binary(instruction* instr) {
     } else if (strcmp(instr->opcode, "str") == 0) {
         data_struct.L = 0; //Clear L for store
     }
+
     // Not dealing with stack pointer case
     // Have to deal with zero register
     // MACRO for below
@@ -58,26 +60,36 @@ uint32_t single_data_transfer_to_binary(instruction* instr) {
     // remove last two characters
     char* address_mode = getString(address_mode_array);
     address_mode[address_mode_array->current_size - 2] = '\0';
-    if (address_mode[0] == '[') {
+
+    if (address_mode[0] != '[') {
+        // Load from literal
+        // Two cases #N and an address
+        instr_struct.opcode = 0b01100;
+        int literal_int;
+        int literal_address;
+        data_struct.L = 0;
+        if (sscanf(address_mode, "%x", &literal_address) == 1) {
+            instr_struct.simm19 = literal_address  - instr->line_number;
+        } else if (sscanf(address_mode, "#%x", &literal_int) == 1) {
+            instr_struct.simm19 = literal_int;
+        }
+    } else {
         instr_struct.type = 1; //Single Data Transfer
         instr_struct.opcode = 0b11100;
         int reg_num, offset, reg_m_num;
-        //Handle the form [xn]
-        // Zero Unsigned Offset
-
         //Handle the form [xn, #<imm>]
+        // [x1''#0x8]'
+        // '[x1, #32]'
         // Unsigned Immediate Offset
-        if(sscanf(address_mode, "[x%d, #%x]", &reg_num, &offset) == 2) {
+        char* cur_operand =  getString( instr->operands[2]);
+        if (sscanf(address_mode, "[x%d, #%x]", &reg_num, &offset) == 2 && cur_operand[strlen(cur_operand)-1] != '!') {
             data_struct.xn = reg_num; // Register number assigned
-            data_struct.offset = offset; //Division dependent on rt_type
-            instr_struct.U = 1;// Unsigned bit is set
-        } else if(sscanf(address_mode, "[x%d, #%d]", &reg_num, &offset) == 2) {
-            data_struct.xn = reg_num; // Register number assigned
-            data_struct.offset = offset; //Division dependent on rt_type
+            data_struct.offset = (offset / ((rt_type == 'x') ? 8 : 4)) - instr->line_number; //Division dependent on rt_type
             instr_struct.U = 1;// Unsigned bit is set
         }
         // Handle the form [xn, #<simm>]!
         // Pre-Indexed
+        //Not okay 
         else if(sscanf(address_mode, "[x%d, #%d]!", &reg_num, &offset) == 2) {
             data_struct.xn = reg_num; // Register number assigned
             offset_struct.simm9 = offset; // Direct offset assignment
@@ -99,23 +111,16 @@ uint32_t single_data_transfer_to_binary(instruction* instr) {
             offset_struct.simm9 = ((uint32_t)reg_m_num << 4) | 0b0110; // Shift 4 and mask
             offset_struct.type = 1;
             offset_struct.I = 1; // Set I
-        } else if (sscanf(address_mode, "[x%d]", &reg_num) == 1) {
+        } 
+        //Handle the form [xn]
+        // Zero Unsigned Offset
+        // given [x5, x15]
+        else if (sscanf(address_mode, "[x%d]", &reg_num) == 1) {
             data_struct.xn = reg_num; // Register number assigned
-            instr_struct.U = 1; // Unsigned bit is set
-        } else {
-            fprintf(stderr, "Invalid single data transfer form\n");
+            instr_struct.U = 1;// Unsigned bit is se
         }
-    }
-    else {
-        // Load from literal
-        // Two cases #N and an address
-        instr_struct.opcode = 0b01100;
-        int literal_int;
-        int literal_address;
-        if (sscanf(address_mode, "#%x", &literal_int) == 1) {
-            instr_struct.simm19 = literal_int - instr->line_number;
-        } else if (sscanf(address_mode, "%x", &literal_address) == 1) {
-            instr_struct.simm19 = literal_address - instr->line_number;
+        else {
+            fprintf(stderr, "Invalid single data transfer form\n");
         }
     }
 
