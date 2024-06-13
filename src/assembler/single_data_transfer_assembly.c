@@ -114,6 +114,7 @@ uint32_t single_data_transfer_to_binary(instruction* instr) {
     uint32_t data = generate_data_binary(data_struct);
     uint32_t instr_bin = generate_instruction_binary(instr_struct);
     binary_instr = offset | data | instr_bin;
+    freeDynamicString(address_mode_array);
     return binary_instr;
 
 }
