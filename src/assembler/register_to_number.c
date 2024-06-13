@@ -10,14 +10,16 @@ int register_to_number(char *reg) {
         result = 31;
     else if (strcmp(reg, "SP") == 0)
         result = -1;
-    int j = 0; // index for output array
-    char output[256];
-    for (int i = 0; reg[i] != '\0'; i++) {
-        if (isdigit((unsigned char)reg[i])) {
-            output[j++] = reg[i];
+    else {
+        int j = 0; // index for output array
+        char output[256];
+        for (int i = 0; reg[i] != '\0'; i++) {
+            if (isdigit((unsigned char)reg[i])) {
+                output[j++] = reg[i];
+            }
         }
+        output[j] = '\0'; // null-terminate the output string
+        result = atoi(output);
     }
-    output[j] = '\0'; // null-terminate the output string
-    result = atoi(output);
     return result;
 }
