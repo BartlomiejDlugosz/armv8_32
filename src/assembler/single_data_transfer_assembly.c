@@ -46,8 +46,6 @@ uint32_t single_data_transfer_to_binary(instruction* instr) {
     }
 
     // Not dealing with stack pointer case
-    // Have to deal with zero register
-    // xzr or wzr
     // MACRO for below
     instr_struct.rt = register_to_number(getString(instr->operands[0]));
     char rt_type =  getString(instr->operands[0])[0];
