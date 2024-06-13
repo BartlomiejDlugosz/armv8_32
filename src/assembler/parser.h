@@ -19,6 +19,7 @@ typedef struct {
     uint64_t line_number;
 } instruction;
 
+void pretty_print(instruction *instr);
 void free_instruction(instruction *, bool);
 void initialize_instruction(instruction *, bool);
 instruction *parse(char *, uint64_t *);
