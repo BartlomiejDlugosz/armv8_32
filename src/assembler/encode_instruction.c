@@ -45,6 +45,25 @@ static bool is_type(instruction *instr, char **opcodes) {
 }
 
 
+uint32_t encode_directive(instruction *instr) {
+    uint32_t encoded_n;
+    char *n = getString(instr->operands[0]);
+
+    // .int <123499 | 0xFA223>
+    // check if hex
+    if (sscanf(n, "%x", &encoded_n) == 1) {
+        return encoded_n;
+    }
+    // check if denary
+    if (sscanf(n, "%d", &encoded_n) == 1) {
+        return encoded_n;
+    }
+
+    fprintf(stderr, "invalid operand to .int directive!\n");
+    return 0;
+}
+
+
 uint32_t encode_instruction(instruction *instr) {
     // first identify if we're dealing with a halt instruction
     // in which case we immediately return the halt instruction
@@ -71,8 +90,7 @@ uint32_t encode_instruction(instruction *instr) {
     }
 
     if (is_type(instr, directive_opcodes)) {
-        //todo
-        
+        return encode_directive(instr);
     }
 
     fprintf(stderr, "The opcode is not defined!\n");
@@ -80,19 +98,3 @@ uint32_t encode_instruction(instruction *instr) {
 }
 
 
-uint32_t encode_directive(instruction *instr) {
-    uint32_t encoded_n;
-    char *n = getString(instr->operands[0]);
-
-    // check if hex
-    if (sscanf(n, "%x", &encoded_n) == 1) {
-        return encoded_n;
-    }
-    // check if denary
-    if (sscanf(n, "%d", &encoded_n) == 1) {
-        return encoded_n;
-    }
-
-    fprintf(stderr, "invalid operand to .int directive!\n");
-    return 0;
-}
