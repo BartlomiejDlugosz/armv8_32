@@ -58,6 +58,7 @@ void second_pass(FILE* in, FILE* out, const symbol_table* table) {
                     }
                 }
             }
+            pretty_print(instr);
             uint32_t binary_instr = encode_instruction(instr);
             binary_instr = to_little_endian(binary_instr, 4);
             fwrite(&binary_instr, sizeof(binary_instr),1 , out);

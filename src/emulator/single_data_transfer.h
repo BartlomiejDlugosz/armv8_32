@@ -17,7 +17,7 @@ typedef struct {
     unsigned xn : 5;
     unsigned offset : 12;
     unsigned L : 1;
-    unsigned : 1;
+    unsigned debug : 1;
 } single_data_transfer_data;
 
 // Defines union structure for the Single Data Transfer instructions

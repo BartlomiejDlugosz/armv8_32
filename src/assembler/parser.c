@@ -132,7 +132,7 @@ instruction *parse(char *current_line, uint64_t *current_line_counter) {
         // Error occurred???
         printf("ERROR OCCURRED");
     }
-    pretty_print(new_instruction);
+    // pretty_print(new_instruction);
     regfree(&rx);
     return new_instruction;
 }
