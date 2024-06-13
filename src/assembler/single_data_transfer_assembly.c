@@ -81,10 +81,9 @@ uint32_t single_data_transfer_to_binary(instruction* instr) {
         // [x1''#0x8]'
         // '[x1, #32]'
         // Unsigned Immediate Offset
-        if (sscanf(address_mode, "[x%d, #%x]", &reg_num, &offset) == 2) {
+        char* cur_operand =  getString( instr->operands[2]);
+        if (sscanf(address_mode, "[x%d, #%x]", &reg_num, &offset) == 2 && cur_operand[strlen(cur_operand)-1] != '!') {
             data_struct.xn = reg_num; // Register number assigned
-            // 206400f9
-            // 201800f9
             data_struct.offset = (offset / ((rt_type == 'x') ? 8 : 4)) - instr->line_number; //Division dependent on rt_type
             instr_struct.U = 1;// Unsigned bit is set
         }
