@@ -6,23 +6,23 @@
 static uint32_t generate_data_offset_binary(single_data_transfer_data_offset data_offset) {
     uint32_t bin = ((uint32_t)data_offset.tenth) << 10;
     bin |= ((uint32_t)data_offset.I) << 11;
-    bin |= ((uint32_t)data_offset.simm9 & 0x1FF) << 20;
+    bin |= ((uint32_t)data_offset.simm9 & 0x1FF) << 12;
     bin |= ((uint32_t)data_offset.type) << 21;
     return bin;
 }
 
 static uint32_t generate_data_binary(single_data_transfer_data data) {
-    uint32_t bin = ((uint32_t)data.xn) << 9;
-    bin |= ((uint32_t)data.offset) << 21;
+    uint32_t bin = ((uint32_t)data.xn) << 5;
+    bin |= ((uint32_t)data.offset) << 10;
     bin |= ((uint32_t)data.L) << 22;
     return bin;
 }
 
 static uint32_t generate_instruction_binary(single_data_transfer_instruction instr) {
     uint32_t bin = (uint32_t)instr.rt;
-    bin |= ((uint32_t)instr.simm19 & 0x1F) << 23;
+    bin |= ((uint32_t)instr.simm19 & 0x7FFFF) << 5;
     bin |= ((uint32_t)instr.U) << 24;
-    bin |= ((uint32_t)instr.opcode) << 29;
+    bin |= ((uint32_t)instr.opcode) << 25;
     bin |= ((uint32_t)instr.sf) << 30;
     bin |= ((uint32_t)instr.type) << 31; 
     return bin;
@@ -45,7 +45,7 @@ uint32_t single_data_transfer_to_binary(instruction* instr) {
     // Not dealing with stack pointer case
     // Have to deal with zero register
     // MACRO for below
-    instr_struct.rt = atoi(&(getString(instr->operands[0])[1])); // x3
+    instr_struct.rt = atoi(getString(instr->operands[0])); // x3
     char rt_type =  getString(instr->operands[0])[0];
     instr_struct.sf = (rt_type == 'x') ? 1 : 0;
     dynamicString* address_mode_array = createNewDynamicString(10);
@@ -60,7 +60,7 @@ uint32_t single_data_transfer_to_binary(instruction* instr) {
     address_mode[address_mode_array->current_size - 2] = '\0';
     if (address_mode[0] == '[') {
         instr_struct.type = 1; //Single Data Transfer
-        instr_struct.opcode = 0b1110;
+        instr_struct.opcode = 0b11100;
         int reg_num, offset, reg_m_num;
         //Handle the form [xn]
         // Zero Unsigned Offset
@@ -109,9 +109,9 @@ uint32_t single_data_transfer_to_binary(instruction* instr) {
         int literal_int;
         int literal_address;
         if (sscanf(address_mode, "#%d", &literal_int) == 1) {
-            instr_struct.simm19 = literal_int / 4;
-        } else if (sscanf(address_mode, "%d", &literal_address) == 1) {
-            instr_struct.simm19 = literal_int / 4;
+            instr_struct.simm19 = literal_int;
+        } else if (sscanf(address_mode, "%x", &literal_address) == 1) {
+            instr_struct.simm19 = literal_address - instr->line_number;
         }
     }
 
