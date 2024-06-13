@@ -12,16 +12,19 @@ all: assemble emulate
 assemble: assemble.o
 emulate: emulate.o
 
+solution:
+	mkdir -p ../armv8_testsuite/solution/
+
 clean:
 	$(RM) *.o assemble emulate
 
-emulate2:
-	gcc -Wall emulator/*.c -o emulate
-	cp emulate ../../armv8_testsuite/solution/
+emulate2: solution
+	gcc -Wall emulator/*.c -o emulate -g --debug
+	cp emulate ../armv8_testsuite/solution/
 
-assemble2:
-	gcc -Wall assembler/*.c -o assemble -ggdb3 -g --debug
-	cp assemble ../../armv8_testsuite/solution/
+assemble2: solution
+	gcc -Wall assembler/*.c -o assemble -g --debug
+	cp assemble ../armv8_testsuite/solution/
 
 assemble_with_valgrind:
 	gcc -Wall assembler/*.c -o assemble -ggdb3
@@ -31,4 +34,3 @@ assemble_with_valgrind:
          --verbose \
          --log-file=assemble.txt \
          ./assemble ../../armv8_testsuite/test/test_cases/general/example.s test.bin
-	cp assemble ../../armv8_testsuite/solution/
