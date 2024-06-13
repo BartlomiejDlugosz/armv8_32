@@ -217,7 +217,7 @@ static uint32_t arithemtic_instructions (char *opcode, char *rd, char *rn, char 
     }
     else {
         if (shift[0] != '\0') {
-            data.operand = resolve_operand(shift);
+            data.operand = resolve_operand(shift_amount);
             if (strncmp(shift, "lsl", 3) == 0) {
                 data.opr = 0b1000;
             }
@@ -289,7 +289,7 @@ uint32_t data_processing_assembly_init(instruction *instr) {
         result = arithemtic_instructions(instr->opcode, getString(instr->operands[0]), getString(instr->operands[1]), getString(instr->operands[2]), getString(instr->operands[3]),getString(instr->operands[4]), register_64_bits);
         break;
     case 4: // cmp
-        result = arithemtic_instructions("subs", "rzr", getString(instr->operands[0]), getString(instr->operands[1]), getString(instr->operands[2]), getString(instr->operands[2]), register_64_bits);
+        result = arithemtic_instructions("subs", "rzr", getString(instr->operands[0]), getString(instr->operands[1]), getString(instr->operands[2]), getString(instr->operands[3]), register_64_bits);
         break;
     case 5: // cmn
         result = arithemtic_instructions("adds", "rzr", getString(instr->operands[0]), getString(instr->operands[1]), getString(instr->operands[2]), getString(instr->operands[3]), register_64_bits);
