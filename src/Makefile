@@ -42,4 +42,4 @@ led_blink: assemble2
 	./assemble ../programs/led_blink.s ../programs/kernel8.img
 
 format:
-	clang-format assembler/*.c assembler/*.h emulator/*.c emulator/*.h
+	clang-format -i assembler/*.c assembler/*.h emulator/*.c emulator/*.h
