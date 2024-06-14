@@ -11,6 +11,7 @@ core_instruction *generate_core_instruction(instruction *instr) {
     new_cinstr->operand2 = getString(instr->operand[2]);
     new_cinstr->operand3 = getString(instr->operand[3]);
     new_cinstr->operand4 = getString(instr->operand[4]);
+    new_cinstr->line_number = instr->line_number;
 
     return new_cinstr;
 }
