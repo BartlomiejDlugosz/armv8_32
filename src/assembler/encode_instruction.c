@@ -2,17 +2,12 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
+#include "opcodes.h"
 #include "parser.h"
 #include "encode_instruction.h"
 #include "branch_encoder.h"
 #include "single_data_transfer_assembly.h"
 #include "data_processing_assembly.h"
-
-// all arrays are null terminated, for easy iteration when passing to functions
-char *data_processing_opcodes[] = { "add", "adds", "sub", "subs", "cmp", "cmn", "neg", "negs", "and", "ands", "bic", "bics", "eor", "eon", "orr", "orn", "tst", "mvn", "mov", "movn", "movk", "movz", "madd", "msub", "mul", "mneg", NULL };
-char *branch_opcodes[] = { "b", "br", "b.eq", "b.ne", "b.ge", "b.lt", "b.gt", "b.le", "b.al", NULL };
-char *single_data_transfer_opcodes[] = { "ldr", "str", NULL };
-char *directive_opcodes[] = { ".int", NULL };
 
 static bool is_type(instruction *instr, char **opcodes) {
     for (int i = 0; opcodes[i] != NULL; i++) {
@@ -29,12 +24,9 @@ uint32_t encode_directive(instruction *instr) {
     uint32_t encoded_n;
     char *n = getString(instr->operands[0]);
 
-    // .int <123499 | 0xFA223>
-    // check if hex
     if (sscanf(n, "0x%x", &encoded_n) == 1) {
         return encoded_n;
     }
-    // check if denary
     if (sscanf(n, "%d", &encoded_n) == 1) {
         return encoded_n;
     }
