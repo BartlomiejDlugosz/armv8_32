@@ -21,9 +21,6 @@ void first_pass(FILE* in, symbol_table* table) {
     uint64_t address = 0;
     //Address to be incremented by parser
     while (fgets(line, sizeof(line), in)) {
-        if (line[0] == '$') {
-            continue;
-        }
         instruction* instr = parse(line, &address);
         if (instr->complete && strlen(getString(instr->label)) > 0) { 
             // Add the symbol to the table along with its address
@@ -50,9 +47,6 @@ void second_pass(FILE* in, FILE* out, const symbol_table* table) {
     uint64_t address = 0;
     instruction* instr;
     while(fgets(line, sizeof(line), in)) {
-        if (line[0] == '$') {
-            continue;
-        }
         instr = parse(line, &address);
         if (instr->complete) {
             for (int i = 0; i < 4; i++) {
