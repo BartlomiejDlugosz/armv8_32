@@ -1,7 +1,9 @@
+#include <stdbool.h>
 #include "data_processing_assembly.h"
 #include "../emulator/data_processing.h"
 #include "register_to_number.h"
-#include <stdbool.h>
+
+extern char *data_processing_opcodes[];
 
 #define MULTIPLY_ADD "madd"
 #define MULTIPLY_SUB "msub"
@@ -273,7 +275,6 @@ static uint32_t multiply_instructions(char *mulopcode, char *rd, char *rn, char 
 }
 
 uint32_t data_processing_assembly_init(instruction *instr) {
-    char *data_processing_opcodes[] = { "add", "adds", "sub", "subs", "cmp", "cmn", "neg", "negs", "and", "ands", "bic", "bics", "eor", "eon", "orr", "orn", "tst", "mvn", "mov", "movn", "movk", "movz", "madd", "msub", "mul", "mneg", NULL };
     // using find() to get the pointer to the first occurence
     bool register_64_bits = (strncmp(getString(instr->operands[0]),"x",1) == 0);
     // getting index from pointer
@@ -281,6 +282,8 @@ uint32_t data_processing_assembly_init(instruction *instr) {
     while (strcmp(data_processing_opcodes[counter], instr->opcode) != 0 && data_processing_opcodes[counter] != NULL) {
         counter++;
     };
+
+    
     int targetIndex = counter;
     uint32_t result;
     switch (targetIndex)

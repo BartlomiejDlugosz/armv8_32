@@ -2,12 +2,18 @@
 #include <stdlib.h>
 #include <stdint.h>
 #include <string.h>
-#include "opcodes.h"
 #include "parser.h"
 #include "encode_instruction.h"
+#include "opcodes.h"
 #include "branch_encoder.h"
 #include "single_data_transfer_assembly.h"
 #include "data_processing_assembly.h"
+
+
+// extern char *data_processing_opcodes[];
+// extern char *branch_opcodes[];
+// extern char *single_data_transfer_opcodes[];
+// extern char *directive_opcodes[];
 
 static bool is_type(instruction *instr, char **opcodes) {
     for (int i = 0; opcodes[i] != NULL; i++) {
