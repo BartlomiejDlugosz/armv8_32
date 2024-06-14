@@ -4,28 +4,46 @@
 #include <stdio.h>
 #include <string.h>
 
+#define DATA_OFFSET_TENTH_BIT_SHIFT 10
+#define DATA_OFFSET_I_BIT_SHIFT 11
+#define DATA_OFFSET_SIMM9_MASK 0x1FF
+#define DATA_OFFSET_SIMM9_SHIFT 12
+#define DATA_OFFSET_TYPE_BIT_SHIFT 21
+
+#define DATA_XN_SHIFT 5
+#define DATA_OFFSET_SHIFT 10
+#define DATA_L_BIT_SHIFT 22
+
+#define INSTRUCTION_SIMM19_MASK 0x7FFFF
+#define INSTRUCTION_SIMM19_SHIFT 5
+#define INSTRUCTION_U_BIT_SHIFT 24
+#define INSTRUCTION_OPCODE_SHIFT 25
+#define INSTRUCTION_SF_BIT_SHIFT 30
+#define INSTRUCTION_TYPE_BIT_SHIFT 31
+
+
 static uint32_t generate_data_offset_binary(single_data_transfer_data_offset data_offset) {
-    uint32_t bin = ((uint32_t)data_offset.tenth) << 10;
-    bin |= ((uint32_t)data_offset.I) << 11;
-    bin |= ((uint32_t)data_offset.simm9 & 0x1FF) << 12;
-    bin |= ((uint32_t)data_offset.type) << 21;
+    uint32_t bin = ((uint32_t)data_offset.tenth) << DATA_OFFSET_TENTH_BIT_SHIFT;
+    bin |= ((uint32_t)data_offset.I) << DATA_OFFSET_I_BIT_SHIFT;
+    bin |= ((uint32_t)data_offset.simm9 & DATA_OFFSET_SIMM9_MASK) << DATA_OFFSET_SIMM9_SHIFT;
+    bin |= ((uint32_t)data_offset.type) << DATA_OFFSET_TYPE_BIT_SHIFT;
     return bin;
 }
 
 static uint32_t generate_data_binary(single_data_transfer_data data) {
-    uint32_t bin = ((uint32_t)data.xn) << 5;
-    bin |= ((uint32_t)data.offset) << 10;
-    bin |= ((uint32_t)data.L) << 22;
+    uint32_t bin = ((uint32_t)data.xn) << DATA_XN_SHIFT;
+    bin |= ((uint32_t)data.offset) << DATA_OFFSET_SHIFT;
+    bin |= ((uint32_t)data.L) << DATA_L_BIT_SHIFT;
     return bin;
 }
 
 static uint32_t generate_instruction_binary(single_data_transfer_instruction instr) {
     uint32_t bin = (uint32_t)instr.rt;
-    bin |= ((uint32_t)instr.simm19 & 0x7FFFF) << 5;
-    bin |= ((uint32_t)instr.U) << 24;
-    bin |= ((uint32_t)instr.opcode) << 25;
-    bin |= ((uint32_t)instr.sf) << 30;
-    bin |= ((uint32_t)instr.type) << 31; 
+    bin |= ((uint32_t)instr.simm19 & INSTRUCTION_SIMM19_MASK) << INSTRUCTION_SIMM19_SHIFT;
+    bin |= ((uint32_t)instr.U) << INSTRUCTION_U_BIT_SHIFT;
+    bin |= ((uint32_t)instr.opcode) << INSTRUCTION_OPCODE_SHIFT;
+    bin |= ((uint32_t)instr.sf) << INSTRUCTION_SF_BIT_SHIFT;
+    bin |= ((uint32_t)instr.type) << INSTRUCTION_TYPE_BIT_SHIFT; 
     return bin;
 }
 
