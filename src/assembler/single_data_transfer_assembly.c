@@ -68,9 +68,11 @@ uint32_t single_data_transfer_to_binary(instruction* instr) {
         int literal_int;
         int literal_address;
         data_struct.L = 0;
-        if (sscanf(address_mode, "%x", &literal_address) == 1) {
+        if (sscanf(address_mode, "0x%x", &literal_address) == 1) {
             instr_struct.simm19 = literal_address  - instr->line_number;
-        } else if (sscanf(address_mode, "#%x", &literal_int) == 1) {
+        } else  if (sscanf(address_mode, "#0x%x", &literal_int) == 1) {
+            instr_struct.simm19 = literal_int;
+        } else if (sscanf(address_mode, "#%d", &literal_int) == 1) {
             instr_struct.simm19 = literal_int;
         }
     } else {
