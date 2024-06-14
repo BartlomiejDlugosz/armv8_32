@@ -15,4 +15,4 @@ char getChar(dynamicString *, int);
 char *getString(dynamicString *);
 void freeDynamicString(dynamicString *);
 
-#endif // DYNAMIC_STRING_H
+#endif  // DYNAMIC_STRING_H

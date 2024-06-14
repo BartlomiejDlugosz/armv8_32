@@ -5,8 +5,7 @@
 
 #include "encode_instruction.h"
 
-
-//Function to convert 32 bit value to little endian
+// Function to convert 32 bit value to little endian
 static uint32_t to_little_endian(uint32_t value, uint8_t num_bytes) {
     uint32_t result = 0;
     for (uint8_t i = 0; i < num_bytes; i++) {
@@ -19,21 +18,22 @@ static uint32_t to_little_endian(uint32_t value, uint8_t num_bytes) {
 void first_pass(FILE* in, symbol_table* table) {
     char line[LINE_LENGTH];
     uint64_t address = 0;
-    //Address to be incremented by parser
+    // Address to be incremented by parser
     while (fgets(line, sizeof(line), in)) {
         instruction* instr = parse(line, &address);
-        if (instr->complete && strlen(getString(instr->label)) > 0) { 
+        if (instr->complete && strlen(getString(instr->label)) > 0) {
             // Add the symbol to the table along with its address
-            dynamicString *lbl = createNewDynamicString(10);
+            dynamicString* lbl = createNewDynamicString(10);
             addString(lbl, getString(instr->label));
             add_entry(table, lbl, address);
         }
     }
-    rewind(in); // Reset file pointer to beginning for the second pass
+    rewind(in);  // Reset file pointer to beginning for the second pass
 }
 
 // Replace label in operand with its address from the symbol table
-static void replace_label_with_address(instruction *instr, int index, uint64_t address) {
+static void replace_label_with_address(instruction* instr, int index,
+                                       uint64_t address) {
     char address_str[STRING_LENGTH_64BIT];
     sprintf(address_str, "0x%lx", address);
     freeDynamicString(instr->operands[index]);
@@ -46,14 +46,14 @@ void second_pass(FILE* in, FILE* out, const symbol_table* table) {
     char line[LINE_LENGTH];
     uint64_t address = 0;
     instruction* instr;
-    while(fgets(line, sizeof(line), in)) {
+    while (fgets(line, sizeof(line), in)) {
         instr = parse(line, &address);
         if (instr->complete) {
             for (int i = 0; i < 4; i++) {
-                dynamicString *operand = instr->operands[i];
+                dynamicString* operand = instr->operands[i];
                 if (operand->current_size > 0) {
                     uint64_t entry_address = find_entry(table, operand);
-                    if (entry_address != UINT64_MAX) { // Check if entry exists
+                    if (entry_address != UINT64_MAX) {  // Check if entry exists
                         replace_label_with_address(instr, i, entry_address);
                     }
                 }
@@ -61,7 +61,7 @@ void second_pass(FILE* in, FILE* out, const symbol_table* table) {
             pretty_print(instr);
             uint32_t binary_instr = encode_instruction(instr);
             binary_instr = to_little_endian(binary_instr, 4);
-            fwrite(&binary_instr, sizeof(binary_instr),1 , out);
+            fwrite(&binary_instr, sizeof(binary_instr), 1, out);
         }
     }
     free_instruction(instr, true);

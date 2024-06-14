@@ -71,7 +71,8 @@ instruction *parse(char *current_line, uint64_t *current_line_counter) {
         }
         initialize_instruction(new_instruction, false);
     } else if (new_instruction->complete) {
-        // If the instruction is already complete then we want to start a new one
+        // If the instruction is already complete then we want to start a new
+        // one
         initialize_instruction(new_instruction, true);
     }
 
@@ -81,7 +82,8 @@ instruction *parse(char *current_line, uint64_t *current_line_counter) {
     }
 
     // Remove new line on end
-    if (strlen(current_line) > 0 && current_line[strlen(current_line) - 1] == '\n') {
+    if (strlen(current_line) > 0 &&
+        current_line[strlen(current_line) - 1] == '\n') {
         current_line[strlen(current_line) - 1] = '\0';
     }
 
