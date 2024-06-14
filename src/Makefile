@@ -37,3 +37,6 @@ assemble_with_valgrind:
 
 test: assemble2
 	cd ../armv8_testsuite && ./run -Apf
+
+led_blink: assemble2
+	./assemble ../programs/led_blink.s ../programs/kernel8.img
