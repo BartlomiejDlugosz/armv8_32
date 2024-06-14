@@ -22,6 +22,15 @@
 #define INSTRUCTION_SF_BIT_SHIFT 30
 #define INSTRUCTION_TYPE_BIT_SHIFT 31
 
+#define BIT_DIVIDER_64 8
+#define BIT_DIVIDER_32 4
+
+#define SIMM9_OFFSET_SHIFT 4
+#define SIMM9_OFFSET_MASK 0b0110
+
+#define SINGLE_DATA_TRANSFER_OPCODE 0b11100 
+#define LITERAL_OPCODE 0b01100
+
 static uint32_t generate_data_offset_binary(single_data_transfer_data_offset data_offset) {
     uint32_t bin = ((uint32_t)data_offset.tenth) << DATA_OFFSET_TENTH_BIT_SHIFT;
     bin |= ((uint32_t)data_offset.I) << DATA_OFFSET_I_BIT_SHIFT;
@@ -74,7 +83,7 @@ uint32_t single_data_transfer_to_binary(instruction* instr) {
     if (xn_or_literal[0] == '[') {
         //Single Data Transfer
         instr_struct.type = 1;
-        instr_struct.opcode = 0b11100;
+        instr_struct.opcode = SINGLE_DATA_TRANSFER_OPCODE;
         int reg_num, offset, reg_m_num;
         char last_char = code_offset[strlen(code_offset) - 1];
         if (code_offset[0] == '\0') {
@@ -89,8 +98,8 @@ uint32_t single_data_transfer_to_binary(instruction* instr) {
             sscanf(xn_or_literal, "[x%d", &reg_num);
             sscanf(code_offset, "x%d]", &reg_m_num);
             data_struct.xn = reg_num;
-            offset_struct.simm9 = ((uint32_t)reg_m_num << 4) | 0b0110; // Shift 4 and mask
-            offset_struct.type = 1;
+            offset_struct.simm9 = ((uint32_t)reg_m_num << SIMM9_OFFSET_SHIFT) | SIMM9_OFFSET_MASK;
+            offset_struct.type = 1; // Set type of offset
             offset_struct.I = 1; // Set I
         } else if (last_char == '!') {
             // Pre-Indexed
@@ -109,7 +118,7 @@ uint32_t single_data_transfer_to_binary(instruction* instr) {
             sscanf(code_offset, "#%d]",&offset);
             sscanf(code_offset, "#0x%x]",&offset);
             data_struct.xn = reg_num; // Register number assigned
-            data_struct.offset = (offset / ((rt_type == 'x') ? 8 : 4));//Division dependent on rt_type
+            data_struct.offset = (offset / ((rt_type == 'x') ? BIT_DIVIDER_64 : BIT_DIVIDER_32));//Division dependent on rt_type
             instr_struct.U = 1;// Unsigned bit is set
         } else {
             // Post-Indexed
@@ -123,7 +132,7 @@ uint32_t single_data_transfer_to_binary(instruction* instr) {
     } else {
         // Load from literal
         // Two cases #N and an label (which has been converted to an address by the passing)
-        instr_struct.opcode = 0b01100;
+        instr_struct.opcode = LITERAL_OPCODE;
         int literal_int;
         int literal_address;
         data_struct.L = 0;
