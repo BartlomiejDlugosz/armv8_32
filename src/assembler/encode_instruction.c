@@ -9,7 +9,6 @@
 #include "single_data_transfer_assembly.h"
 #include "data_processing_assembly.h"
 
-
 // extern char *data_processing_opcodes[];
 // extern char *branch_opcodes[];
 // extern char *single_data_transfer_opcodes[];
@@ -25,7 +24,6 @@ static bool is_type(instruction *instr, char **opcodes) {
     return false;
 }
 
-
 uint32_t encode_directive(instruction *instr) {
     uint32_t encoded_n;
     char *n = getString(instr->operands[0]);
@@ -37,10 +35,10 @@ uint32_t encode_directive(instruction *instr) {
         return encoded_n;
     }
 
-    fprintf(stderr, "encode_instruction: Invalid operand '%s'to .int directive!\n", n);
+    fprintf(stderr,
+            "encode_instruction: Invalid operand '%s'to .int directive!\n", n);
     return 0;
 }
-
 
 uint32_t encode_instruction(instruction *instr) {
     if (is_type(instr, data_processing_opcodes)) {

@@ -5,4 +5,4 @@
 
 uint32_t encode_branch(instruction *instr);
 
-#endif //BRANCH_ENCODER_H
+#endif  // BRANCH_ENCODER_H

@@ -28,4 +28,4 @@ branch_register create_branch_register(uint32_t bits);
 branch_conditional create_branch_conditional(uint32_t bits);
 branch_instruction create_branch_instruction(uint32_t bits);
 
-#endif // BRANCH_H
+#endif  // BRANCH_H

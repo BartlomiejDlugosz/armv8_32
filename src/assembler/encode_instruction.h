@@ -8,4 +8,4 @@
 
 uint32_t encode_instruction(instruction *instr);
 
-#endif // ENCODE_INSTRUCTION_H
+#endif  // ENCODE_INSTRUCTION_H

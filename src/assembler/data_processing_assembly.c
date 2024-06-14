@@ -27,9 +27,9 @@ extern char *data_processing_opcodes[];
 
 static uint32_t resolve_operand(char *amount) {
     uint32_t result;
-    if (sscanf(amount+1, "0x%x", &result) == 1 && amount[0] == '#') {
+    if (sscanf(amount + 1, "0x%x", &result) == 1 && amount[0] == '#') {
         return result;
-    } else if (sscanf(amount+1, "%d", &result) == 1 && amount[0] == '#') {
+    } else if (sscanf(amount + 1, "%d", &result) == 1 && amount[0] == '#') {
         return result;
     } else {
         return register_to_number(amount);
@@ -38,7 +38,6 @@ static uint32_t resolve_operand(char *amount) {
     return 0;
 }
 
-
 static uint32_t generate_operand(multiply_operand *operand) {
     uint32_t result = 0;
     result |= ((uint32_t)operand->x) << 5;
@@ -46,7 +45,8 @@ static uint32_t generate_operand(multiply_operand *operand) {
     return result;
 }
 
-static uint32_t generate_arithmetic_operand(arithmetic_immediate_operand *arith_operand) {
+static uint32_t generate_arithmetic_operand(
+    arithmetic_immediate_operand *arith_operand) {
     uint32_t result = 0;
     result |= ((uint32_t)arith_operand->sh) << 17;
     result |= ((uint32_t)arith_operand->imm12) << 5;
@@ -61,14 +61,16 @@ static uint32_t generate_wide_move_operand(wide_move_operand *operand) {
     return result;
 }
 
-static uint32_t generate_data_immediate_data(data_processing_data_immediate *data) {
+static uint32_t generate_data_immediate_data(
+    data_processing_data_immediate *data) {
     uint32_t result = 0;
     result |= ((uint32_t)data->opi) << 18;
     result |= (uint32_t)data->operand;
     return result;
 }
 
-static int32_t generate_data_register_data(data_processing_data_register *data) {
+static int32_t generate_data_register_data(
+    data_processing_data_register *data) {
     uint32_t result = 0;
     result |= ((uint32_t)0b1) << 20;
     result |= ((uint32_t)data->opr) << 16;
@@ -78,7 +80,8 @@ static int32_t generate_data_register_data(data_processing_data_register *data) 
     return result;
 }
 
-static uint32_t generate_data_processing_instruction(data_processing_instruction *instr, bool is_register) {
+static uint32_t generate_data_processing_instruction(
+    data_processing_instruction *instr, bool is_register) {
     uint32_t result = 0;
     result |= ((uint32_t)instr->sf) << 31;
     result |= ((uint32_t)instr->opc) << 29;
@@ -103,7 +106,9 @@ static void msub(char *mulopcode, char *ra, multiply_operand *operand) {
     return;
 }
 
-static uint32_t wide_move_instruction (char *opcode, char *rd, char *imm, char *shift_type, char *shift_amount, bool register_64_bits) {
+static uint32_t wide_move_instruction(char *opcode, char *rd, char *imm,
+                                      char *shift_type, char *shift_amount,
+                                      bool register_64_bits) {
     wide_move_operand wide_operand;
     data_processing_instruction dpr_instruction;
     data_processing_data_immediate dpi_instruction;
@@ -114,11 +119,9 @@ static uint32_t wide_move_instruction (char *opcode, char *rd, char *imm, char *
     wide_operand.imm16 = resolve_operand(imm);
     if (strcmp(opcode, MOVE_WIDE_NOT) == 0) {
         dpr_instruction.opc = 0b00;
-    }
-    else if (strcmp(opcode, MOVE_WIDE_ZERO) == 0) {
+    } else if (strcmp(opcode, MOVE_WIDE_ZERO) == 0) {
         dpr_instruction.opc = 0b10;
-    }
-    else if (strcmp(opcode, MOVE_WIDE_KEEP) == 0) {
+    } else if (strcmp(opcode, MOVE_WIDE_KEEP) == 0) {
         dpr_instruction.opc = 0b11;
     }
     if (shift_amount[0] != '\0') {
@@ -133,26 +136,28 @@ static uint32_t wide_move_instruction (char *opcode, char *rd, char *imm, char *
     return generate_data_processing_instruction(&dpr_instruction, false);
 }
 
-static uint32_t logical_instructions (char *opcode, char *rd, char *rn, char *rm, char *shift, char *shift_amount, bool register_64_bits) {
+static uint32_t logical_instructions(char *opcode, char *rd, char *rn, char *rm,
+                                     char *shift, char *shift_amount,
+                                     bool register_64_bits) {
     data_processing_data_register data;
     data_processing_instruction dpr_instruction;
     dpr_instruction.sf = register_64_bits;
     dpr_instruction.rd = resolve_operand(rd);
     dpr_instruction.maybe_M = 0;
     bool n = false;
-    if (strcmp(opcode, BIT_CLEAR) == 0 || strcmp(opcode, OR_NOT) == 0 || strcmp(opcode, EXCLUSIVE_OR_NOT) == 0 || strcmp(opcode, BIT_CLEAR_SET) == 0) {
+    if (strcmp(opcode, BIT_CLEAR) == 0 || strcmp(opcode, OR_NOT) == 0 ||
+        strcmp(opcode, EXCLUSIVE_OR_NOT) == 0 ||
+        strcmp(opcode, BIT_CLEAR_SET) == 0) {
         n = true;
     }
     if (strcmp(opcode, AND) == 0 || strcmp(opcode, BIT_CLEAR) == 0) {
         dpr_instruction.opc = 0b00;
-    }
-    else if (strcmp(opcode, OR) == 0 || strcmp(opcode, OR_NOT) == 0) {
+    } else if (strcmp(opcode, OR) == 0 || strcmp(opcode, OR_NOT) == 0) {
         dpr_instruction.opc = 0b01;
-    }
-    else if (strcmp(opcode, EXCLUSIVE_OR) == 0 || strcmp(opcode, EXCLUSIVE_OR_NOT) == 0){
+    } else if (strcmp(opcode, EXCLUSIVE_OR) == 0 ||
+               strcmp(opcode, EXCLUSIVE_OR_NOT) == 0) {
         dpr_instruction.opc = 0b10;
-    }
-    else {
+    } else {
         dpr_instruction.opc = 0b11;
     }
     if (shift[0] != '\0') {
@@ -161,22 +166,18 @@ static uint32_t logical_instructions (char *opcode, char *rd, char *rn, char *rm
         data.opr = 0;
         if (strncmp(shift, "lsl", 3) == 0) {
             data.opr = 0b0000;
-        }
-        else if (strncmp(shift, "lsr", 3) == 0) {
+        } else if (strncmp(shift, "lsr", 3) == 0) {
             data.opr = 0b0010;
-        }
-        else if (strncmp(shift, "asr", 3) == 0){
+        } else if (strncmp(shift, "asr", 3) == 0) {
             data.opr = 0b0100;
-        }
-        else if (strncmp(shift, "ror", 3) == 0){
+        } else if (strncmp(shift, "ror", 3) == 0) {
             data.opr = 0b0110;
         }
         if (n) {
             data.opr |= n;
         }
-    }
-    else {
-        data.opr = n; // 0011 or 0010
+    } else {
+        data.opr = n;  // 0011 or 0010
         data.operand = 0;
     }
     data.rm = resolve_operand(rm);
@@ -185,10 +186,10 @@ static uint32_t logical_instructions (char *opcode, char *rd, char *rn, char *rm
     return generate_data_processing_instruction(&dpr_instruction, true);
 }
 
-
-
-
-static uint32_t arithmetic_instructions (char *opcode, char *rd, char *rn, char *rm, char *shift, char* shift_amount, bool register_64_bits) {
+static uint32_t arithmetic_instructions(char *opcode, char *rd, char *rn,
+                                        char *rm, char *shift,
+                                        char *shift_amount,
+                                        bool register_64_bits) {
     data_processing_data_register data;
     data_processing_instruction dpr_instruction;
     arithmetic_immediate_operand arith_operand;
@@ -197,49 +198,40 @@ static uint32_t arithmetic_instructions (char *opcode, char *rd, char *rn, char 
     dpr_instruction.rd = resolve_operand(rd);
     if (strcmp(opcode, ADD) == 0) {
         dpr_instruction.opc = 0b00;
-    }
-    else if (strcmp(opcode, ADD_SIGNED) == 0) {
+    } else if (strcmp(opcode, ADD_SIGNED) == 0) {
         dpr_instruction.opc = 0b01;
-    }
-    else if (strcmp(opcode, SUBTRACT) == 0){
+    } else if (strcmp(opcode, SUBTRACT) == 0) {
         dpr_instruction.opc = 0b10;
-    }
-    else {
+    } else {
         dpr_instruction.opc = 0b11;
     }
-    if (strncmp(rm, "#",1) == 0) {
+    if (strncmp(rm, "#", 1) == 0) {
         dpi_instruction.opi = 0b010;
         dpr_instruction.maybe_M = 1;
         arith_operand.imm12 = resolve_operand(rm);
 
         if (strcmp(shift, "lsl") == 0 && strcmp(shift_amount, "#12") == 0) {
             arith_operand.sh = 1;
-        }
-        else {
+        } else {
             arith_operand.sh = 0;
         }
         arith_operand.rn = resolve_operand(rn);
         dpi_instruction.operand = generate_arithmetic_operand(&arith_operand);
         dpr_instruction.data = generate_data_immediate_data(&dpi_instruction);
         return generate_data_processing_instruction(&dpr_instruction, false);
-    }
-    else {
+    } else {
         if (shift[0] != '\0') {
             data.operand = resolve_operand(shift_amount);
             if (strncmp(shift, "lsl", 3) == 0) {
                 data.opr = 0b1000;
-            }
-            else if (strncmp(shift, "lsr", 3) == 0) {
+            } else if (strncmp(shift, "lsr", 3) == 0) {
                 data.opr = 0b1010;
-            }
-            else if (strncmp(shift, "asr", 3) == 0){
+            } else if (strncmp(shift, "asr", 3) == 0) {
                 data.opr = 0b1100;
-            }
-            else {
+            } else {
                 data.opr = 0b1110;
             }
-        }
-        else {
+        } else {
             data.opr = 0b1000;
             data.operand = 0;
         }
@@ -252,14 +244,17 @@ static uint32_t arithmetic_instructions (char *opcode, char *rd, char *rn, char 
     }
 }
 
-static uint32_t multiply_instructions(char *mulopcode, char *rd, char *rn, char *rm, char *ra, bool register_64_bits) {
+static uint32_t multiply_instructions(char *mulopcode, char *rd, char *rn,
+                                      char *rm, char *ra,
+                                      bool register_64_bits) {
     data_processing_data_register data;
     data_processing_instruction dp_instruction;
     multiply_operand operand;
-    if (strcmp(mulopcode, MULTIPLY_ADD) == 0 || strcmp(mulopcode, MULTIPLY) == 0) {
+    if (strcmp(mulopcode, MULTIPLY_ADD) == 0 ||
+        strcmp(mulopcode, MULTIPLY) == 0) {
         madd(mulopcode, ra, &operand);
-    }
-    else if (strcmp(mulopcode, MULTIPLY_SUB) == 0 || !strcmp(mulopcode, MULTIPLY_NEG) == 0) {
+    } else if (strcmp(mulopcode, MULTIPLY_SUB) == 0 ||
+               !strcmp(mulopcode, MULTIPLY_NEG) == 0) {
         msub(mulopcode, ra, &operand);
     }
     data.operand = generate_operand(&operand);
@@ -276,10 +271,12 @@ static uint32_t multiply_instructions(char *mulopcode, char *rd, char *rn, char 
 
 uint32_t data_processing_assembly_init(instruction *instr) {
     // using find() to get the pointer to the first occurence
-    bool register_64_bits = (strncmp(getString(instr->operands[0]),"x",1) == 0);
+    bool register_64_bits =
+        (strncmp(getString(instr->operands[0]), "x", 1) == 0);
     // getting index from pointer
     int counter = 0;
-    while (strcmp(data_processing_opcodes[counter], instr->opcode) != 0 && data_processing_opcodes[counter] != NULL) {
+    while (strcmp(data_processing_opcodes[counter], instr->opcode) != 0 &&
+           data_processing_opcodes[counter] != NULL) {
         counter++;
     };
 
@@ -289,59 +286,72 @@ uint32_t data_processing_assembly_init(instruction *instr) {
     char *oper2 = getString(instr->operands[2]);
     char *oper3 = getString(instr->operands[3]);
     char *oper4 = getString(instr->operands[4]);
-    
+
     int targetIndex = counter;
 
     if (targetIndex <= 3) {
-        return arithmetic_instructions(opc, oper0, oper1, oper2, oper3, oper4, register_64_bits);
+        return arithmetic_instructions(opc, oper0, oper1, oper2, oper3, oper4,
+                                       register_64_bits);
     }
 
     if (targetIndex == 4) {
-        return arithmetic_instructions("subs", "rzr", oper0, oper1, oper2, oper3, register_64_bits);
+        return arithmetic_instructions("subs", "rzr", oper0, oper1, oper2,
+                                       oper3, register_64_bits);
     }
 
     if (targetIndex == 5) {
-        return arithmetic_instructions("adds", "rzr", oper0, oper1, oper2, oper3, register_64_bits);
+        return arithmetic_instructions("adds", "rzr", oper0, oper1, oper2,
+                                       oper3, register_64_bits);
     }
 
     if (targetIndex == 6) {
-        return arithmetic_instructions("sub", oper0, "rzr", oper1, oper2,oper3, register_64_bits);
+        return arithmetic_instructions("sub", oper0, "rzr", oper1, oper2, oper3,
+                                       register_64_bits);
     }
 
     if (targetIndex == 7) {
-        return arithmetic_instructions("subs",  oper0, "rzr", oper1, oper2, oper3, register_64_bits);
+        return arithmetic_instructions("subs", oper0, "rzr", oper1, oper2,
+                                       oper3, register_64_bits);
     }
 
     if (targetIndex <= 15) {
-        return logical_instructions(opc, oper0, oper1, oper2, oper3, oper4, register_64_bits);
+        return logical_instructions(opc, oper0, oper1, oper2, oper3, oper4,
+                                    register_64_bits);
     }
 
     if (targetIndex == 16) {
-        return logical_instructions("ands", "rzr", oper0, oper1, oper2, oper3, register_64_bits);
+        return logical_instructions("ands", "rzr", oper0, oper1, oper2, oper3,
+                                    register_64_bits);
     }
 
     if (targetIndex == 17) {
-        return logical_instructions("orn", oper0,"rzr", oper1, oper2, oper3, register_64_bits);
+        return logical_instructions("orn", oper0, "rzr", oper1, oper2, oper3,
+                                    register_64_bits);
     }
 
     if (targetIndex == 18) {
-        return logical_instructions ("orr", oper0,"rzr", oper1, oper2, oper3, register_64_bits);
+        return logical_instructions("orr", oper0, "rzr", oper1, oper2, oper3,
+                                    register_64_bits);
     }
 
     if (targetIndex <= 21) {
-        return wide_move_instruction (opc, oper0, oper1, oper2, oper3, register_64_bits);
+        return wide_move_instruction(opc, oper0, oper1, oper2, oper3,
+                                     register_64_bits);
     }
 
     if (targetIndex <= 23) {
-        return multiply_instructions(opc, oper0, oper1, oper2, oper3, register_64_bits);
+        return multiply_instructions(opc, oper0, oper1, oper2, oper3,
+                                     register_64_bits);
     }
 
     if (targetIndex == 24) {
-        return multiply_instructions("madd", oper0, oper1, oper2, "rzr", register_64_bits);
+        return multiply_instructions("madd", oper0, oper1, oper2, "rzr",
+                                     register_64_bits);
     }
 
     if (targetIndex == 25) {
-        return multiply_instructions("msub", oper0, oper1, oper2, "rzr", register_64_bits);
+        return multiply_instructions("msub", oper0, oper1, oper2, "rzr",
+                                     register_64_bits);
     }
 
     fprintf(stderr, "data_processing: targetIndex not Found!");

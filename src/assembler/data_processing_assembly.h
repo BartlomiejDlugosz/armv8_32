@@ -5,4 +5,4 @@
 #include <stdint.h>
 uint32_t data_processing_assembly_init(instruction *instr);
 
-#endif // DATA_PROCESSING_ASSEMBLY_H
+#endif  // DATA_PROCESSING_ASSEMBLY_H

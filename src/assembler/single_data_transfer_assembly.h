@@ -7,4 +7,4 @@
 // Function prototype for converting single data transfer instruction to binary
 uint32_t single_data_transfer_to_binary(instruction* instr);
 
-#endif // SINGLE_DATA_TRANSFER_ASSEMBLY_H
+#endif  // SINGLE_DATA_TRANSFER_ASSEMBLY_H
