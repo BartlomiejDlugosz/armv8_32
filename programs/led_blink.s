@@ -1,8 +1,10 @@
 ldr w21 gpio21
-str w21 #0x3f200008 
+ldr w20 #0x3f200008
+str w21 [x20] 
 
 high:
-str w0 bit21
+ldr w20 bit21
+str w0 [x20]
 ldr wzr #0x3f200028
 ldr w0 #0x3f20001c
 
@@ -17,7 +19,8 @@ subs x28, x28, #1
 b.ne delay_outer_loop
 
 low:
-str w0 bit21
+ldr w20 bit21
+str w0 [x20]
 ldr wzr #0x3f20001c
 ldr w0 #0x3f200028
 
