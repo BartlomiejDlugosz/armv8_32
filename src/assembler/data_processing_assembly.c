@@ -1,7 +1,9 @@
+#include <stdbool.h>
 #include "data_processing_assembly.h"
 #include "../emulator/data_processing.h"
 #include "register_to_number.h"
-#include <stdbool.h>
+
+extern char *data_processing_opcodes[];
 
 #define MULTIPLY_ADD "madd"
 #define MULTIPLY_SUB "msub"
@@ -273,7 +275,6 @@ static uint32_t multiply_instructions(char *mulopcode, char *rd, char *rn, char 
 }
 
 uint32_t data_processing_assembly_init(instruction *instr) {
-    char *data_processing_opcodes[] = { "add", "adds", "sub", "subs", "cmp", "cmn", "neg", "negs", "and", "ands", "bic", "bics", "eor", "eon", "orr", "orn", "tst", "mvn", "mov", "movn", "movk", "movz", "madd", "msub", "mul", "mneg", NULL };
     // using find() to get the pointer to the first occurence
     bool register_64_bits = (strncmp(getString(instr->operands[0]),"x",1) == 0);
     // getting index from pointer
@@ -281,79 +282,68 @@ uint32_t data_processing_assembly_init(instruction *instr) {
     while (strcmp(data_processing_opcodes[counter], instr->opcode) != 0 && data_processing_opcodes[counter] != NULL) {
         counter++;
     };
+
+    char *opc = instr->opcode;
+    char *oper0 = getString(instr->operands[0]);
+    char *oper1 = getString(instr->operands[1]);
+    char *oper2 = getString(instr->operands[2]);
+    char *oper3 = getString(instr->operands[3]);
+    char *oper4 = getString(instr->operands[4]);
+    
     int targetIndex = counter;
-    uint32_t result;
-    switch (targetIndex)
-    {
-    case 0: // add 
-        // fall through
-    case 1: // adds
-        // fall through
-    case 2: // sub
-        // fall through
-    case 3: // subs
-        result = arithmetic_instructions(instr->opcode, getString(instr->operands[0]), getString(instr->operands[1]), getString(instr->operands[2]), getString(instr->operands[3]),getString(instr->operands[4]), register_64_bits);
-        break;
-    case 4: // cmp
-        result = arithmetic_instructions("subs", "rzr", getString(instr->operands[0]), getString(instr->operands[1]), getString(instr->operands[2]), getString(instr->operands[3]), register_64_bits);
-        break;
-    case 5: // cmn
-        result = arithmetic_instructions("adds", "rzr", getString(instr->operands[0]), getString(instr->operands[1]), getString(instr->operands[2]), getString(instr->operands[3]), register_64_bits);
-        break;
-    case 6: // neg
-        result = arithmetic_instructions("sub", getString(instr->operands[0]), "rzr", getString(instr->operands[1]), getString(instr->operands[2]),getString(instr->operands[3]), register_64_bits);
-        break;
-    case 7: // negs
-        result = arithmetic_instructions("subs",  getString(instr->operands[0]), "rzr", getString(instr->operands[1]), getString(instr->operands[2]), getString(instr->operands[3]), register_64_bits);
-        break;
-    case 8: // and
-        // fall through
-    case 9: // ands
-        // fall through
-    case 10: // bic
-        // fall through
-    case 11: // bics 
-        // fall through
-    case 12: // eor
-        // fall through
-    case 13: // eon
-        // fall through
-    case 14: // orr
-        // fall through
-    case 15: // orn
-        result = logical_instructions (instr->opcode, getString(instr->operands[0]), getString(instr->operands[1]), getString(instr->operands[2]), getString(instr->operands[3]), getString(instr->operands[4]), register_64_bits);
-        break;
-    case 16: // tst
-        result = logical_instructions ("ands", "rzr", getString(instr->operands[0]), getString(instr->operands[1]), getString(instr->operands[2]), getString(instr->operands[3]), register_64_bits);
-        break;
-    case 17: // mvn
-        result = logical_instructions ("orn", getString(instr->operands[0]),"rzr", getString(instr->operands[1]), getString(instr->operands[2]), getString(instr->operands[3]), register_64_bits);
-        break;
-    case 18: // mov
-        result = logical_instructions ("orr", getString(instr->operands[0]),"rzr", getString(instr->operands[1]), getString(instr->operands[2]), getString(instr->operands[3]), register_64_bits);
-        break;
-    case 19: // movn
-        // fall through
-    case 20: // movk
-        // fall through
-    case 21: // movz
-        result = wide_move_instruction (instr->opcode, getString(instr->operands[0]), getString(instr->operands[1]), getString(instr->operands[2]), getString(instr->operands[3]), register_64_bits);
-        break;
-    case 22: // madd
-        // fall through to msub
-    case 23: // msub
-        result = multiply_instructions(instr->opcode, getString(instr->operands[0]), getString(instr->operands[1]), getString(instr->operands[2]), getString(instr->operands[3]), register_64_bits);
-        break;
-    case 24: // mul
-        result = multiply_instructions("madd", getString(instr->operands[0]), getString(instr->operands[1]), getString(instr->operands[2]), "rzr", register_64_bits);
-        break;
-    case 25: // mneg
-        result = multiply_instructions("msub", getString(instr->operands[0]), getString(instr->operands[1]), getString(instr->operands[2]), "rzr", register_64_bits);
-        break;
-    case 26:
-        break;
-    default:
-        break;
+
+    if (targetIndex <= 3) {
+        return arithmetic_instructions(opc, oper0, oper1, oper2, oper3, oper4, register_64_bits);
     }
-    return result;
+
+    if (targetIndex == 4) {
+        return arithmetic_instructions("subs", "rzr", oper0, oper1, oper2, oper3, register_64_bits);
+    }
+
+    if (targetIndex == 5) {
+        return arithmetic_instructions("adds", "rzr", oper0, oper1, oper2, oper3, register_64_bits);
+    }
+
+    if (targetIndex == 6) {
+        return arithmetic_instructions("sub", oper0, "rzr", oper1, oper2,oper3, register_64_bits);
+    }
+
+    if (targetIndex == 7) {
+        return arithmetic_instructions("subs",  oper0, "rzr", oper1, oper2, oper3, register_64_bits);
+    }
+
+    if (targetIndex <= 15) {
+        return logical_instructions(opc, oper0, oper1, oper2, oper3, oper4, register_64_bits);
+    }
+
+    if (targetIndex == 16) {
+        return logical_instructions("ands", "rzr", oper0, oper1, oper2, oper3, register_64_bits);
+    }
+
+    if (targetIndex == 17) {
+        return logical_instructions("orn", oper0,"rzr", oper1, oper2, oper3, register_64_bits);
+    }
+
+    if (targetIndex == 18) {
+        return logical_instructions ("orr", oper0,"rzr", oper1, oper2, oper3, register_64_bits);
+    }
+
+    if (targetIndex <= 21) {
+        return wide_move_instruction (opc, oper0, oper1, oper2, oper3, register_64_bits);
+    }
+
+    if (targetIndex <= 23) {
+        return multiply_instructions(opc, oper0, oper1, oper2, oper3, register_64_bits);
+    }
+
+    if (targetIndex == 24) {
+        return multiply_instructions("madd", oper0, oper1, oper2, "rzr", register_64_bits);
+    }
+
+    if (targetIndex == 25) {
+        return multiply_instructions("msub", oper0, oper1, oper2, "rzr", register_64_bits);
+    }
+
+    fprintf(stderr, "data_processing: targetIndex not Found!");
+    return 0;
 }
