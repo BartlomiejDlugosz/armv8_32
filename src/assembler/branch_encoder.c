@@ -27,7 +27,7 @@
 #define BITMASK_26BITS 0x3FFFFFF
 #define BRANCH_INSTRUCTION_PADDING 0b0101
 #define SIMM26_SHIFT 26
-#define INSTR_TYPE_SHIFT 20
+#define INSTR_TYPE_SHIFT 30
 #define INSTR_REG_SHIFT 31
 
 struct conditional_encoding {
