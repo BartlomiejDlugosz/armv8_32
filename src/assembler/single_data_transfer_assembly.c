@@ -71,14 +71,6 @@ uint32_t single_data_transfer_to_binary(instruction* instr) {
     char rt_type =  target_reg[0];
     instr_struct.sf = (rt_type == 'x') ? 1 : 0;
 
-    // All address mode cases
-    // [x0]         Zero Unsigned Offset    general/ldr01.s         HANDLED
-    // [x1, #0x0]   Unsigned Offset         general/ldr16.s         HANDLED
-    // [x24, #224]! Pre-Indexed             generated/ldr/ldr10.s   HANDLED
-    // [x0], #2     Post Indexed            general/ldr10.s         HANDLED
-    // [x15, x4]    Register Offset         generated/ldr/ldr0.s    HANDLED
-    // 0x3 Literal  Address                 general/ldr_lit.s       HANDLED
-
     if (xn_or_literal[0] == '[') {
         //Single Data Transfer
         instr_struct.type = 1;
