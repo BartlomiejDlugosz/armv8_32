@@ -64,91 +64,83 @@ uint32_t single_data_transfer_to_binary(instruction* instr) {
     }
 
     char* target_reg = getString(instr->operands[0]); // Get target register
+    char* xn_or_literal = getString(instr->operands[1]); // Get xn/literal
+    char* code_offset = getString(instr->operands[2]); // Get offset
+
     instr_struct.rt = register_to_number(target_reg);
     char rt_type =  target_reg[0];
     instr_struct.sf = (rt_type == 'x') ? 1 : 0;
-    dynamicString* address_mode_array = createNewDynamicString(10);
-    for (int i = 1; i < 5; i++) {
-        addString(address_mode_array, getString(instr->operands[i]));
-        if (getString(instr->operands[i]) != NULL) {
-            addString(address_mode_array, ", ");
-        }
-    }
-    // Remove last two characters
-    char* address_mode = getString(address_mode_array);
-    address_mode[address_mode_array->current_size - 2] = '\0';
 
-    if (address_mode[0] != '[') {
+    // All address mode cases
+    // [x0]         Zero Unsigned Offset    general/ldr01.s         HANDLED
+    // [x1, #0x0]   Unsigned Offset         general/ldr16.s         HANDLED
+    // [x24, #224]! Pre-Indexed             generated/ldr/ldr10.s   HANDLED
+    // [x0], #2     Post Indexed            general/ldr10.s         HANDLED
+    // [x15, x4]    Register Offset         generated/ldr/ldr0.s    HANDLED
+    // 0x3 Literal  Address                 general/ldr_lit.s       HANDLED
+
+    if (xn_or_literal[0] == '[') {
+        //Single Data Transfer
+        instr_struct.type = 1;
+        instr_struct.opcode = 0b11100;
+        int reg_num, offset, reg_m_num;
+        char last_char = code_offset[strlen(code_offset) - 1];
+        if (code_offset[0] == '\0') {
+            // Zero Unsigned Offset
+            // Handle the form [xn]
+            sscanf(xn_or_literal, "[x%d]", &reg_num);
+            data_struct.xn = reg_num; // Register number assigned
+            instr_struct.U = 1;// Unsigned bit is set
+        } else if (code_offset[0] != '#') {
+            // Register Offset
+            // Handle the form [xn, xm]
+            sscanf(xn_or_literal, "[x%d", &reg_num);
+            sscanf(code_offset, "x%d]", &reg_m_num);
+            data_struct.xn = reg_num;
+            offset_struct.simm9 = ((uint32_t)reg_m_num << 4) | 0b0110; // Shift 4 and mask
+            offset_struct.type = 1;
+            offset_struct.I = 1; // Set I
+        } else if (last_char == '!') {
+            // Pre-Indexed
+            // Handle the general form [xn, #<simm>]!
+            sscanf(xn_or_literal, "[x%d", &reg_num);
+            sscanf(code_offset, "#%d]!",&offset);
+            sscanf(code_offset, "#0x%x]!",&offset);
+            data_struct.xn = reg_num; // Register number assigned
+            offset_struct.simm9 = offset; // PC offset
+            offset_struct.I = 1; // Set I
+            offset_struct.tenth = 1; // Set the tenth bit
+        } else if (last_char == ']') {
+            // Unsigned Immediate Offset
+            // Handle the form [xn, #<imm>]
+            sscanf(xn_or_literal, "[x%d", &reg_num);
+            sscanf(code_offset, "#%d]",&offset);
+            sscanf(code_offset, "#0x%x]",&offset);
+            data_struct.xn = reg_num; // Register number assigned
+            data_struct.offset = (offset / ((rt_type == 'x') ? 8 : 4));//Division dependent on rt_type
+            instr_struct.U = 1;// Unsigned bit is set
+        } else {
+            // Post-Indexed
+            // Handle the form [xn], #<simm>
+            sscanf(xn_or_literal, "[x%d", &reg_num);
+            sscanf(code_offset, "#%d", &offset);
+            data_struct.xn = reg_num; // Register number assigned
+            offset_struct.simm9 = offset; // PC offset
+            offset_struct.tenth = 1; // Set the tenth bit
+        }
+    } else {
         // Load from literal
         // Two cases #N and an label (which has been converted to an address by the passing)
         instr_struct.opcode = 0b01100;
         int literal_int;
         int literal_address;
         data_struct.L = 0;
-        //Handle the form 0xn
-        if (sscanf(address_mode, "0x%x", &literal_address) == 1) {
-            instr_struct.simm19 = literal_address  - instr->line_number;
-        //Handle the form #0xn
-        } else  if (sscanf(address_mode, "#0x%x", &literal_int) == 1) {
+        if (xn_or_literal[0] == '#') {
+            sscanf(xn_or_literal, "#%d", &literal_int);
             instr_struct.simm19 = literal_int;
-        // Handle the form #N
-        } else if (sscanf(address_mode, "#%d", &literal_int) == 1) {
-            instr_struct.simm19 = literal_int;
-        }
-    } else {
-        //Single Data Transfer
-        instr_struct.type = 1;
-        instr_struct.opcode = 0b11100;
-        char* case_operand =  getString(instr->operands[2]);
-        int reg_num, offset, reg_m_num;
-        // Unsigned Immediate Offset
-        // Handle the form [xn, #<imm>]
-        if (sscanf(address_mode, "[x%d, #%x]", &reg_num, &offset) == 2 && case_operand[strlen(case_operand)-1] != '!') {
-            if (case_operand[2] != 'x') {
-                sscanf(address_mode, "[x%d, #%d]", &reg_num, &offset);
-            }
-            data_struct.xn = reg_num; // Register number assigned
-            data_struct.offset = (offset / ((rt_type == 'x') ? 8 : 4));//Division dependent on rt_type
-            instr_struct.U = 1;// Unsigned bit is set
-        }
-        // Pre-Indexed
-        // Handle the form [xn, #<simm>]!
-        // Handle the form [xn, #0xn]
-        else if(sscanf(address_mode, "[x%d, #%x]!", &reg_num, &offset) == 2) {
-            // Handle the form [xn, #n]
-            if (case_operand[2] != 'x') {
-                // Overwrite reg_num and offset
-                sscanf(address_mode, "[x%d, #%d]!", &reg_num, &offset);
-            }
-            data_struct.xn = reg_num; // Register number assigned
-            offset_struct.simm9 = offset; // PC offset
-            offset_struct.I = 1; // Set I
-            offset_struct.tenth = 1; // Set the tenth bit
-
-        }
-        // Post-Indexed
-        // Handle the form [xn], #<simm>
-        else if(sscanf(address_mode, "[x%d], #%d", &reg_num, &offset) == 2) {
-            data_struct.xn = reg_num; // Register number assigned
-            offset_struct.simm9 = offset; // PC offset
-            offset_struct.tenth = 1; // Set the tenth bit
-        }
-        // Register Offset
-        // Handle the form [xn, xm]
-        else if(sscanf(address_mode, "[x%d, x%d]", &reg_num, &reg_m_num) == 2) {
-            data_struct.xn = reg_num;
-            offset_struct.simm9 = ((uint32_t)reg_m_num << 4) | 0b0110; // Shift 4 and mask
-            offset_struct.type = 1;
-            offset_struct.I = 1; // Set I
-        } 
-        // Zero Unsigned Offset
-        //Handle the form [xn]
-        else if (sscanf(address_mode, "[x%d]", &reg_num) == 1) {
-            data_struct.xn = reg_num; // Register number assigned
-            instr_struct.U = 1;// Unsigned bit is set
-        }
-        else {
-            fprintf(stderr, "Invalid single data transfer form\n");
+        } else {
+            sscanf(xn_or_literal, "0x%x", &literal_address);
+            instr_struct.simm19 = literal_address - instr->line_number;
         }
     }
     // Generate the binary for each part of the instruction
@@ -157,7 +149,6 @@ uint32_t single_data_transfer_to_binary(instruction* instr) {
     uint32_t instr_bin = generate_instruction_binary(instr_struct);
     // Generate final binary instruction using bitwise or
     binary_instr = offset | data | instr_bin;
-    freeDynamicString(address_mode_array);
     return binary_instr;
 
 }
