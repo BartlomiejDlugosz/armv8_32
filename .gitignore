@@ -20,6 +20,9 @@
 emulate
 assemble
 
+#ignore junk files from compiling Assembly
+*.img
+
 #ignore junk files from compiling Haskell code
 *.hi
 
