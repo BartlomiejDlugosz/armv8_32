@@ -17,6 +17,7 @@
 *.o
 *.txt
 *.bin
+*.bi
 emulate
 assemble
 
