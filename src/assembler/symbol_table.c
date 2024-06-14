@@ -8,7 +8,6 @@
 #define CHECK_ALLOCATION(ptr)                                    \
     if (ptr == NULL) {                                           \
         fprintf(stderr, "An error occured allocating memory\n"); \
-        exit(1);                                                 \
     }
 #define RESIZE_FACTOR 2
 
