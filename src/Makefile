@@ -43,3 +43,6 @@ led_blink: assemble2
 
 format:
 	clang-format -i assembler/*.c assembler/*.h emulator/*.c emulator/*.h
+
+simulate_traffic: solution
+	gcc -Wall ../extension2/*.c -o simulate_traffic -g --debug
