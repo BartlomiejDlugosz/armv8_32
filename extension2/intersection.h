@@ -7,7 +7,7 @@ typedef struct {
     road roads[4];
 
     // make sure these stay in sync
-    light lights[4];
+    traffic_light lights[4];
     int state_index;
 } intersection;
 

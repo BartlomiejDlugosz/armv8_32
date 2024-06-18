@@ -4,7 +4,6 @@
 #include "traffic_light.h"
 
 typedef enum { RED, RED_AMBER, GREEN, AMBER } colour;
-typedef enum { RED, RED_AMBER, GREEN, AMBER } colour;
 typedef enum { LEFT, RIGHT } direction;
 
 typedef struct {
@@ -13,6 +12,6 @@ typedef struct {
     bool arrow_lit;
     direction arrow;
     bool has_sensor; // tells us if cars are waiting
-} light;
+} traffic_light;
 
 #endif // TRAFFIC_LIGHT_H

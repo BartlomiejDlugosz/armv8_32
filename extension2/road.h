@@ -8,6 +8,7 @@ typedef struct {
     int length; // traverse the ll, only adding if sum < length
     int speed_limit;
     car *head_car;
+    traffic_light light;
 } road;
 
 // think about case where road->first_car == NULL
