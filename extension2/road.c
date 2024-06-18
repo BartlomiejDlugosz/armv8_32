@@ -6,7 +6,7 @@
 // update distance of all cars (starting with first)
 // if distance stays the same, add time to stationary time
  // update_distances(road, delta_t); // let cars roll forward if possible (note special case for first car)
-void *update_distances(road* update_road, time_t dt) {   
+void update_distances(road* update_road, time_t dt) {   
     int speed_limit = update_road->speed_limit;
     // the lights can be checked using the road (it has a light attribute)
     int distance_covered = speed_limit * dt;
