@@ -40,7 +40,6 @@ int main(int argc, char **argv) {
     car *head_of_crossed;
     time_t time_since_change = 0.0;
     time_t dt = 0.5; // seconds
-    bool updated;
     uint64_t max_iterations = 100;
 
     uint64_t i = 0;
