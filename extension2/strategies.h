@@ -2,11 +2,16 @@
 #define STRATEGIES_H
 #include <time.h>
 #include <stdbool.h>
+#include "intersection.h"
 // every strategy:
 // 1. intersection (to access lights and state)
 // 2. takes in the time since change
 
-//typedef bool (*strategy)(intersection *isec, time_t *time_since_change);
+typedef bool (*strategy)(intersection *isec, time_t *time_since_change);
+
+bool basic (intersection *isec, time_t *time_since_change);
+
+bool basic_plus (intersection *isec, time_t *time_since_change);
 
 // takes in a number of parameters which are to be decided
 // note that the parameters need to be the same for all strategies
