@@ -1,28 +1,18 @@
 #include <stdbool.h>
+#include <time.h>
 #include <stdlib.h>
 #include <stdint.h>
 
 #include "strategies.h"
 #include "traffic_light.h"
-#include "traffic_light.h"
 #include "intersection.h"
 #include "road.h"
 #include "car.h"
-
-#define NUM_STATES 6
-#define NUM_ROADS 4
-
-colour states[NUM_STATES][NUM_ROADS] = {
-    {RED, GREEN, RED, GREEN},
-    {RED, AMBER, RED, AMBER},
-    {RED_AMBER, RED, RED_AMBER, RED},
-    {GREEN, RED, GREEN, RED},
-    {AMBER, RED, AMBER, RED},
-    {RED, RED_AMBER, RED, RED_AMBER},
-};
+#include "states.h"
 
 int main(int argc, char **argv) {
 
+    srand(time(NULL));   // Initialization, should only be called once.
 
     // initialise all the structures
     traffic_light light0 = {.clr = RED, .has_arrow = false, .has_sensor = false};
@@ -47,30 +37,26 @@ int main(int argc, char **argv) {
     road current_road;
     car *head_of_crossed;
     time_t time_since_change = 0.0;
-    time_t delta_t = 0.5; // seconds
+    time_t dt = 0.5; // seconds
     bool updated;
     uint64_t max_iterations = 100;
 
     uint64_t i = 0;
     while (i < max_iterations) { // timestep
 
-        //updated = update_lights_to_next_state(isec, delta_t, time_since_change); // takes a strategy
-        if (updated) {
-            time_since_change = 0.0;
-        } else {
-            time_since_change += delta_t;
-        }
+        //update_lights_to_next_state(isec, dt, &time_since_change); // takes a strategy
 
         for (int i = 0; i < NUM_ROADS; i++) {
             current_road = isec.roads[i];
 
-            // update_distances(road, delta_t); // let cars roll forward if possible (note special case for first car)
-            // head_of_crossed = remove_crossed(road); // pop off ANY cars which have passed stop line. return the number of cars that crossed
-            // maybe_add_cars(); // random function + also check sum < max_length
+            // update_distances(currrent_road, dt); // let cars roll forward if possible (note special case for first car)
+            // head_of_crossed = remove_crossed(current_road); // pop off ANY cars which have passed stop line. return the number of cars that crossed
+            if (rand() < (RAND_MAX+1u) / N) {// perform with probability 1/N
+                //maybe_add_cars(current_road) // also checks sum < length of road
+            }
         }
 
         i++;
     }
-
     return 0;
 }
