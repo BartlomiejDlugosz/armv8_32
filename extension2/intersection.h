@@ -11,6 +11,4 @@ typedef struct {
     int state_index;
 } intersection;
 
-bool update_lights_to_next_state();
-
 #endif // INTERSECTION_H
