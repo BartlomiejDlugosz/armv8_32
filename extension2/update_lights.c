@@ -1,11 +1,8 @@
 #include <stdbool.h>
 #include <time.h>
 #include <stdio.h>
-#include "update_lights.h"
-#include "intersection.h"
-#include "strategies.h"
-#include "states.h"
 
+#include "update_lights.h"
 
 bool update_lights_to_next_state(intersection *isec, time_t dt, time_t *time_since_change, strategy *s) {
     if ((*s) (isec, time_since_change)) {

@@ -1,8 +1,8 @@
 #ifndef ROAD_H
 #define ROAD_H
 
-#include "traffic_light.h"
 #include "car.h"
+#include "traffic_light.h"
 
 typedef struct {
     int length; // traverse the ll, only adding if sum < length

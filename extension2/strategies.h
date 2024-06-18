@@ -2,6 +2,7 @@
 #define STRATEGIES_H
 #include <time.h>
 #include <stdbool.h>
+#include "states.h"
 #include "intersection.h"
 // every strategy:
 // 1. intersection (to access lights and state)

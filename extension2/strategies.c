@@ -1,8 +1,7 @@
 #include <time.h>
 #include <stdbool.h>
+
 #include "strategies.h"
-#include "intersection.h"
-#include "states.h"
 
 static bool cars_waiting(intersection *isec) {
     bool cars_waiting_bool = false;

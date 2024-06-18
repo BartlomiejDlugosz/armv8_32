@@ -1,8 +1,7 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include "road.h"
 #include <sys/param.h>
-
+#include "road.h"
 // check lights (just once)
 // update distance of all cars (starting with first)
 // if distance stays the same, add time to stationary time

@@ -3,12 +3,12 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-#include "strategies.h"
 #include "traffic_light.h"
-#include "intersection.h"
-#include "road.h"
-#include "car.h"
 #include "states.h"
+#include "road.h"
+#include "intersection.h"
+#include "strategies.h"
+#include "update_lights.h"
 
 #define N 20
 

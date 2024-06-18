@@ -1,6 +1,7 @@
 #ifndef INTERSECTION_H
 #define INTERSECTION_H
 
+#include "traffic_light.h"
 #include "road.h"
 
 typedef struct {
