@@ -48,25 +48,28 @@ int main(int argc, char **argv) {
 
     //strategy s = &minimax;
     //
-    double time_since_change = 0.0;
-    double delta_t = 0.5; // seconds
+    car *head_of_crossed;
+    time_t time_since_change = 0.0;
+    time_t delta_t = 0.5; // seconds
     bool updated;
     uint64_t max_iterations = 100;
 
     uint64_t i = 0;
     while (i < max_iterations) { // timestep
 
-        updated = update_lights_to_next_state(); // takes a strategy
+        updated = update_lights_to_next_state(isec, delta_t); // takes a strategy
         if (updated) {
             time_since_change = 0.0;
         } else {
             time_since_change += delta_t;
         }
 
-        for (int i = 0; i < 4; i++) {
-            //update_distances(); // let cars roll forward if possible (note special case for first car)
-            // num_crossed = remove_crossed(); // pop off ANY cars which have passed stop line. return the number of cars that crossed
-            //maybe_add_cars(); // random function + also check sum < max_length
+        for (int i = 0; i < NUM_ROADS; i++) {
+            road = isec.roads[i];
+
+            // update_distances(road, delta_t); // let cars roll forward if possible (note special case for first car)
+            // head_of_crossed = remove_crossed(road); // pop off ANY cars which have passed stop line. return the number of cars that crossed
+            // maybe_add_cars(); // random function + also check sum < max_length
         }
 
         i++;
