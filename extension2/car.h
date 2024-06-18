@@ -10,17 +10,15 @@ typedef struct car {
     time_t time_stationary; // time stationary initially 0
 } car;
 
-// need to keep track how long they are waiting for
-
 
 // check lights (just once)
 // update distance of all cars (starting with first)
 // if distance stays the same, add time to stationary time
-void *update_distances();
+void *update_distances(road update_road, time_t time_to_add);
 
 // pop off ANY cars which have passed stop line (checking for negative distances), that involves
 // potentially popping many cars, updating the running head and its distance to the light
 // return the head of number of cars crossed
-car* remove_crossed();
+car* remove_crossed(road cur_road);
 
 #endif // CAR_H
