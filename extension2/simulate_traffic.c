@@ -25,29 +25,26 @@ int main(int argc, char **argv) {
 
 
     // initialise all the structures
-    road road0 = {.length = 10, .speed_limit = 60, .head_car = NULL };
-    road road1 = {.length = 100, .speed_limit = 50, .head_car = NULL };
-    road road2 = {.length = 20, .speed_limit = 10, .head_car = NULL };
-    road road3 = {.length = 100, .speed_limit = 50, .head_car = NULL };
+    traffic_light light0 = {.clr = RED, .has_arrow = false, .has_sensor = false};
+    traffic_light light1 = {.clr = GREEN, .has_arrow = false, .has_sensor = false};
+    traffic_light light2 = {.clr = RED, .has_arrow = false, .has_sensor = false};
+    traffic_light light3 = {.clr = GREEN, .has_arrow = false, .has_sensor = false};
 
-    light light0 = {.clr = RED, .has_arrow = false, .has_sensor = false};
-    light light1 = {.clr = GREEN, .has_arrow = false, .has_sensor = false};
-    light light2 = {.clr = RED, .has_arrow = false, .has_sensor = false};
-    light light3 = {.clr = GREEN, .has_arrow = false, .has_sensor = false};
+    road road0 = {.length = 10, .speed_limit = 60, .head_car = NULL, .light = light0 };
+    road road1 = {.length = 100, .speed_limit = 50, .head_car = NULL, .light = light1 };
+    road road2 = {.length = 20, .speed_limit = 10, .head_car = NULL, .light = light2 };
+    road road3 = {.length = 100, .speed_limit = 50, .head_car = NULL, .light = light3 };
     
     intersection isec;
     isec.roads[0] = road0;
     isec.roads[1] = road1;
     isec.roads[2] = road2;
     isec.roads[3] = road3;
-    isec.lights[0] = light0;
-    isec.lights[1] = light1;
-    isec.lights[2] = light2;
-    isec.lights[3] = light3;
     isec.state_index = 0;
 
     //strategy s = &minimax;
     //
+    road current_road;
     car *head_of_crossed;
     time_t time_since_change = 0.0;
     time_t delta_t = 0.5; // seconds
@@ -57,7 +54,7 @@ int main(int argc, char **argv) {
     uint64_t i = 0;
     while (i < max_iterations) { // timestep
 
-        updated = update_lights_to_next_state(isec, delta_t); // takes a strategy
+        //updated = update_lights_to_next_state(isec, delta_t, time_since_change); // takes a strategy
         if (updated) {
             time_since_change = 0.0;
         } else {
@@ -65,7 +62,7 @@ int main(int argc, char **argv) {
         }
 
         for (int i = 0; i < NUM_ROADS; i++) {
-            road = isec.roads[i];
+            current_road = isec.roads[i];
 
             // update_distances(road, delta_t); // let cars roll forward if possible (note special case for first car)
             // head_of_crossed = remove_crossed(road); // pop off ANY cars which have passed stop line. return the number of cars that crossed
