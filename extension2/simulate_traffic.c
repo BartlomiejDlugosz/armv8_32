@@ -10,6 +10,8 @@
 #include "car.h"
 #include "states.h"
 
+#define N 20
+
 int main(int argc, char **argv) {
 
     srand(time(NULL));   // Initialization, should only be called once.

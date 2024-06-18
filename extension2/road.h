@@ -21,7 +21,7 @@ car *maybe_add_cars();
 // check lights (just once)
 // update distance of all cars (starting with first)
 // if distance stays the same, add time to stationary time
-void *update_distances(road update_road, time_t time_to_add);
+void *update_distances(road *update_road, time_t dt);
 
 // pop off ANY cars which have passed stop line (checking for negative distances), that involves
 // potentially popping many cars, updating the running head and its distance to the light
