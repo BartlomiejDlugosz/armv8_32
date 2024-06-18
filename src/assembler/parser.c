@@ -9,6 +9,8 @@
 #include "dynamicString.h"
 #include "parser.h"
 
+#define DEFAULT_LABEL_SIZE 10
+
 void free_instruction(instruction *instr, bool full_free) {
     freeDynamicString(instr->label);
     for (int i = 0; i < 5; i++) {
@@ -24,23 +26,22 @@ void initialize_instruction(instruction *instr, bool free_previous) {
         free_instruction(instr, false);
     }
 
-    instr->label = createNewDynamicString(10);
+    instr->label = createNewDynamicString(DEFAULT_LABEL_SIZE);
     memset(instr->opcode, 0, sizeof(instr->opcode));
-    for (int i = 0; i < 5; i++) {
-        instr->operands[i] = createNewDynamicString(10);
+    for (int i = 0; i < MAX_OPERANDS; i++) {
+        instr->operands[i] = createNewDynamicString(DEFAULT_LABEL_SIZE);
     }
     instr->complete = false;
     instr->line_number = 0;
 }
 
 void pretty_print(instruction *instr) {
+    // Pretty print instruction, useful for debugging
     printf("Label: '%s'\n", getString(instr->label));
     printf("Opcode: '%s'\n", instr->opcode);
-    printf("Operand 1: '%s'\n", getString(instr->operands[0]));
-    printf("Operand 2: '%s'\n", getString(instr->operands[1]));
-    printf("Operand 3: '%s'\n", getString(instr->operands[2]));
-    printf("Operand 4: '%s'\n", getString(instr->operands[3]));
-    printf("Operand 5: '%s'\n", getString(instr->operands[4]));
+    for (int i = 0; i < MAX_OPERANDS; i++) {
+        printf("Operand %i: '%s'\n", i + 1,  getString(instr->operands[i]));
+    }
     printf("Complete: '%i'\n", instr->complete);
     printf("Line Number: '%lu'\n", instr->line_number);
     printf("\n");
@@ -88,6 +89,8 @@ instruction *parse(char *current_line, uint64_t *current_line_counter) {
     }
 
     // Check if empty line
+    // Done after new line replacement since '\n' could make
+    // strlen return 1 even though it's technically empty
     if (strlen(current_line) == 0) {
         return new_instruction;
     }
@@ -109,13 +112,14 @@ instruction *parse(char *current_line, uint64_t *current_line_counter) {
         }
     } else if (match == REG_NOMATCH) {
         (*current_line_counter)++;
-        // Instruction or empty line
+        // Instruction
         // Seperate by space and commas
         char *tok = strtok(current_line, ", ");
         // Keep track of which iteration it is
         int curr_it = 0;
 
-        while (tok != NULL && curr_it < 6) {
+        // curr_it also accounts for opcode so that's why + 1
+        while (tok != NULL && curr_it < MAX_OPERANDS + 1) {
             if (curr_it == 0) {
                 strcpy(new_instruction->opcode, tok);
             } else {
@@ -131,7 +135,7 @@ instruction *parse(char *current_line, uint64_t *current_line_counter) {
         new_instruction->line_number = *current_line_counter;
 
     } else {
-        // Error occurred???
+        // Error occurred
         printf("ERROR OCCURRED");
     }
     // pretty_print(new_instruction);

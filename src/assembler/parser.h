@@ -5,13 +5,16 @@
 #include <stdint.h>
 #include "dynamicString.h"
 
+#define MAX_OPCODE_LENGTH 10
+#define MAX_OPERANDS 5
+
 typedef struct {
     // Dynamic since we don't know size of label
     dynamicString *label;
     // Will always be a max of 10 characters
-    char opcode[10];
+    char opcode[MAX_OPCODE_LENGTH];
     // Max number of operands is 5, may include labels with unkown size
-    dynamicString *operands[5];
+    dynamicString *operands[MAX_OPERANDS];
     // Boolean to let others know if instruction is complete, or still in
     // the process of being created
     bool complete;

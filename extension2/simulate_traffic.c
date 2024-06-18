@@ -20,10 +20,10 @@ int main(int argc, char **argv) {
     traffic_light light2 = {.clr = RED, .has_arrow = false, .has_sensor = false};
     traffic_light light3 = {.clr = GREEN, .has_arrow = false, .has_sensor = false};
 
-    road road0 = {.length = 10, .speed_limit = 60, .head_car = NULL, .light = light0 };
-    road road1 = {.length = 100, .speed_limit = 50, .head_car = NULL, .light = light1 };
-    road road2 = {.length = 20, .speed_limit = 10, .head_car = NULL, .light = light2 };
-    road road3 = {.length = 100, .speed_limit = 50, .head_car = NULL, .light = light3 };
+    road road0 = {.length = 10, .speed_limit = 60, .follow_distance = 2 , .head_car = NULL, .light = light0 };
+    road road1 = {.length = 100, .speed_limit = 50, .follow_distance = 2 , .head_car = NULL, .light = light1 };
+    road road2 = {.length = 20, .speed_limit = 10, .follow_distance = 2 , .head_car = NULL, .light = light2 };
+    road road3 = {.length = 100, .speed_limit = 50, .follow_distance = 2 , .head_car = NULL, .light = light3 };
     
     intersection isec;
     isec.roads[0] = road0;
