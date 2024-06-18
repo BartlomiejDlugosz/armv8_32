@@ -22,7 +22,6 @@ void update_distances(road* update_road, time_t dt) {
         }
         distance_covered -= cur_distance - new_distance;
         // Dealing with rest of the cars
-        car* prev_car = update_road->head_car;
         car* next_car = update_road->head_car->next;
         int follow_distance = update_road->follow_distance; // minimum separation needed between cars
         while (next_car != NULL && distance_covered != 0) {
