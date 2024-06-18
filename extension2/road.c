@@ -1,14 +1,20 @@
 #include "road.h"
+#include <sys/param.h>
 
 // check lights (just once)
 // update distance of all cars (starting with first)
 // if distance stays the same, add time to stationary time
  // update_distances(road, delta_t); // let cars roll forward if possible (note special case for first car)
 void *update_distances(road* update_road, time_t dt)
-{
+{   
+    int speed_limit = update_road->speed_limit;
     // the lights can be checked using the road (it has a light attribute)
     if (update_road->light.clr == RED) {
-
+        // dealing with HEAD
+        int cur_distance = update_road->head_car->distance_to_car_in_front; // distance to light
+        // distance = speed * time
+        int new_distance = cur_distance - (speed_limit * dt) < 0;
+        update_road->head_car->distance_to_car_in_front = MAX(new_distance, 0);
     }
 }
 
