@@ -23,8 +23,6 @@ colour states[NUM_STATES][NUM_ROADS] = {
 
 int main(int argc, char **argv) {
 
-    double time_since_change = 0.0;
-    double delta_t = 0.5; // seconds
 
     // initialise all the structures
     road road0 = {.length = 10, .speed_limit = 60, .head_car = NULL };
@@ -49,8 +47,12 @@ int main(int argc, char **argv) {
     isec.state_index = 0;
 
     //strategy s = &minimax;
+    //
+    double time_since_change = 0.0;
+    double delta_t = 0.5; // seconds
     bool updated;
     uint64_t max_iterations = 100;
+
     uint64_t i = 0;
     while (i < max_iterations) { // timestep
 
@@ -63,7 +65,7 @@ int main(int argc, char **argv) {
 
         for (int i = 0; i < 4; i++) {
             //update_distances(); // let cars roll forward if possible (note special case for first car)
-            //remove_crossed(); // pop off ANY cars which have passed stop line
+            // num_crossed = remove_crossed(); // pop off ANY cars which have passed stop line. return the number of cars that crossed
             //maybe_add_cars(); // random function + also check sum < max_length
         }
 

@@ -1,8 +1,11 @@
 #ifndef STRATEGIES_H
 #define STRATEGIES_H
 
+// every strategy:
+// 1. intersection (to access lights and state)
+// 2. takes in the time since change
 
-//typedef bool (*strategy)(int, int);
+typedef bool (*strategy)(intersection isec, double time_since_change);
 
 // takes in a number of parameters which are to be decided
 // note that the parameters need to be the same for all strategies

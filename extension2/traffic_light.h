@@ -1,9 +1,7 @@
 #ifndef TRAFFIC_LIGHT_H
 #define TRAFFIC_LIGHT_H
 
-#include <stdbool.h>
 #include "traffic_light.h"
-
 
 typedef enum { RED, RED_AMBER, GREEN, AMBER } colour;
 typedef enum { RED, RED_AMBER, GREEN, AMBER } colour;
@@ -16,7 +14,5 @@ typedef struct {
     direction arrow;
     bool has_sensor; // tells us if cars are waiting
 } light;
-
-bool update_lights_to_next_state();
 
 #endif // TRAFFIC_LIGHT_H
