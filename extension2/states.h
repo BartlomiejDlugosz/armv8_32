@@ -3,6 +3,7 @@
 
 #define NUM_STATES 6
 #define NUM_ROADS 4
+
 #include "traffic_light.h"
 
 colour states[NUM_STATES][NUM_ROADS] = {

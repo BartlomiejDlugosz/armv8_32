@@ -12,11 +12,7 @@ typedef struct {
     traffic_light light;
 } road;
 
-// think about case where road->first_car == NULL
-// in the case where nothing is updated, the previous
-// head is returned so use as
-// road->first_car = maybe_add_cars(road, f(x));
-car *maybe_add_cars();
+bool maybe_add_cars();
 
 // check lights (just once)
 // update distance of all cars (starting with first)
