@@ -9,7 +9,7 @@ typedef struct {
     int speed_limit;
     int follow_distance; //minimum distance a car be from another car
     car *head_car;
-    traffic_light light;
+    traffic_light *light;
 } road;
 
 

@@ -5,7 +5,7 @@
 #include "road.h"
 
 typedef struct {
-    road roads[4];
+    road *roads[4];
 
     // make sure these stay in sync
     // traffic_light lights[4];

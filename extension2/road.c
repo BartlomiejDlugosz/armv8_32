@@ -11,7 +11,7 @@ void update_distances(road* update_road, time_t dt) {
     int speed_limit = update_road->speed_limit;
     // the lights can be checked using the road (it has a light attribute)
     int distance_covered = speed_limit * dt;
-    if (update_road->light.clr == RED) {
+    if (update_road->light->clr == RED) {
         // dealing with HEAD
         int cur_distance = update_road->head_car->distance_to_car_in_front; // distance to light
         // distance = speed * time
@@ -48,24 +48,40 @@ void update_distances(road* update_road, time_t dt) {
 // pop off ANY cars which have passed stop line (checking for negative distances), that involves
 // potentially popping many cars, updating the running head and its distance to the light
 car* remove_crossed(road* cur_road) {
+    printf("start of remove_crossed\n");
+    print_road(cur_road);
     if (cur_road->head_car == NULL) {
         return NULL;
     }
+
     car* old_head = cur_road->head_car;
     car* last_popped = NULL;
     int distance_travelled = cur_road->head_car->distance_to_car_in_front;
+
     if (distance_travelled >= 0) {
         return NULL;
     }
-    while (distance_travelled < 0 && cur_road->head_car->next != NULL) {
-        distance_travelled += cur_road->head_car->next->distance_to_car_in_front;
+
+    while (distance_travelled < 0 && cur_road->head_car != NULL) {
+        // check if there is a next car, in which case we need to update distance travelled
+        if (cur_road->head_car->next != NULL) {
+            distance_travelled += cur_road->head_car->next->distance_to_car_in_front;
+        }
+
         last_popped = cur_road->head_car;
         cur_road->head_car = cur_road->head_car->next;
     }
 
-    last_popped->next = NULL;
+    // if only one car crossed
+    if (last_popped != NULL) {
+        last_popped->next = NULL;
+    }
 
-    cur_road->head_car->distance_to_car_in_front -= distance_travelled;
+    // if there is a head, then update dist
+    if (cur_road->head_car != NULL)  {
+        cur_road->head_car->distance_to_car_in_front -= distance_travelled;
+    }
+    // otherwise no head, so no need to update dist
 
     return old_head;    
 
@@ -80,19 +96,19 @@ bool maybe_add_cars(road *update_road)
     // in which case add it
 
     car *current_car = update_road->head_car;
+    car *prev_car = NULL;
 
     int total_distance = 0;
-    // special case where no cars on road:
-    if (current_car == NULL) {
-        // skip while loop, no cars on road
-    } else {
-        while (current_car->next != NULL) {
-            total_distance += current_car->distance_to_car_in_front;
-            current_car = current_car->next;
-        }
-        if (total_distance >= update_road->length) {
-            return false; // no space for car
-        }
+    while (current_car != NULL) {
+        total_distance += current_car->distance_to_car_in_front;
+        prev_car = current_car;
+        current_car = current_car->next;
+    }
+    // current_car = NULL
+    // prev_car is last car in ll
+
+    if (total_distance >= update_road->length) {
+        return false; // no space for car
     }
     
     car *new_car = malloc(sizeof(struct car));
@@ -108,7 +124,7 @@ bool maybe_add_cars(road *update_road)
     if (update_road->head_car == NULL) {
         update_road->head_car = new_car;
     } else {
-        current_car->next = new_car;
+        prev_car->next = new_car;
     }
     return true;
 }
@@ -133,7 +149,10 @@ void free_all_cars(car *current_car) {
 }
 
 void print_road(road *rd) {
-    printf("rd len: %i ", rd->length);
+    printf("road len: %i\n", rd->length);
+    printf("NULL");
     print_car(rd->head_car);
-    print_traffic_light(&rd->light);
+    printf(" | ");
+    print_traffic_light(rd->light);
+    printf("\n\n");
 }
