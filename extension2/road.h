@@ -5,7 +5,7 @@
 #include "traffic_light.h"
 
 typedef struct {
-    uint64_t length;
+    int length;
     int speed_limit;
     int follow_distance;
     car *head_car;
