@@ -30,4 +30,6 @@ void free_single_car(car *current_car);
 
 void free_all_cars(car *current_car);
 
+void print_road(road *rd);
+
 #endif // ROAD_H

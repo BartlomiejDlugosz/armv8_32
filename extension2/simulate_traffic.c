@@ -3,6 +3,8 @@
 #include <stdlib.h>
 #include <stdint.h>
 
+#include <stdio.h> // debugging
+
 #include "traffic_light.h"
 #include "states.h"
 #include "road.h"
@@ -39,17 +41,18 @@ int main(int argc, char **argv) {
     road current_road;
     car *head_of_crossed;
     time_t time_since_change = 0.0;
-    time_t dt = 0.5; // seconds
+    time_t dt = 1; // seconds
     uint64_t max_iterations = 100;
     uint64_t iterations = 0;
     while (iterations < max_iterations) { // timestep
 
-        update_lights_to_next_state(&isec, dt, &time_since_change, (*basic)); // takes a strategy
-
+        update_lights_to_next_state(&isec, dt, &time_since_change, basic); // takes a strategy
+        
         for (int i = 0; i < NUM_ROADS; i++) {
             current_road = isec.roads[i];
 
             update_distances(&current_road, dt); // let cars roll forward if possible (note special case for first car)
+            
             //head_of_crossed = remove_crossed(&current_road); // pop off ANY cars which have passed stop line. return the number of cars that crossed
             head_of_crossed = remove_crossed(&current_road);
             free_all_cars(head_of_crossed);
@@ -57,7 +60,7 @@ int main(int argc, char **argv) {
                 maybe_add_cars(&current_road); // also checks sum < length of road
             }
         }
-
+        print_intersection(&isec);
         iterations++;
     }
     for (int i = 0; i < NUM_ROADS; i++) {

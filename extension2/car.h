@@ -9,4 +9,6 @@ typedef struct car {
     time_t time_stationary; // time stationary initially 0
 } car;
 
+void print_car(car *head_car);
+
 #endif // CAR_H
