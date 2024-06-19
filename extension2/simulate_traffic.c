@@ -12,6 +12,10 @@
 #include "strategies.h"
 #include "update_lights.h"
 
+#ifdef RPI
+#include "show_leds.h"
+#endif // RPI
+
 #define N 4
 #define DT 1 // seconds
 #define INITIAL_STATE_INDEX 0
@@ -37,6 +41,9 @@
 
 
 int main(int argc, char **argv) {
+    #ifdef RPI
+    init_leds();
+    #endif // RPI
 
     srand(time(NULL));   // Initialization, should only be called once.
 
@@ -75,6 +82,9 @@ int main(int argc, char **argv) {
             printf("\n\n\n\nSTART OF ITERATION MOD 100\n");
             print_intersection(isec);
         }
+        #ifdef RPI
+            update_leds(isec->state_index);
+        #endif // RPI
 
         // NOTE: also deals with updating physical LEDs
         update_lights_to_next_state(isec, DT, time_since_change, s); // takes a strategy
@@ -90,10 +100,18 @@ int main(int argc, char **argv) {
                 maybe_add_car(current_road); // also checks sum < length of road
             }
         }
+
+        #ifdef RPI
+            sleep(DT);
+        #endif // RPI
     }
 
     for (int i = 0; i < NUM_ROADS; i++) {
         free_all_cars(isec->roads[i]->head_car);
     }
+    #ifdef RPI
+        terminate_gpio();
+    #endif // RPI
+    
     return 0;
 }
