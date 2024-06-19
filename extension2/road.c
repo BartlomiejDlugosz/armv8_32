@@ -131,3 +131,9 @@ void free_all_cars(car *current_car) {
     }
     free(current_car);
 }
+
+void print_road(road *rd) {
+    printf("rd len: %i ", rd->length);
+    print_car(rd->head_car);
+    print_traffic_light(&rd->light);
+}

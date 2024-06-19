@@ -6,7 +6,7 @@
 static bool cars_waiting(intersection *isec) {
     bool cars_waiting_bool = false;
     for(int i = 0;  i < NUM_ROADS; i++) {
-        cars_waiting_bool |= (isec->lights[i].clr == RED && isec->roads[i].head_car != NULL);
+        cars_waiting_bool |= (isec->roads[i].light.clr == RED && isec->roads[i].head_car != NULL);
     }
     return cars_waiting_bool;
 }
