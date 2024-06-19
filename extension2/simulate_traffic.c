@@ -75,6 +75,7 @@ int main(int argc, char **argv) {
             print_intersection(isec);
         }
 
+        // NOTE: also deals with updating physical LEDs
         update_lights_to_next_state(isec, dt, time_since_change, s); // takes a strategy
         
         for (int i = 0; i < NUM_ROADS; i++) {

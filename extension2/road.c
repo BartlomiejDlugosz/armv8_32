@@ -47,8 +47,6 @@ void update_distances(road* update_road, time_t dt) {
 // pop off ANY cars which have passed stop line (checking for negative distances), that involves
 // potentially popping many cars, updating the running head and its distance to the light
 car* remove_crossed(road* cur_road) {
-    printf("start of remove_crossed\n");
-    print_road(cur_road);
     if (cur_road->head_car == NULL) {
         return NULL;
     }
