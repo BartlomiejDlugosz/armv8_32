@@ -148,7 +148,7 @@ void free_all_cars(car *current_car) {
 }
 
 void print_road(road *rd) {
-    printf("road len: %i\n", rd->length);
+    printf("road len: %i speed: %d\n", rd->length, rd->speed_limit);
     printf("NULL");
     print_car(rd->head_car);
     printf(" | ");
