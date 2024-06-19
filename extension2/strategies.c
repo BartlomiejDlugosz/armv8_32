@@ -54,3 +54,8 @@ bool basic_plus (intersection *isec, time_t time_since_change) {
     }
     return false;
 }
+
+// what i need: duration to hold for each traffic light state where it's green 
+bool genetic_algorithm (intersection *isec, time_t time_since_change) {
+    return false;
+}

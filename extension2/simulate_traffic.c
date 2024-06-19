@@ -89,6 +89,8 @@ int main(int argc, char **argv) {
     isec_eval->road_evals[1] = &road1_eval;
     isec_eval->road_evals[2] = &road2_eval;
     isec_eval->road_evals[3] = &road3_eval;
+    isec_eval->total_average_time_stationary = 0;
+    isec_eval->total_maximum_time_stationary = 0;
 
     strategy s = basic_plus;
     
