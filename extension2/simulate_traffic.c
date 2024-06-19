@@ -49,7 +49,7 @@ int main(int argc, char **argv) {
     srand(time(NULL));   // Initialization, should only be called once.
 
     // initialise all the structures
-    traffic_light light0 = {.clr = RED, .has_arrow = false, .has_sensor = false};
+    traffic_light light0 = {.clr = RED, .has_arrow = false, .has_sensor = true, .sensor_distance = 0/*get_sensor_value()*/ };
     traffic_light light1 = {.clr = GREEN, .has_arrow = false, .has_sensor = false};
     traffic_light light2 = {.clr = RED, .has_arrow = false, .has_sensor = false};
     traffic_light light3 = {.clr = GREEN, .has_arrow = false, .has_sensor = false};
@@ -101,6 +101,7 @@ int main(int argc, char **argv) {
             update_leds(isec->state_index);
         #endif // RPI
 
+        //isec->roads[0]->light->sensor_distance = get_sensor_value();
         // NOTE: also deals with updating physical LEDs
         update_lights_to_next_state(isec, DT, time_since_change, s); // takes a strategy
         
