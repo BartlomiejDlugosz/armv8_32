@@ -16,6 +16,7 @@ bool basic (intersection *isec, time_t time_since_change);
 bool basic_plus (intersection *isec, time_t time_since_change);
 
 extern strategy strategies[NUM_STRATEGIES];
+extern char strategy_names[NUM_STRATEGIES];
 // takes in a number of parameters which are to be decided
 // note that the parameters need to be the same for all strategies
 // so update the above typedef to accomodate this!

@@ -69,4 +69,5 @@ bool genetic_algorithm_data (intersection *isec, time_t time_since_change, Chrom
     return genetic_algorithm (isec, time_since_change);
 }   
 
-strategy functions[NUM_STRATEGIES] = {basic, basic_plus, genetic_algorithm};
+strategy strategies[NUM_STRATEGIES] = {basic, basic_plus, genetic_algorithm};
+char* strategy_names[NUM_STRATEGIES] = {"Basic", "Basic Plus", "Genetic Algorithm"};
