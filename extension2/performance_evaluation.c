@@ -2,9 +2,9 @@
 #include "performance_evaluation.h"
 #include "car.h"
 void evaluate_road(car *car_crossed, intersection_evaluation *isec_eval, int road_num) {
-    printf("STARTED EVALUATING ROAD");
-    print_car(car_crossed);
-    printf("\n\n");
+    // printf("STARTED EVALUATING ROAD");
+    // print_car(car_crossed);
+    // printf("\n\n");
     if (car_crossed == NULL)
     {
         return;

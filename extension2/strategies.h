@@ -5,7 +5,7 @@
 #include "states.h"
 #include "intersection.h"
 #include "genetic_algorithm.h"
-#define NUM_STRATEGIES 4
+#define NUM_STRATEGIES 3
 #define TIME_TO_CHANGE_BASIC 30
 #define TIME_TO_CHANGE_AMBER 2
 // every strategy:
@@ -21,7 +21,7 @@ bool basic_plus (intersection *isec, time_t time_since_change, Chromosome *optim
 bool genetic_algorithm (intersection *isec, time_t time_since_change, Chromosome *optimal_data);
 
 extern strategy strategies[NUM_STRATEGIES];
-extern char strategy_names[NUM_STRATEGIES];
+extern char *strategy_names[NUM_STRATEGIES];
 // takes in a number of parameters which are to be decided
 // note that the parameters need to be the same for all strategies
 // so update the above typedef to accomodate this!

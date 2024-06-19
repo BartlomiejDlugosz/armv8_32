@@ -5,6 +5,6 @@
 #include "strategies.h"
 #include "performance_evaluation.h"
 
-intersection_evaluation* simulate_traffic(strategy s);
+intersection_evaluation* simulate_traffic(strategy s, Chromosome *optimal_data);
 
 #endif

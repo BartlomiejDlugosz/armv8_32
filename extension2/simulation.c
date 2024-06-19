@@ -1,8 +1,8 @@
 #include <stdlib.h>
-#include <strings.h>
+#include <string.h>
 #include "simulate_traffic.h"
 #include "strategies.h"
-#define NUM_STRATEGY_CALLS 10
+#define NUM_STRATEGY_CALLS 100
 
 // One strategy
 // ./simulation (FILE) strategy
@@ -20,8 +20,18 @@ int main(int argc, char **argv) {
 
     // Calling all strategies and writing to a file
     // ./simulation (FILE)
+    int basic_durations[NUM_STATES] = {TIME_TO_CHANGE_BASIC, TIME_TO_CHANGE_AMBER, TIME_TO_CHANGE_AMBER, TIME_TO_CHANGE_BASIC, TIME_TO_CHANGE_AMBER, TIME_TO_CHANGE_AMBER};
+    Chromosome optimal_data_struct;
+    Chromosome *optimal_data;
+    optimal_data = &optimal_data_struct;
+    optimal_data->durations[0] = basic_durations[0];
+    optimal_data->durations[1] = basic_durations[1];
+    optimal_data->durations[2] = basic_durations[2];
+    optimal_data->durations[3] = basic_durations[3];
+    optimal_data->durations[4] = basic_durations[4];
+    optimal_data->durations[5] = basic_durations[5];
 
-    FILE* output_file = fopen(argv[1], "a");
+    FILE* output_file = fopen(argv[1], "w");
     if (output_file == NULL) {
         fprintf(stderr, "Failed to open input file\n");
         return EXIT_FAILURE;
@@ -35,7 +45,7 @@ int main(int argc, char **argv) {
             double total_average_time_stationary = 0;
             double total_maximum_time_stationary = 0;
             for (int i = 0; i < NUM_STRATEGY_CALLS; i++) {
-                intersection_evaluation* returned_evaluation = simulate_traffic(s);
+                intersection_evaluation* returned_evaluation = simulate_traffic(s, optimal_data);
                 total_average_time_stationary += (double)(returned_evaluation->total_average_time_stationary);
                 total_maximum_time_stationary += (double)(returned_evaluation->total_maximum_time_stationary);
             }
@@ -61,7 +71,7 @@ int main(int argc, char **argv) {
             for (int i = 0; i < NUM_STRATEGIES; i++) {
                 if (strcmp(strategy_name, strategy_names[i]) == 0) {
                     const strategy s = strategies[i];
-                    intersection_evaluation* returned_evaluation = simulate_traffic(s);
+                    intersection_evaluation* returned_evaluation = simulate_traffic(s, optimal_data);
                     double total_average_time_stationary = (double)(returned_evaluation->total_average_time_stationary);
                     double total_maximum_time_stationary = (double)(returned_evaluation->total_maximum_time_stationary);
                     fprintf(output_file, "Strategy: %s Total Average Time: %lf, Total Maximum Time: %lf\n", strategy_name, total_average_time_stationary, total_maximum_time_stationary);

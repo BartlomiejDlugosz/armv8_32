@@ -43,7 +43,7 @@
 
 
 
-intersection_evaluation* simulate_traffic(strategy s) {
+intersection_evaluation* simulate_traffic(strategy s, Chromosome *optimal_data) {
     #ifdef RPI
     init_gpio();
     init_leds();
@@ -93,16 +93,7 @@ intersection_evaluation* simulate_traffic(strategy s) {
     isec_eval->total_average_time_stationary = 0;
     isec_eval->total_maximum_time_stationary = 0;
 
-    int basic_durations[NUM_STATES] = {TIME_TO_CHANGE_BASIC, TIME_TO_CHANGE_AMBER, TIME_TO_CHANGE_AMBER, TIME_TO_CHANGE_BASIC, TIME_TO_CHANGE_AMBER, TIME_TO_CHANGE_AMBER};
-    Chromosome optimal_data_struct;
-    Chromosome *optimal_data;
-    optimal_data = &optimal_data_struct;
-    optimal_data->durations[0] = basic_durations[0];
-    optimal_data->durations[1] = basic_durations[1];
-    optimal_data->durations[2] = basic_durations[2];
-    optimal_data->durations[3] = basic_durations[3];
-    optimal_data->durations[4] = basic_durations[4];
-    optimal_data->durations[5] = basic_durations[5];
+    
     // strategy s = basic_plus;
     
     road *current_road;
@@ -113,10 +104,10 @@ intersection_evaluation* simulate_traffic(strategy s) {
     time_since_change = &initial_time_since_change;
 
     for (uint64_t iter = 0; iter < MAX_ITERATIONS; iter++) { // timestep
-        if (iter % 100 == 0) {
-            printf("\n\n\n\nSTART OF ITERATION MOD 100\n");
-            print_intersection(isec);
-        }
+        // if (iter % 100 == 0) {
+        //     printf("\n\n\n\nSTART OF ITERATION MOD 100\n");
+        //     print_intersection(isec);
+        // }
         #ifdef RPI
         update_leds(isec->state_index);
         isec->roads[0]->light->sensor_distance = get_radar();
