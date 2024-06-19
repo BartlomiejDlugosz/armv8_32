@@ -37,11 +37,10 @@ int main(int argc, char **argv) {
     //strategy s = &minimax;
     //
     road current_road;
-    //car *head_of_crossed;
+    car *head_of_crossed;
     time_t time_since_change = 0.0;
     time_t dt = 0.5; // seconds
     uint64_t max_iterations = 100;
-
     uint64_t iterations = 0;
     while (iterations < max_iterations) { // timestep
 
@@ -52,7 +51,8 @@ int main(int argc, char **argv) {
 
             update_distances(&current_road, dt); // let cars roll forward if possible (note special case for first car)
             //head_of_crossed = remove_crossed(&current_road); // pop off ANY cars which have passed stop line. return the number of cars that crossed
-            isec.roads[i].head_car = remove_crossed(&current_road);
+            head_of_crossed = remove_crossed(&current_road);
+            free_all_cars(head_of_crossed);
             if (rand() < (RAND_MAX+1u) / N) {// perform with probability 1/N
                 maybe_add_cars(&current_road); // also checks sum < length of road
             }

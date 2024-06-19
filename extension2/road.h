@@ -12,7 +12,7 @@ typedef struct {
     traffic_light light;
 } road;
 
-bool maybe_add_cars();
+
 
 // check lights (just once)
 // update distance of all cars (starting with first)
@@ -23,5 +23,11 @@ void update_distances(road *update_road, time_t dt);
 // potentially popping many cars, updating the running head and its distance to the light
 // return the head of number of cars crossed
 car* remove_crossed(road* cur_road);
+
+bool maybe_add_cars();
+
+void free_single_car(car *current_car);
+
+void free_all_cars(car *current_car);
 
 #endif // ROAD_H
