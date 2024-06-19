@@ -11,10 +11,12 @@ typedef struct {
 
 typedef struct {
     road_evaluation *road_evals[NUM_ROADS];
+    double total_average_time_stationary;
+    time_t total_maximum_time_stationary;
 } intersection_evaluation;
 
 void evaluate_road(car *car_crossed, intersection_evaluation *isec_eval, int road_num);
 
-void evaluate_intersection(intersection_evaluation *isec_eval);
+intersection_evaluation *evaluate_intersection(intersection_evaluation *isec_eval);
 
 #endif // PERFORMANCE_EVALUATION_H
