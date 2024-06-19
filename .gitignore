@@ -20,6 +20,7 @@
 *.bi
 emulate
 assemble
+simulate_traffic
 
 #ignore junk files from compiling Assembly
 *.img
