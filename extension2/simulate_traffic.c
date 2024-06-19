@@ -14,6 +14,7 @@
 #include "performance_evaluation.h"
 
 #ifdef RPI
+#include "radar.h"
 #include "show_leds.h"
 #endif // RPI
 
@@ -43,13 +44,15 @@
 
 int main(int argc, char **argv) {
     #ifdef RPI
+    init_gpio();
     init_leds();
+    init_radar();
     #endif // RPI
 
     srand(time(NULL));   // Initialization, should only be called once.
 
     // initialise all the structures
-    traffic_light light0 = {.clr = RED, .has_arrow = false, .has_sensor = true, .sensor_distance = 0/*get_sensor_value()*/ };
+    traffic_light light0 = {.clr = RED, .has_arrow = false, .has_sensor = true, .sensor_distance = get_radar() };
     traffic_light light1 = {.clr = GREEN, .has_arrow = false, .has_sensor = false};
     traffic_light light2 = {.clr = RED, .has_arrow = false, .has_sensor = false};
     traffic_light light3 = {.clr = GREEN, .has_arrow = false, .has_sensor = false};
@@ -83,7 +86,7 @@ int main(int argc, char **argv) {
     isec_eval->road_evals[2] = &road2_eval;
     isec_eval->road_evals[3] = &road3_eval;
 
-    strategy s = basic;
+    strategy s = basic_plus;
     
     road *current_road;
     car *head_of_crossed;
@@ -101,7 +104,7 @@ int main(int argc, char **argv) {
             update_leds(isec->state_index);
         #endif // RPI
 
-        //isec->roads[0]->light->sensor_distance = get_sensor_value();
+        isec->roads[0]->light->sensor_distance = get_radar();
         // NOTE: also deals with updating physical LEDs
         update_lights_to_next_state(isec, DT, time_since_change, s); // takes a strategy
         
