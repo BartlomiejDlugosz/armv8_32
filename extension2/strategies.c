@@ -4,10 +4,6 @@
 #include "strategies.h"
 #include "genetic_algorithm.h"
 
-#define TIME_TO_CHANGE_BASIC 30
-
-static Chromosome optimal_data;  
-
 static bool cars_waiting(intersection *isec) {
     bool cars_waiting_bool = false;
     for(int i = 0;  i < NUM_ROADS; i++) {
@@ -37,8 +33,8 @@ static bool amber_lights(intersection *isec) {
     return amber_light;
 }
 
-bool basic (intersection *isec, time_t time_since_change) {
-    if (amber_lights(isec) && time_since_change > 2) {
+bool basic (intersection *isec, time_t time_since_change, Chromosome *optimal_data) {
+    if (amber_lights(isec) && time_since_change > TIME_TO_CHANGE_AMBER) {
         return true;
     } else if (time_since_change > TIME_TO_CHANGE_BASIC) {
         return true;
@@ -46,8 +42,8 @@ bool basic (intersection *isec, time_t time_since_change) {
     return false;
 }
 
-bool basic_plus (intersection *isec, time_t time_since_change) {
-    if (amber_lights(isec) && time_since_change > 2) {
+bool basic_plus (intersection *isec, time_t time_since_change, Chromosome *optimal_data) {
+    if (amber_lights(isec) && time_since_change > TIME_TO_CHANGE_AMBER) {
         return true;
     } else if (time_since_change > TIME_TO_CHANGE_BASIC * sensor_significance(isec)) {
         if(cars_waiting(isec)) {
@@ -59,14 +55,11 @@ bool basic_plus (intersection *isec, time_t time_since_change) {
 }
 
 // what i need: duration to hold for each traffic light state where it's green 
-bool genetic_algorithm (intersection *isec, time_t time_since_change) {
-    
+bool genetic_algorithm (intersection *isec, time_t time_since_change, Chromosome *optimal_data) {
+    if(optimal_data->durations[isec->state_index] < time_since_change) {
+        return true;
+    }
     return false;
 }
 
-bool genetic_algorithm_data (intersection *isec, time_t time_since_change, Chromosome optimal) {
-    optimal_data = optimal;
-    return genetic_algorithm (isec, time_since_change);
-}   
-
-strategy functions[NUM_STRATEGIES] = {basic, basic_plus, genetic_algorithm};
+strategy strategies[NUM_STRATEGIES] = {basic, basic_plus, genetic_algorithm};

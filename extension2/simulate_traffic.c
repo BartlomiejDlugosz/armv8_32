@@ -93,6 +93,16 @@ intersection_evaluation* simulate_traffic(strategy s) {
     isec_eval->total_average_time_stationary = 0;
     isec_eval->total_maximum_time_stationary = 0;
 
+    int basic_durations[NUM_STATES] = {TIME_TO_CHANGE_BASIC, TIME_TO_CHANGE_AMBER, TIME_TO_CHANGE_AMBER, TIME_TO_CHANGE_BASIC, TIME_TO_CHANGE_AMBER, TIME_TO_CHANGE_AMBER};
+    Chromosome optimal_data_struct;
+    Chromosome *optimal_data;
+    optimal_data = &optimal_data_struct;
+    optimal_data->durations[0] = basic_durations[0];
+    optimal_data->durations[1] = basic_durations[1];
+    optimal_data->durations[2] = basic_durations[2];
+    optimal_data->durations[3] = basic_durations[3];
+    optimal_data->durations[4] = basic_durations[4];
+    optimal_data->durations[5] = basic_durations[5];
     // strategy s = basic_plus;
     
     road *current_road;
@@ -113,7 +123,7 @@ intersection_evaluation* simulate_traffic(strategy s) {
         #endif // RPI
 
         // NOTE: also deals with updating physical LEDs
-        update_lights_to_next_state(isec, DT, time_since_change, s); // takes a strategy
+        update_lights_to_next_state(isec, DT, time_since_change, s, optimal_data); // takes a strategy
         
         for (int i = 0; i < NUM_ROADS; i++) {
             current_road = isec->roads[i];

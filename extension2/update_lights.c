@@ -5,8 +5,8 @@
 #include "update_lights.h"
 #include "traffic_light.h"
 
-bool update_lights_to_next_state(intersection *isec, time_t dt, time_t *time_since_change, strategy s) {
-    if ((s) (isec, *time_since_change)) {
+bool update_lights_to_next_state(intersection *isec, time_t dt, time_t *time_since_change, strategy s, Chromosome *optimal_data) {
+    if ((s) (isec, *time_since_change, optimal_data)) {
         isec->state_index = (isec->state_index + 1) % (NUM_STATES);
         for(int i = 0; i < NUM_ROADS; i++) {
             printf("Road: %i ", i);
