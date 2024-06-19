@@ -13,6 +13,25 @@
 #include "update_lights.h"
 
 #define N 4
+#define MAX_ITERATIONS 10000
+
+#define ROAD0_LENGTH 5000
+#define ROAD1_LENGTH 7200
+#define ROAD2_LENGTH 6000
+#define ROAD3_LENGTH 6500
+
+#define ROAD0_SPEED_LIMIT 60
+#define ROAD1_SPEED_LIMIT 75
+#define ROAD2_SPEED_LIMIT 50
+#define ROAD3_SPEED_LIMIT 65
+
+#define FOLLOW_DIST_SF 15
+#define ROAD0_FOLLOW_DIST (int)(ROAD0_SPEED_LIMIT / FOLLOW_DIST_SF)
+#define ROAD1_FOLLOW_DIST (int)(ROAD1_SPEED_LIMIT / FOLLOW_DIST_SF)
+#define ROAD2_FOLLOW_DIST (int)(ROAD2_SPEED_LIMIT / FOLLOW_DIST_SF)
+#define ROAD3_FOLLOW_DIST (int)(ROAD3_SPEED_LIMIT / FOLLOW_DIST_SF)
+
+
 
 int main(int argc, char **argv) {
 
@@ -24,10 +43,10 @@ int main(int argc, char **argv) {
     traffic_light light2 = {.clr = RED, .has_arrow = false, .has_sensor = false};
     traffic_light light3 = {.clr = GREEN, .has_arrow = false, .has_sensor = false};
 
-    road road0 = {.length = 40000, .speed_limit = 60, .follow_distance = 5 , .head_car = NULL, .light = &light0 };
-    road road1 = {.length = 10000, .speed_limit = 50, .follow_distance = 2 , .head_car = NULL, .light = &light1 };
-    road road2 = {.length = 20000, .speed_limit = 40, .follow_distance = 2 , .head_car = NULL, .light = &light2 };
-    road road3 = {.length = 15000, .speed_limit = 60, .follow_distance = 2 , .head_car = NULL, .light = &light3 };
+    road road0 = {.length = ROAD0_LENGTH, .speed_limit = ROAD0_SPEED_LIMIT, .follow_distance = ROAD0_FOLLOW_DIST , .head_car = NULL, .light = &light0 };
+    road road1 = {.length = ROAD1_LENGTH, .speed_limit = ROAD1_SPEED_LIMIT, .follow_distance = ROAD1_FOLLOW_DIST , .head_car = NULL, .light = &light1 };
+    road road2 = {.length = ROAD2_LENGTH, .speed_limit = ROAD2_SPEED_LIMIT, .follow_distance = ROAD2_FOLLOW_DIST , .head_car = NULL, .light = &light2 };
+    road road3 = {.length = ROAD3_LENGTH, .speed_limit = ROAD3_SPEED_LIMIT, .follow_distance = ROAD3_FOLLOW_DIST , .head_car = NULL, .light = &light3 };
     
     intersection isec_struct;
     intersection *isec;
@@ -43,15 +62,15 @@ int main(int argc, char **argv) {
     
     road *current_road;
     car *head_of_crossed;
+
     time_t initial_time_since_change = 0;
     time_t *time_since_change;
     time_since_change = &initial_time_since_change;
 
     time_t dt = 1; // seconds
-    uint64_t max_iterations = 10000;
 
-    for (uint64_t iter = 0; iter < max_iterations; iter++) { // timestep
-        if (max_iterations % 100 == 0) {
+    for (uint64_t iter = 0; iter < MAX_ITERATIONS; iter++) { // timestep
+        if (iter % 100 == 0) {
             printf("\n\n\n\nSTART OF ITERATION MOD 100\n");
             print_intersection(isec);
         }
