@@ -9,6 +9,7 @@
 void update_leds(int state_index);
 void sleep(int seconds);
 void init_leds(void);
+void init_gpio(void);
 void terminate_gpio(void);
 
 

@@ -14,6 +14,7 @@
 #include "performance_evaluation.h"
 
 #ifdef RPI
+#include "radar.h"
 #include "show_leds.h"
 #endif // RPI
 
@@ -43,7 +44,9 @@
 
 int main(int argc, char **argv) {
     #ifdef RPI
+    init_gpio();
     init_leds();
+    init_radar();
     #endif // RPI
 
     srand(time(NULL));   // Initialization, should only be called once.

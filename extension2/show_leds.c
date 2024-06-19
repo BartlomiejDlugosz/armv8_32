@@ -56,7 +56,7 @@ static void set_light(int pins[], colour clr) {
             gpioWrite(pins[2], 1);
             break;
         default:
-            fprintf(stderr, "UNKNOWN COLOUR");
+            fprintf(stderr, "UNKNOWN COLOUR %i\n", clr);
             exit(1);
     }
 }
@@ -74,8 +74,6 @@ void update_leds(int state_index) {
 }
 
 void init_leds() {
-    gpioInitialise();
-
     for (int i = 0; i < 3; i++) {
         all_lights[0 + i] = (struct physical_light) {.pin_num = light_1_pins[i], .state = 0};
     }
@@ -92,6 +90,10 @@ void init_leds() {
     for (int i = 0; i < 12; i++) {
         gpioSetMode(all_lights[i].pin_num, PI_OUTPUT);
     }
+}
+
+void init_gpio() {
+    gpioInitialise();
 }
 
 void terminate_gpio() {
