@@ -54,9 +54,10 @@ int main(int argc, char **argv) {
     // initialise all the structures
     #ifdef RPI
     traffic_light light0 = {.clr = RED, .has_arrow = false, .has_sensor = true, .sensor_distance = get_radar() };
-#else 
+    #else 
     traffic_light light0 = {.clr = RED, .has_arrow = false, .has_sensor = false };
-#endif
+    #endif
+
     traffic_light light1 = {.clr = GREEN, .has_arrow = false, .has_sensor = false};
     traffic_light light2 = {.clr = RED, .has_arrow = false, .has_sensor = false};
     traffic_light light3 = {.clr = GREEN, .has_arrow = false, .has_sensor = false};
@@ -118,8 +119,8 @@ int main(int argc, char **argv) {
         }
 
         #ifdef RPI
-            update_leds(isec->state_index);
-            isec->roads[0]->light->sensor_distance = get_radar();
+        update_leds(isec->state_index);
+        isec->roads[0]->light->sensor_distance = get_radar();
         #endif // RPI
 
         // NOTE: also deals with updating physical LEDs
@@ -139,7 +140,7 @@ int main(int argc, char **argv) {
         }
 
         #ifdef RPI
-            sleep(DT);
+        sleep(DT);
         #endif // RPI
     }
     evaluate_intersection(isec_eval);
@@ -147,7 +148,7 @@ int main(int argc, char **argv) {
         free_all_cars(isec->roads[i]->head_car);
     }
     #ifdef RPI
-        terminate_gpio();
+    terminate_gpio();
     #endif // RPI
     
     return 0;
