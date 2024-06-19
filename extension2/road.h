@@ -10,13 +10,14 @@ typedef struct {
     int follow_distance;
     car *head_car;
     traffic_light *light;
+    int num_cars;
 } road;
 
 void update_distances(road *update_road, time_t dt);
 
 car* remove_crossed(road* cur_road);
 
-bool maybe_add_cars();
+bool maybe_add_car(road *update_road);
 
 void free_single_car(car *current_car);
 

@@ -13,6 +13,9 @@
 #include "update_lights.h"
 
 #define N 4
+#define DT 1 // seconds
+#define INITIAL_STATE_INDEX 0
+#define INITIAL_NUM_CARS 0
 #define MAX_ITERATIONS 10000
 
 #define ROAD0_LENGTH 5000
@@ -43,10 +46,10 @@ int main(int argc, char **argv) {
     traffic_light light2 = {.clr = RED, .has_arrow = false, .has_sensor = false};
     traffic_light light3 = {.clr = GREEN, .has_arrow = false, .has_sensor = false};
 
-    road road0 = {.length = ROAD0_LENGTH, .speed_limit = ROAD0_SPEED_LIMIT, .follow_distance = ROAD0_FOLLOW_DIST , .head_car = NULL, .light = &light0 };
-    road road1 = {.length = ROAD1_LENGTH, .speed_limit = ROAD1_SPEED_LIMIT, .follow_distance = ROAD1_FOLLOW_DIST , .head_car = NULL, .light = &light1 };
-    road road2 = {.length = ROAD2_LENGTH, .speed_limit = ROAD2_SPEED_LIMIT, .follow_distance = ROAD2_FOLLOW_DIST , .head_car = NULL, .light = &light2 };
-    road road3 = {.length = ROAD3_LENGTH, .speed_limit = ROAD3_SPEED_LIMIT, .follow_distance = ROAD3_FOLLOW_DIST , .head_car = NULL, .light = &light3 };
+    road road0 = {.length = ROAD0_LENGTH, .speed_limit = ROAD0_SPEED_LIMIT, .follow_distance = ROAD0_FOLLOW_DIST , .head_car = NULL, .light = &light0, .num_cars = INITIAL_NUM_CARS };
+    road road1 = {.length = ROAD1_LENGTH, .speed_limit = ROAD1_SPEED_LIMIT, .follow_distance = ROAD1_FOLLOW_DIST , .head_car = NULL, .light = &light1, .num_cars = INITIAL_NUM_CARS };
+    road road2 = {.length = ROAD2_LENGTH, .speed_limit = ROAD2_SPEED_LIMIT, .follow_distance = ROAD2_FOLLOW_DIST , .head_car = NULL, .light = &light2, .num_cars = INITIAL_NUM_CARS };
+    road road3 = {.length = ROAD3_LENGTH, .speed_limit = ROAD3_SPEED_LIMIT, .follow_distance = ROAD3_FOLLOW_DIST , .head_car = NULL, .light = &light3, .num_cars = INITIAL_NUM_CARS };
     
     intersection isec_struct;
     intersection *isec;
@@ -56,7 +59,7 @@ int main(int argc, char **argv) {
     isec->roads[1] = &road1;
     isec->roads[2] = &road2;
     isec->roads[3] = &road3;
-    isec->state_index = 0;
+    isec->state_index = INITIAL_STATE_INDEX;
 
     strategy s = basic;
     
@@ -67,25 +70,24 @@ int main(int argc, char **argv) {
     time_t *time_since_change;
     time_since_change = &initial_time_since_change;
 
-    time_t dt = 1; // seconds
-
     for (uint64_t iter = 0; iter < MAX_ITERATIONS; iter++) { // timestep
         if (iter % 100 == 0) {
             printf("\n\n\n\nSTART OF ITERATION MOD 100\n");
             print_intersection(isec);
         }
 
-        update_lights_to_next_state(isec, dt, time_since_change, s); // takes a strategy
+        // NOTE: also deals with updating physical LEDs
+        update_lights_to_next_state(isec, DT, time_since_change, s); // takes a strategy
         
         for (int i = 0; i < NUM_ROADS; i++) {
             current_road = isec->roads[i];
 
-            update_distances(current_road, dt); // let cars roll forward if possible (note special case for first car)
+            update_distances(current_road, DT); // let cars roll forward if possible (note special case for first car)
             head_of_crossed = remove_crossed(current_road); // pop off ANY cars which have passed stop line. return the number of cars that crossed
             free_all_cars(head_of_crossed); // because we don't calculate best algo yet
 
             if (rand() < (RAND_MAX+1u) / N) {// perform with probability 1/N
-                maybe_add_cars(current_road); // also checks sum < length of road
+                maybe_add_car(current_road); // also checks sum < length of road
             }
         }
     }
