@@ -21,7 +21,7 @@
 #define DT 1 // seconds
 #define INITIAL_STATE_INDEX 0
 #define INITIAL_NUM_CARS 0
-#define MAX_ITERATIONS 10000
+#define MAX_ITERATIONS 100000
 
 #define ROAD0_LENGTH 500
 #define ROAD1_LENGTH 720

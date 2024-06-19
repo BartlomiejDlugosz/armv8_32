@@ -7,7 +7,7 @@
 
 bool update_lights_to_next_state(intersection *isec, time_t dt, time_t *time_since_change, strategy s) {
     if ((s) (isec, *time_since_change)) {
-        isec->state_index = (isec->state_index + 1) % (NUM_STATES + 1);
+        isec->state_index = (isec->state_index + 1) % (NUM_STATES);
         for(int i = 0; i < NUM_ROADS; i++) {
             printf("Road: %i ", i);
             print_traffic_light(isec->roads[i]->light);

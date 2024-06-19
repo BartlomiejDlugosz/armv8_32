@@ -13,4 +13,4 @@ clean:
 	$(RM) *.o simulate_traffic
 
 simulate_traffic: clean
-	gcc -Wall ./*.c -o simulate_traffic -g --debug
+	gcc -Wall ./*.c -o simulate_traffic -lm -g --debug
