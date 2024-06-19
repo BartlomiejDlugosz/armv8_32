@@ -63,39 +63,18 @@ void update_leds(int state_index) {
 
 // Sets the pin mode for all leds to output
 void init_leds(void) {
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < PINS_PER_LIGHT; i++) {
         gpioSetMode(light_1_pins[i], PI_OUTPUT);
     }
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < PINS_PER_LIGHT; i++) {
         gpioSetMode(light_2_pins[i], PI_OUTPUT);
     }
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < PINS_PER_LIGHT; i++) {
         gpioSetMode(light_3_pins[i], PI_OUTPUT);
     }
-    for (int i = 0; i < 3; i++) {
+    for (int i = 0; i < PINS_PER_LIGHT; i++) {
         gpioSetMode(light_4_pins[i], PI_OUTPUT);
     }
 }
-
-
-
-//int main() {
-//    printf("test");
-//    init_leds();
-    
-//    gpioSleep(PI_TIME_RELATIVE, 1, 0);
-
-//    for (int j = 0; j < 10; j++) {
-//        for (int i = 0; i < NUM_STATES; i++) {
-//            update_leds(i);
-//            gpioSleep(PI_TIME_RELATIVE, 1, 0);
-//        }
-//    }
-
-
-//    terminate_gpio();
-
-//    return 0;
-//}
 
 #endif // RPI
