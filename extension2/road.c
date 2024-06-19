@@ -47,8 +47,6 @@ void update_distances(road* update_road, time_t dt) {
 // pop off ANY cars which have passed stop line (checking for negative distances), that involves
 // potentially popping many cars, updating the running head and its distance to the light
 car* remove_crossed(road* cur_road) {
-    printf("start of remove_crossed\n");
-    print_road(cur_road);
     if (cur_road->head_car == NULL) {
         return NULL;
     }
@@ -68,6 +66,7 @@ car* remove_crossed(road* cur_road) {
         }
 
         last_popped = cur_road->head_car;
+        cur_road->num_cars--;
         cur_road->head_car = cur_road->head_car->next;
     }
 
@@ -86,7 +85,7 @@ car* remove_crossed(road* cur_road) {
 
 }
 
-bool maybe_add_cars(road *update_road)
+bool maybe_add_car(road *update_road)
 {
     // true iff a car was added
     
@@ -125,6 +124,9 @@ bool maybe_add_cars(road *update_road)
     } else {
         prev_car->next = new_car;
     }
+
+    update_road->num_cars++;
+
     return true;
 }
 
@@ -148,7 +150,7 @@ void free_all_cars(car *current_car) {
 }
 
 void print_road(road *rd) {
-    printf("road len: %i speed: %d\n", rd->length, rd->speed_limit);
+    printf("road len: %i, speed: %d, num_cars: %d\n", rd->length, rd->speed_limit, rd->num_cars);
     printf("NULL");
     print_car(rd->head_car);
     printf(" | ");

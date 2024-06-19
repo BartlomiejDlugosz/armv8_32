@@ -10,9 +10,8 @@ typedef struct {
     int follow_distance; //minimum distance a car be from another car
     car *head_car;
     traffic_light *light;
+    int num_cars;
 } road;
-
-
 
 // check lights (just once)
 // update distance of all cars (starting with first)
@@ -24,7 +23,7 @@ void update_distances(road *update_road, time_t dt);
 // return the head of number of cars crossed
 car* remove_crossed(road* cur_road);
 
-bool maybe_add_cars();
+bool maybe_add_car(road *update_road);
 
 void free_single_car(car *current_car);
 

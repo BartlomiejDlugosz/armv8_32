@@ -18,6 +18,8 @@ bool update_lights_to_next_state(intersection *isec, time_t dt, time_t *time_sin
         }
         printf("\n\n");
         *time_since_change = 0;
+        // also update physical LEDs
+        // update_leds(isec->state_index); UNCOMMENT
         return true;
     }
     else {
