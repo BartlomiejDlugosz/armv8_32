@@ -20,18 +20,18 @@ static bool amber_lights(intersection *isec) {
 }
 
 bool basic (intersection *isec, time_t time_since_change) {
-    if (amber_lights(isec) && time_since_change > 3) {
+    if (amber_lights(isec) && time_since_change > 2) {
         return true;
-    } else if (time_since_change > 30) {
+    } else if (time_since_change > 15) {
         return true;
     }
     return false;
 }
 
 bool basic_plus (intersection *isec, time_t time_since_change) {
-    if (amber_lights(isec) && time_since_change > 3) {
+    if (amber_lights(isec) && time_since_change > 2) {
         return true;
-    } else if (time_since_change > 30) {
+    } else if (time_since_change > 15) {
         if(cars_waiting(isec)) {
             return true;
         }
