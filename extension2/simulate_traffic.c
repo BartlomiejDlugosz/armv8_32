@@ -11,6 +11,13 @@
 #include "intersection.h"
 #include "strategies.h"
 #include "update_lights.h"
+#include "show_leds.h"
+
+#ifdef RPI
+bool rpi = true;
+#else
+bool rpi = false;
+#endif // RPI
 
 #define N 4
 #define MAX_ITERATIONS 10000
@@ -34,6 +41,9 @@
 
 
 int main(int argc, char **argv) {
+    if (rpi) {
+        init_leds();
+    }
 
     srand(time(NULL));   // Initialization, should only be called once.
 
@@ -74,6 +84,9 @@ int main(int argc, char **argv) {
             printf("\n\n\n\nSTART OF ITERATION MOD 100\n");
             print_intersection(isec);
         }
+        if (rpi) {
+            update_leds(isec->state_index);
+        }
 
         update_lights_to_next_state(isec, dt, time_since_change, s); // takes a strategy
         
@@ -88,10 +101,19 @@ int main(int argc, char **argv) {
                 maybe_add_cars(current_road); // also checks sum < length of road
             }
         }
+
+        if (rpi) {
+            sleep(dt);
+        }
     }
 
     for (int i = 0; i < NUM_ROADS; i++) {
         free_all_cars(isec->roads[i]->head_car);
     }
+    printf("\ngpio %i\n", rpi);
+    if (rpi) {
+        terminate_gpio();
+    }
+    
     return 0;
 }
