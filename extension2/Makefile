@@ -12,5 +12,5 @@ all: simulate_traffic
 clean:
 	$(RM) *.o simulate_traffic
 
-simulate_traffic: solution
-	gcc -Wall ../extension2/*.c -o simulate_traffic -g --debug
+simulate_traffic:
+	gcc -Wall ./*.c -o simulate_traffic -g --debug
