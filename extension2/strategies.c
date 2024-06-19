@@ -13,16 +13,17 @@ static bool cars_waiting(intersection *isec) {
     return cars_waiting_bool;
 }
 
+static double sigmoid(double sensor_distance) {
+    double exponent = (double) -0.5 * sensor_distance + 3;
+    return ((double) 1.00) / (double) (1.00 + exp(exponent));
+}
+
 static double sensor_significance(intersection *isec) {
     if (isec->roads[0]->light->clr == RED && isec->roads[0]->light->has_sensor) {
         return sigmoid(isec->roads[0]->light->sensor_distance);
     } else {
         return 1;
     }
-}
-
-static double sigmoid(double sensor_distance) {
-    return ((double) 1.00) / (double) (1.00 + exp((double) -0.5 * sensor_distance + 3));
 }
 
 static bool amber_lights(intersection *isec) {
