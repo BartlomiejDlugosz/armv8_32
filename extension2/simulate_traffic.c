@@ -83,7 +83,7 @@ int main(int argc, char **argv) {
     isec_eval->road_evals[2] = &road2_eval;
     isec_eval->road_evals[3] = &road3_eval;
 
-    strategy s = basic;
+    strategy s = basic_plus;
     
     road *current_road;
     car *head_of_crossed;
