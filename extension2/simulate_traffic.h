@@ -3,7 +3,8 @@
 
 #include <stdio.h>
 #include "strategies.h"
+#include "performance_evaluation.h"
 
-void simulate_traffic(FILE* file, strategy s);
+intersection_evaluation* simulate_traffic(strategy s);
 
 #endif

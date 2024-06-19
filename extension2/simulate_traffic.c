@@ -43,7 +43,7 @@
 
 
 
-void simulate_traffic(FILE* file, strategy s) {
+intersection_evaluation* simulate_traffic(strategy s) {
     #ifdef RPI
     init_gpio();
     init_leds();
@@ -132,11 +132,13 @@ void simulate_traffic(FILE* file, strategy s) {
         sleep(DT);
         #endif // RPI
     }
-    evaluate_intersection(isec_eval);
+    intersection_evaluation* values_to_write_to_file = evaluate_intersection(isec_eval);
     for (int i = 0; i < NUM_ROADS; i++) {
         free_all_cars(isec->roads[i]->head_car);
     }
     #ifdef RPI
     terminate_gpio();
     #endif // RPI
+
+    return values_to_write_to_file;
 }
