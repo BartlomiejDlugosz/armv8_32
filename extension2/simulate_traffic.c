@@ -12,6 +12,7 @@
 #include "strategies.h"
 #include "update_lights.h"
 #include "performance_evaluation.h"
+#include "simulate_traffic.h"
 
 #ifdef RPI
 #include "radar.h"
@@ -42,7 +43,7 @@
 
 
 
-int main(int argc, char **argv) {
+void simulate_traffic(FILE* file, strategy s) {
     #ifdef RPI
     init_gpio();
     init_leds();
@@ -90,7 +91,7 @@ int main(int argc, char **argv) {
     isec_eval->road_evals[2] = &road2_eval;
     isec_eval->road_evals[3] = &road3_eval;
 
-    strategy s = basic_plus;
+    // strategy s = basic_plus;
     
     road *current_road;
     car *head_of_crossed;
@@ -136,6 +137,4 @@ int main(int argc, char **argv) {
     #ifdef RPI
     terminate_gpio();
     #endif // RPI
-    
-    return 0;
 }
