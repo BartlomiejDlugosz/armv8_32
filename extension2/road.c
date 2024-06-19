@@ -14,14 +14,13 @@ void update_distances(road* update_road, time_t dt) {
     if (update_road->light->clr == RED) {
         // dealing with HEAD
         int cur_distance = update_road->head_car->distance_to_car_in_front; // distance to light
-        // distance = speed * time
         int new_distance = cur_distance - distance_covered;
         update_road->head_car->distance_to_car_in_front = MAX(new_distance, 0);
         bool all_cars_in_front_are_stationary = false;
         if (cur_distance == new_distance) {
             all_cars_in_front_are_stationary = true;
         }
-        distance_covered -= cur_distance - new_distance;
+        distance_covered -= cur_distance - update_road->head_car->distance_to_car_in_front;
         // Dealing with rest of the cars
         car* next_car = update_road->head_car->next;
         int follow_distance = update_road->follow_distance; // minimum separation needed between cars
