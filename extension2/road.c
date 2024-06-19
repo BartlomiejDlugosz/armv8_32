@@ -20,7 +20,7 @@ void update_distances(road* update_road, time_t dt) {
         // So don't add time stationary for any cars behind
         bool all_cars_in_front_are_stationary = false;
         // If the car hasn't moved, add to time stationary (same logic is used in while loop)
-        if (cur_distance == new_distance) {
+        if (cur_distance == update_road->head_car->distance_to_car_in_front) {
             all_cars_in_front_are_stationary = true;
         }
         // The distance covered is now reduced by the distance covered by the HEAD car
