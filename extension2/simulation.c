@@ -59,10 +59,24 @@ int main(int argc, char **argv) {
     } else if (argc == 3) {
         const char* command = argv[2];
         if (strcmp(command, "train_model_on_avg") == 0) {
-            // Call function to train model on average
+            *optimal_data = train_genetic_algorithm(true);
+            printf("succesfully trained\n");
+            const strategy s = genetic_algorithm;
+            const char* strategy_name = "Genetic Algorithm with avg";
+            double total_average_time_stationary = 0;
+            double total_maximum_time_stationary = 0;
+            for (int i = 0; i < NUM_STRATEGY_CALLS; i++) {
+                intersection_evaluation* returned_evaluation = simulate_traffic(s, optimal_data);
+                total_average_time_stationary += (double)(returned_evaluation->total_average_time_stationary);
+                total_maximum_time_stationary += (double)(returned_evaluation->total_maximum_time_stationary);
+            }
+            total_average_time_stationary /= NUM_STRATEGY_CALLS;
+            total_maximum_time_stationary /= NUM_STRATEGY_CALLS;
+            fprintf(output_file, "Strategy: %s Total Average Time: %lf, Total Maximum Time: %lf\n", strategy_name, total_average_time_stationary, total_maximum_time_stationary);
+
         }
         else if (strcmp(command, "train_model_on_max") == 0) {
-            // Call function on train model on max
+            *optimal_data = train_genetic_algorithm(false);
         }
         else {
             // Assume strategy

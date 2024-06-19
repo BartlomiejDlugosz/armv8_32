@@ -9,20 +9,20 @@
 #include "simulate_traffic.h"
 #include "genetic_algorithm.h"
 
-#define POP_SIZE 50
+#define POP_SIZE 10
 #define NUM_STATES 6
-#define MAX_GENERATIONS 50
+#define MAX_GENERATIONS 5
 #define MUTATION_RATE 0.1
 #define CROSSOVER_RATE 0.7
-#define MAX_DURATION 100
+#define MAX_DURATION 45
 #define NUM_ROADS 4
-#define CHROMOSOME_EVAL_NUM 10
+#define CHROMOSOME_EVAL_NUM 1
 
 // this selects the best data set from a population
-static Chromosome *get_best_chromosome(Chromosome *population[]) {
-    Chromosome *best = population[0];
+static Chromosome get_best_chromosome(Chromosome *population) {
+    Chromosome best = population[0];
     for (int i = 1; i < POP_SIZE; i++) {
-        if (population[i]->fitness < best->fitness) {
+        if (population[i].fitness < best.fitness) {
             best = population[i];
         }
     }
@@ -42,14 +42,14 @@ static void evaluate_fitness(Chromosome *chromo, bool is_avg) {
 }
 
 // this selects the new parents to creaete a new generation
-static void select_parents(Chromosome *population[], Chromosome *parent1, Chromosome *parent2) {
+static void select_parents(Chromosome *population, Chromosome *parent1, Chromosome *parent2) {
     int id1 = rand() % POP_SIZE;
     int id2 = rand() % POP_SIZE;
     bool take_best = rand() % 2;
-    *parent1 = *population[id1];
-    *parent2 = *population[id2];
+    *parent1 = population[id1];
+    *parent2 = population[id2];
     if (take_best) {
-        *parent1 = *get_best_chromosome(population);
+        *parent1 = get_best_chromosome(population);
     }
 }
 
@@ -81,38 +81,38 @@ static void mutate(Chromosome *chromo) {
 }
 
 // creates a new population given two parents and 2 children
-static void create_new_population(Chromosome *population[]) {
-    Chromosome *new_population[POP_SIZE];
+static void create_new_population(Chromosome *population) {
+    Chromosome new_population[POP_SIZE];
     for (int i = 0; i < POP_SIZE / 2; i++) {
         Chromosome parent1, parent2, child1, child2;
         select_parents(population, &parent1, &parent2);
         crossover(&parent1, &parent2, &child1, &child2);
         mutate(&child1);
         mutate(&child2);
-        *new_population[2 * i] = child1;
-        *new_population[2 * i + 1] = child2;
+        new_population[2 * i] = child1;
+        new_population[2 * i + 1] = child2;
     }
     for (int i = 0; i < POP_SIZE; i++) {
-        *population[i] = *new_population[i];
+        population[i] = new_population[i];
     }
 }
 
 
-Chromosome *train_genetic_algorithm(bool is_avg) {
-    Chromosome *population[POP_SIZE];
+Chromosome train_genetic_algorithm(bool is_avg) {
+    Chromosome population[POP_SIZE];
     for (int i = 0; i < POP_SIZE; i++) {
         for (int j = 0; j < NUM_STATES; j++) {
-            population[i]->durations[j] = rand() % MAX_DURATION + 1; // Random duration between 1 and MAX_DURATION
+            population[i].durations[j] = rand() % MAX_DURATION + 1; // Random duration between 1 and MAX_DURATION
         }
     }
     for (int generation =  0; generation < MAX_GENERATIONS; generation++) {
         for (int i = 0; i < POP_SIZE; i++) {
-            evaluate_fitness(population[i], is_avg);
+            evaluate_fitness(&population[i], is_avg);
         }
         create_new_population(population);
     }
     for (int i = 0; i < POP_SIZE; i++) {
-            evaluate_fitness(population[i], is_avg);
+            evaluate_fitness(&population[i], is_avg);
     }
     return get_best_chromosome(population);
 }

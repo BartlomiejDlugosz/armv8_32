@@ -8,6 +8,6 @@ typedef struct {
     double fitness;
 } Chromosome;
 
-Chromosome *train_genetic_algorithm(bool is_avg);
+Chromosome train_genetic_algorithm(bool is_avg);
 
 #endif // GENETIC_ALGORITHM_H
