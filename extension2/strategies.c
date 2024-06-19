@@ -1,7 +1,9 @@
 #include <time.h>
 #include <stdbool.h>
-
+#include <math.h>
 #include "strategies.h"
+
+#define TIME_TO_CHANGE_BASIC 30
 
 static bool cars_waiting(intersection *isec) {
     bool cars_waiting_bool = false;
@@ -9,6 +11,19 @@ static bool cars_waiting(intersection *isec) {
         cars_waiting_bool |= (isec->roads[i]->light->clr == RED && isec->roads[i]->head_car != NULL);
     }
     return cars_waiting_bool;
+}
+
+static double sigmoid(double sensor_distance) {
+    double exponent = (double) -0.5 * sensor_distance + 3;
+    return ((double) 1.00) / (double) (1.00 + exp(exponent));
+}
+
+static double sensor_significance(intersection *isec) {
+    if (isec->roads[0]->light->clr == RED && isec->roads[0]->light->has_sensor) {
+        return sigmoid(isec->roads[0]->light->sensor_distance);
+    } else {
+        return 1;
+    }
 }
 
 static bool amber_lights(intersection *isec) {
@@ -22,7 +37,7 @@ static bool amber_lights(intersection *isec) {
 bool basic (intersection *isec, time_t time_since_change) {
     if (amber_lights(isec) && time_since_change > 2) {
         return true;
-    } else if (time_since_change > 15) {
+    } else if (time_since_change > TIME_TO_CHANGE_BASIC) {
         return true;
     }
     return false;
@@ -31,7 +46,7 @@ bool basic (intersection *isec, time_t time_since_change) {
 bool basic_plus (intersection *isec, time_t time_since_change) {
     if (amber_lights(isec) && time_since_change > 2) {
         return true;
-    } else if (time_since_change > 15) {
+    } else if (time_since_change > TIME_TO_CHANGE_BASIC * sensor_significance(isec)) {
         if(cars_waiting(isec)) {
             return true;
         }
