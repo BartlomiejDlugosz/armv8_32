@@ -4,6 +4,7 @@
 #include <stdbool.h>
 #include "states.h"
 #include "intersection.h"
+#define NUM_STRATEGIES 4
 // every strategy:
 // 1. intersection (to access lights and state)
 // 2. takes in the time since change
@@ -14,6 +15,7 @@ bool basic (intersection *isec, time_t time_since_change);
 
 bool basic_plus (intersection *isec, time_t time_since_change);
 
+extern strategy strategies[NUM_STRATEGIES];
 // takes in a number of parameters which are to be decided
 // note that the parameters need to be the same for all strategies
 // so update the above typedef to accomodate this!

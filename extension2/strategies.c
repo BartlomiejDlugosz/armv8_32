@@ -2,8 +2,11 @@
 #include <stdbool.h>
 #include <math.h>
 #include "strategies.h"
+#include "genetic_algorithm.h"
 
 #define TIME_TO_CHANGE_BASIC 30
+
+static Chromosome optimal_data;  
 
 static bool cars_waiting(intersection *isec) {
     bool cars_waiting_bool = false;
@@ -57,5 +60,13 @@ bool basic_plus (intersection *isec, time_t time_since_change) {
 
 // what i need: duration to hold for each traffic light state where it's green 
 bool genetic_algorithm (intersection *isec, time_t time_since_change) {
+    
     return false;
 }
+
+bool genetic_algorithm_data (intersection *isec, time_t time_since_change, Chromosome optimal) {
+    optimal_data = optimal;
+    return genetic_algorithm (isec, time_since_change);
+}   
+
+strategy functions[NUM_STRATEGIES] = {basic, basic_plus, genetic_algorithm};
