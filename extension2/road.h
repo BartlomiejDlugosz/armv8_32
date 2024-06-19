@@ -9,7 +9,7 @@ typedef struct {
     int speed_limit;
     int follow_distance; //minimum distance a car be from another car
     car *head_car;
-    traffic_light light;
+    traffic_light *light;
 } road;
 
 
@@ -29,5 +29,7 @@ bool maybe_add_cars();
 void free_single_car(car *current_car);
 
 void free_all_cars(car *current_car);
+
+void print_road(road *rd);
 
 #endif // ROAD_H

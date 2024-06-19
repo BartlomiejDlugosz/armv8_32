@@ -14,4 +14,6 @@ typedef struct {
     bool has_sensor; // tells us if cars are waiting
 } traffic_light;
 
+void print_traffic_light(traffic_light *light);
+
 #endif // TRAFFIC_LIGHT_H
