@@ -2,18 +2,15 @@
 #include <stdio.h>
 #include <sys/param.h>
 #include "road.h"
-// check lights (just once)
-// update distance of all cars (starting with first)
-// if distance stays the same, add time to stationary time
- // update_distances(road, delta_t); // let cars roll forward if possible (note special case for first car)
+
 void update_distances(road* update_road, time_t dt) {   
-    if (update_road->head_car == NULL) return; //early return
+    if (update_road->head_car == NULL) return;
     int speed_limit = update_road->speed_limit;
-    // the lights can be checked using the road (it has a light attribute)
     int distance_covered = speed_limit * dt;
+
     if (update_road->light->clr == RED) {
-        // dealing with HEAD
-        int cur_distance = update_road->head_car->distance_to_car_in_front; // distance to light
+        // Dealing with the HEAD
+        int cur_distance = update_road->head_car->distance_to_car_in_front;
         int new_distance = cur_distance - distance_covered;
         update_road->head_car->distance_to_car_in_front = MAX(new_distance, 0);
         bool all_cars_in_front_are_stationary = false;
@@ -21,12 +18,12 @@ void update_distances(road* update_road, time_t dt) {
             all_cars_in_front_are_stationary = true;
         }
         distance_covered -= cur_distance - update_road->head_car->distance_to_car_in_front;
-        // Dealing with rest of the cars
+        // Dealing with the rest of the cars
         car* next_car = update_road->head_car->next;
-        int follow_distance = update_road->follow_distance; // minimum separation needed between cars
+        int follow_distance = update_road->follow_distance;
         while (next_car != NULL && distance_covered != 0) {
 
-            int distance_to_car_in_front_prev = next_car->distance_to_car_in_front; // previous 
+            int distance_to_car_in_front_prev = next_car->distance_to_car_in_front; // previous distance
             next_car->distance_to_car_in_front = MAX(follow_distance, next_car->distance_to_car_in_front - distance_covered);
             distance_covered -= distance_to_car_in_front_prev - next_car->distance_to_car_in_front;
             if (next_car->distance_to_car_in_front == distance_to_car_in_front_prev && all_cars_in_front_are_stationary) {
@@ -148,7 +145,7 @@ void free_all_cars(car *current_car) {
 }
 
 void print_road(road *rd) {
-    printf("road len: %i speed: %d\n", rd->length, rd->speed_limit);
+    printf("road len: %li speed: %d\n", rd->length, rd->speed_limit);
     printf("NULL");
     print_car(rd->head_car);
     printf(" | ");
