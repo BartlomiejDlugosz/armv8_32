@@ -69,10 +69,10 @@ int main(int argc, char **argv) {
     isec->roads[3] = &road3;
     isec->state_index = INITIAL_STATE_INDEX;
 
-    road_evaluation road0_eval = {.maximum_time_stationary = 0, .num_cars_crossed = 0, .total_time_stationary = 0};
-    road_evaluation road1_eval = {.maximum_time_stationary = 0, .num_cars_crossed = 0, .total_time_stationary = 0};
-    road_evaluation road2_eval = {.maximum_time_stationary = 0, .num_cars_crossed = 0, .total_time_stationary = 0};
-    road_evaluation road3_eval = {.maximum_time_stationary = 0, .num_cars_crossed = 0, .total_time_stationary = 0};
+    road_evaluation road0_eval = {0};
+    road_evaluation road1_eval = {0};
+    road_evaluation road2_eval = {0};
+    road_evaluation road3_eval = {0};
     
     intersection_evaluation isec_eval_struct;
     intersection_evaluation *isec_eval;
