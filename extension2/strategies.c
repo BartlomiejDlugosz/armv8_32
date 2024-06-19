@@ -11,15 +11,27 @@ static bool cars_waiting(intersection *isec) {
     return cars_waiting_bool;
 }
 
+static bool amber_lights(intersection *isec) {
+    bool amber_light = false;
+    for(int i = 0;  i < NUM_ROADS; i++) {
+        amber_light |= (isec->roads[i]->light->clr == RED_AMBER || isec->roads[i]->light->clr == AMBER);
+    }
+    return amber_light;
+}
+
 bool basic (intersection *isec, time_t time_since_change) {
-    if (time_since_change > 30) {
+    if (amber_lights(isec) && time_since_change > 3) {
+        return true;
+    } else if (time_since_change > 30) {
         return true;
     }
     return false;
 }
 
 bool basic_plus (intersection *isec, time_t time_since_change) {
-    if (time_since_change > 30) {
+    if (amber_lights(isec) && time_since_change > 3) {
+        return true;
+    } else if (time_since_change > 30) {
         if(cars_waiting(isec)) {
             return true;
         }
