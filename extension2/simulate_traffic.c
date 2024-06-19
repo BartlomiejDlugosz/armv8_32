@@ -11,6 +11,11 @@
 #include "intersection.h"
 #include "strategies.h"
 #include "update_lights.h"
+#include "performance_evaluation.h"
+
+#ifdef RPI
+#include "show_leds.h"
+#endif // RPI
 
 #define N 4
 #define DT 1 // seconds
@@ -18,10 +23,10 @@
 #define INITIAL_NUM_CARS 0
 #define MAX_ITERATIONS 10000
 
-#define ROAD0_LENGTH 5000
-#define ROAD1_LENGTH 7200
-#define ROAD2_LENGTH 6000
-#define ROAD3_LENGTH 6500
+#define ROAD0_LENGTH 500
+#define ROAD1_LENGTH 720
+#define ROAD2_LENGTH 600
+#define ROAD3_LENGTH 650
 
 #define ROAD0_SPEED_LIMIT 60
 #define ROAD1_SPEED_LIMIT 75
@@ -37,6 +42,9 @@
 
 
 int main(int argc, char **argv) {
+    #ifdef RPI
+    init_leds();
+    #endif // RPI
 
     srand(time(NULL));   // Initialization, should only be called once.
 
@@ -61,6 +69,20 @@ int main(int argc, char **argv) {
     isec->roads[3] = &road3;
     isec->state_index = INITIAL_STATE_INDEX;
 
+    road_evaluation road0_eval = {0};
+    road_evaluation road1_eval = {0};
+    road_evaluation road2_eval = {0};
+    road_evaluation road3_eval = {0};
+    
+    intersection_evaluation isec_eval_struct;
+    intersection_evaluation *isec_eval;
+    
+    isec_eval = &isec_eval_struct;
+    isec_eval->road_evals[0] = &road0_eval;
+    isec_eval->road_evals[1] = &road1_eval;
+    isec_eval->road_evals[2] = &road2_eval;
+    isec_eval->road_evals[3] = &road3_eval;
+
     strategy s = basic;
     
     road *current_road;
@@ -75,6 +97,9 @@ int main(int argc, char **argv) {
             printf("\n\n\n\nSTART OF ITERATION MOD 100\n");
             print_intersection(isec);
         }
+        #ifdef RPI
+            update_leds(isec->state_index);
+        #endif // RPI
 
         //isec->roads[0]->light->sensor_distance = get_sensor_value();
         // NOTE: also deals with updating physical LEDs
@@ -85,16 +110,25 @@ int main(int argc, char **argv) {
 
             update_distances(current_road, DT); // let cars roll forward if possible (note special case for first car)
             head_of_crossed = remove_crossed(current_road); // pop off ANY cars which have passed stop line. return the number of cars that crossed
+            evaluate_road(head_of_crossed, isec_eval, i);
             free_all_cars(head_of_crossed); // because we don't calculate best algo yet
 
             if (rand() < (RAND_MAX+1u) / N) {// perform with probability 1/N
                 maybe_add_car(current_road); // also checks sum < length of road
             }
         }
-    }
 
+        #ifdef RPI
+            sleep(DT);
+        #endif // RPI
+    }
+    evaluate_intersection(isec_eval);
     for (int i = 0; i < NUM_ROADS; i++) {
         free_all_cars(isec->roads[i]->head_car);
     }
+    #ifdef RPI
+        terminate_gpio();
+    #endif // RPI
+    
     return 0;
 }
