@@ -7,6 +7,7 @@
 // if distance stays the same, add time to stationary time
  // update_distances(road, delta_t); // let cars roll forward if possible (note special case for first car)
 void update_distances(road* update_road, time_t dt) {   
+    if (update_road->head_car == NULL) return; //early return
     int speed_limit = update_road->speed_limit;
     // the lights can be checked using the road (it has a light attribute)
     int distance_covered = speed_limit * dt;
@@ -46,23 +47,27 @@ void update_distances(road* update_road, time_t dt) {
 
 // pop off ANY cars which have passed stop line (checking for negative distances), that involves
 // potentially popping many cars, updating the running head and its distance to the light
-// return the head of number of cars crossed
-// head_of_crossed = remove_crossed(road); // pop off ANY cars which have passed stop line. return the number of cars that crossed
-car *remove_crossed(road* cur_road) {
-    car* prev_car = NULL;
-    car* head_car = cur_road->head_car;
-    int distance_travelled = head_car->distance_to_car_in_front;
+car* remove_crossed(road* cur_road) {
+    if (cur_road->head_car == NULL) {
+        return NULL;
+    }
+    car* old_head = cur_road->head_car;
+    car* last_popped = NULL;
+    int distance_travelled = cur_road->head_car->distance_to_car_in_front;
     if (distance_travelled >= 0) {
-        return head_car;
-    } else {
-        while (distance_travelled < 0 && head_car != NULL) {
-            prev_car = head_car;
-            head_car = head_car->next;
-            distance_travelled += head_car->distance_to_car_in_front;
-        }
+        return NULL;
+    }
+    while (distance_travelled < 0 && cur_road->head_car->next != NULL) {
+        distance_travelled += cur_road->head_car->next->distance_to_car_in_front;
+        last_popped = cur_road->head_car;
+        cur_road->head_car = cur_road->head_car->next;
     }
 
-    return prev_car;
+    last_popped->next = NULL;
+
+    cur_road->head_car->distance_to_car_in_front -= distance_travelled;
+
+    return old_head;    
 
 }
 
@@ -118,6 +123,9 @@ void free_single_car(car *current_car) {
 
 
 void free_all_cars(car *current_car) {
+    if (current_car == NULL) {
+        return;
+    }
     if (current_car->next != NULL) {
         free_all_cars(current_car->next);
     }
