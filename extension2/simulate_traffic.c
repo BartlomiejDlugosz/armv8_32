@@ -11,12 +11,9 @@
 #include "intersection.h"
 #include "strategies.h"
 #include "update_lights.h"
-#include "show_leds.h"
 
 #ifdef RPI
-bool rpi = true;
-#else
-bool rpi = false;
+#include "show_leds.h"
 #endif // RPI
 
 #define N 4
@@ -44,9 +41,9 @@ bool rpi = false;
 
 
 int main(int argc, char **argv) {
-    if (rpi) {
-        init_leds();
-    }
+    #ifdef RPI
+    init_leds();
+    #endif // RPI
 
     srand(time(NULL));   // Initialization, should only be called once.
 
@@ -85,9 +82,9 @@ int main(int argc, char **argv) {
             printf("\n\n\n\nSTART OF ITERATION MOD 100\n");
             print_intersection(isec);
         }
-        if (rpi) {
+        #ifdef RPI
             update_leds(isec->state_index);
-        }
+        #endif // RPI
 
         // NOTE: also deals with updating physical LEDs
         update_lights_to_next_state(isec, DT, time_since_change, s); // takes a strategy
@@ -104,18 +101,17 @@ int main(int argc, char **argv) {
             }
         }
 
-        if (rpi) {
-            sleep(dt);
-        }
+        #ifdef RPI
+            sleep(DT);
+        #endif // RPI
     }
 
     for (int i = 0; i < NUM_ROADS; i++) {
         free_all_cars(isec->roads[i]->head_car);
     }
-    printf("\ngpio %i\n", rpi);
-    if (rpi) {
+    #ifdef RPI
         terminate_gpio();
-    }
+    #endif // RPI
     
     return 0;
 }

@@ -1,3 +1,5 @@
+#ifdef RPI
+
 #include <pigpio.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -116,3 +118,5 @@ void terminate_gpio() {
 
 //    return 0;
 //}
+
+#endif // RPI

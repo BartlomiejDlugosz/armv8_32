@@ -1,3 +1,5 @@
+#ifdef RPI
+
 #ifndef SHOW_LEDS_H
 #define SHOW_LEDS_H
 
@@ -11,3 +13,4 @@ void terminate_gpio(void);
 
 
 #endif // SHOW_LEDS_H
+#endif // RPI
