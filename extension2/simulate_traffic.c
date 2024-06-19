@@ -15,6 +15,7 @@
 #define N 4
 #define DT 1 // seconds
 #define INITIAL_STATE_INDEX 0
+#define INITIAL_NUM_CARS 0
 #define MAX_ITERATIONS 10000
 
 #define ROAD0_LENGTH 5000
@@ -45,10 +46,10 @@ int main(int argc, char **argv) {
     traffic_light light2 = {.clr = RED, .has_arrow = false, .has_sensor = false};
     traffic_light light3 = {.clr = GREEN, .has_arrow = false, .has_sensor = false};
 
-    road road0 = {.length = ROAD0_LENGTH, .speed_limit = ROAD0_SPEED_LIMIT, .follow_distance = ROAD0_FOLLOW_DIST , .head_car = NULL, .light = &light0 };
-    road road1 = {.length = ROAD1_LENGTH, .speed_limit = ROAD1_SPEED_LIMIT, .follow_distance = ROAD1_FOLLOW_DIST , .head_car = NULL, .light = &light1 };
-    road road2 = {.length = ROAD2_LENGTH, .speed_limit = ROAD2_SPEED_LIMIT, .follow_distance = ROAD2_FOLLOW_DIST , .head_car = NULL, .light = &light2 };
-    road road3 = {.length = ROAD3_LENGTH, .speed_limit = ROAD3_SPEED_LIMIT, .follow_distance = ROAD3_FOLLOW_DIST , .head_car = NULL, .light = &light3 };
+    road road0 = {.length = ROAD0_LENGTH, .speed_limit = ROAD0_SPEED_LIMIT, .follow_distance = ROAD0_FOLLOW_DIST , .head_car = NULL, .light = &light0, .num_cars = INITIAL_NUM_CARS };
+    road road1 = {.length = ROAD1_LENGTH, .speed_limit = ROAD1_SPEED_LIMIT, .follow_distance = ROAD1_FOLLOW_DIST , .head_car = NULL, .light = &light1, .num_cars = INITIAL_NUM_CARS };
+    road road2 = {.length = ROAD2_LENGTH, .speed_limit = ROAD2_SPEED_LIMIT, .follow_distance = ROAD2_FOLLOW_DIST , .head_car = NULL, .light = &light2, .num_cars = INITIAL_NUM_CARS };
+    road road3 = {.length = ROAD3_LENGTH, .speed_limit = ROAD3_SPEED_LIMIT, .follow_distance = ROAD3_FOLLOW_DIST , .head_car = NULL, .light = &light3, .num_cars = INITIAL_NUM_CARS };
     
     intersection isec_struct;
     intersection *isec;
@@ -86,7 +87,7 @@ int main(int argc, char **argv) {
             free_all_cars(head_of_crossed); // because we don't calculate best algo yet
 
             if (rand() < (RAND_MAX+1u) / N) {// perform with probability 1/N
-                maybe_add_cars(current_road); // also checks sum < length of road
+                maybe_add_car(current_road); // also checks sum < length of road
             }
         }
     }
