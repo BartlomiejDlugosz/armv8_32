@@ -1,17 +1,8 @@
-#from importlib.metadata import metadata
 import json
 import math
 import numpy as np
 import scipy.optimize
 import matplotlib.pyplot as plt
-from numpy import polynomial
-
-# set the font for graphs
-#plt.rcParams.update({
-#    'text.usetex': True,
-#    'font.family': 'Computer Modern Serif',
-#    'font.sans-serif': ['Computer Modern Serif']})
-
 
 def genxy(file, delim=','):
     # takes a .txt file as an argument (of type str).
@@ -29,13 +20,13 @@ def initalisePlot(title, xs, ys, xlabel, ylabel):
     plt.ylabel(ylabel)
     plt.xlim(min(xs), max(xs))
     plt.ylim(min(ys), max(ys))
-    plt.plot(xs, ys, '-', label="fitted")
+    plt.plot(xs, ys, '-', label="fitted", linewidth=0.5)
     plt.grid()
     plt.title(title)
     # 72 dpi is default for screens, doesn't matter much for a pdf
     # however, higher values will increase file size without much benefit
 
-def savePlot(title, resolution=72):
+def savePlot(title, resolution=300):
     plt.savefig(f'{title}.pdf', dpi=resolution)
-
-# TODO: add plot from two points function?
+    plt.clf()
+    plt.close()

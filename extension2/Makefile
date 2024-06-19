@@ -14,3 +14,8 @@ clean:
 
 simulate_traffic: clean
 	gcc -Wall ./*.c -o simulate_traffic -lm -g --debug
+
+graphs:
+	cd graphing/ && python3 main.py
+
+
