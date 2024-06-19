@@ -12,7 +12,7 @@
 #include "strategies.h"
 #include "update_lights.h"
 
-#define N 5
+#define N 4
 
 int main(int argc, char **argv) {
 
@@ -24,10 +24,10 @@ int main(int argc, char **argv) {
     traffic_light light2 = {.clr = RED, .has_arrow = false, .has_sensor = false};
     traffic_light light3 = {.clr = GREEN, .has_arrow = false, .has_sensor = false};
 
-    road road0 = {.length = 10, .speed_limit = 60, .follow_distance = 2 , .head_car = NULL, .light = &light0 };
-    road road1 = {.length = 100, .speed_limit = 50, .follow_distance = 2 , .head_car = NULL, .light = &light1 };
-    road road2 = {.length = 20, .speed_limit = 10, .follow_distance = 2 , .head_car = NULL, .light = &light2 };
-    road road3 = {.length = 100, .speed_limit = 50, .follow_distance = 2 , .head_car = NULL, .light = &light3 };
+    road road0 = {.length = 40000, .speed_limit = 60, .follow_distance = 5 , .head_car = NULL, .light = &light0 };
+    road road1 = {.length = 10000, .speed_limit = 50, .follow_distance = 2 , .head_car = NULL, .light = &light1 };
+    road road2 = {.length = 20000, .speed_limit = 40, .follow_distance = 2 , .head_car = NULL, .light = &light2 };
+    road road3 = {.length = 15000, .speed_limit = 60, .follow_distance = 2 , .head_car = NULL, .light = &light3 };
     
     intersection isec_struct;
     intersection *isec;
@@ -48,11 +48,13 @@ int main(int argc, char **argv) {
     time_since_change = &initial_time_since_change;
 
     time_t dt = 1; // seconds
-    uint64_t max_iterations = 100;
+    uint64_t max_iterations = 10000;
 
     for (uint64_t iter = 0; iter < max_iterations; iter++) { // timestep
-        printf("\n\n\n\nSTART OF ITERATION\n");
-        print_intersection(isec);
+        if (max_iterations % 100 == 0) {
+            printf("\n\n\n\nSTART OF ITERATION MOD 100\n");
+            print_intersection(isec);
+        }
 
         update_lights_to_next_state(isec, dt, time_since_change, s); // takes a strategy
         
