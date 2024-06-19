@@ -56,7 +56,7 @@ static void set_light(int pins[], colour clr) {
             gpioWrite(pins[2], 1);
             break;
         default:
-            fprintf(stderr, "UNKNOWN COLUOR");
+            fprintf(stderr, "UNKNOWN COLOUR");
             exit(1);
     }
 }
