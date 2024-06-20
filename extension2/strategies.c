@@ -2,8 +2,7 @@
 #include <stdbool.h>
 #include <math.h>
 #include "strategies.h"
-
-#define TIME_TO_CHANGE_BASIC 30
+#include "genetic_algorithm.h"
 
 static bool cars_waiting(intersection *isec) {
     bool cars_waiting_bool = false;
@@ -34,8 +33,8 @@ static bool amber_lights(intersection *isec) {
     return amber_light;
 }
 
-bool basic (intersection *isec, time_t time_since_change) {
-    if (amber_lights(isec) && time_since_change > 2) {
+bool basic (intersection *isec, time_t time_since_change, Chromosome *optimal_data) {
+    if (amber_lights(isec) && time_since_change > TIME_TO_CHANGE_AMBER) {
         return true;
     } else if (time_since_change > TIME_TO_CHANGE_BASIC) {
         return true;
@@ -43,8 +42,8 @@ bool basic (intersection *isec, time_t time_since_change) {
     return false;
 }
 
-bool basic_plus (intersection *isec, time_t time_since_change) {
-    if (amber_lights(isec) && time_since_change > 2) {
+bool basic_plus (intersection *isec, time_t time_since_change, Chromosome *optimal_data) {
+    if (amber_lights(isec) && time_since_change > TIME_TO_CHANGE_AMBER) {
         return true;
     } else if (time_since_change > TIME_TO_CHANGE_BASIC * sensor_significance(isec)) {
         if(cars_waiting(isec)) {
@@ -54,3 +53,16 @@ bool basic_plus (intersection *isec, time_t time_since_change) {
     }
     return false;
 }
+
+// what i need: duration to hold for each traffic light state where it's green 
+bool genetic_algorithm (intersection *isec, time_t time_since_change, Chromosome *optimal_data) {
+    if(amber_lights(isec) && time_since_change > TIME_TO_CHANGE_AMBER) {
+        return true;
+    } else if(!amber_lights(isec) && (optimal_data->durations[isec->state_index] * sensor_significance(isec) < time_since_change)) {
+        return true;
+    }
+    return false;
+}
+
+strategy strategies[NUM_STRATEGIES] = {basic, basic_plus, genetic_algorithm};
+char* strategy_names[NUM_STRATEGIES] = {"Basic", "Basic Plus", "Genetic Algorithm"};
