@@ -41,8 +41,8 @@ int main(int argc, char **argv) {
     // performance_evaluation will return a pointer to intersection evaluation withe parameters mentioned above
     if (argc == 2) {
         for (int i = 0; i < NUM_STRATEGIES; i++) {
-            const strategy s = strategies[i];
-            const char* strategy_name = strategy_names[i];
+            strategy s = strategies[i];
+            char* strategy_name = strategy_names[i];
             if (strcmp(strategy_name, "Genetic Algorithm Avg") == 0) {
                 *optimal_data = train_genetic_algorithm(true); 
             } else if (strcmp(strategy_name, "Genetic Algorithm Max") == 0) {
@@ -51,7 +51,7 @@ int main(int argc, char **argv) {
             double total_average_time_stationary = 0;
             double total_maximum_time_stationary = 0;
             for (int i = 0; i < NUM_STRATEGY_CALLS; i++) {
-                intersection_evaluation* returned_evaluation = simulate_traffic(s, optimal_data);
+                intersection_evaluation* returned_evaluation = simulate_traffic(s, optimal_data, strategy_name);
                 total_average_time_stationary += (double)(returned_evaluation->total_average_time_stationary);
                 total_maximum_time_stationary += (double)(returned_evaluation->total_maximum_time_stationary);
                 free(returned_evaluation);
@@ -77,8 +77,8 @@ int main(int argc, char **argv) {
         bool strategy_found = false;
         for (int i = 0; i < NUM_STRATEGIES; i++) {
             if (strcmp(strategy_name, strategy_names[i]) == 0) {
-                const strategy s = strategies[i];
-                intersection_evaluation* returned_evaluation = simulate_traffic(s, optimal_data);
+                strategy s = strategies[i];
+                intersection_evaluation* returned_evaluation = simulate_traffic(s, optimal_data, strategy_name);
                 double total_average_time_stationary = (double)(returned_evaluation->total_average_time_stationary);
                 double total_maximum_time_stationary = (double)(returned_evaluation->total_maximum_time_stationary);
                 fprintf(output_file, "Strategy: %s Total Average Time: %lf, Total Maximum Time: %lf\n", strategy_name, total_average_time_stationary, total_maximum_time_stationary);
