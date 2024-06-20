@@ -18,6 +18,7 @@
 // do not call it is trained
 int main(int argc, char **argv) {
 
+    srand(time(NULL));   // Initialization, should only be called once.
     // Calling all strategies and writing to a file
     // ./simulation (FILE)
     int basic_durations[NUM_STATES] = {TIME_TO_CHANGE_BASIC, TIME_TO_CHANGE_AMBER, TIME_TO_CHANGE_AMBER, TIME_TO_CHANGE_BASIC, TIME_TO_CHANGE_AMBER, TIME_TO_CHANGE_AMBER};
@@ -54,6 +55,33 @@ int main(int argc, char **argv) {
             fprintf(output_file, "Strategy: %s Total Average Time: %lf, Total Maximum Time: %lf\n", strategy_name, total_average_time_stationary, total_maximum_time_stationary);
         }
 
+        *optimal_data = train_genetic_algorithm(true);
+        const strategy ga = genetic_algorithm;
+        const char* genetic_avg_name = "Genetic Algorithm with avg";
+        double total_average_time_stationary = 0;
+        double total_maximum_time_stationary = 0;
+        for (int i = 0; i < NUM_STRATEGY_CALLS; i++) {
+            intersection_evaluation* returned_evaluation = simulate_traffic(ga, optimal_data);
+            total_average_time_stationary += (double)(returned_evaluation->total_average_time_stationary);
+            total_maximum_time_stationary += (double)(returned_evaluation->total_maximum_time_stationary);
+        }
+        total_average_time_stationary /= NUM_STRATEGY_CALLS;
+        total_maximum_time_stationary /= NUM_STRATEGY_CALLS;
+        fprintf(output_file, "Strategy: %s Total Average Time: %lf, Total Maximum Time: %lf\n", genetic_avg_name, total_average_time_stationary, total_maximum_time_stationary);
+        
+        *optimal_data = train_genetic_algorithm(false);
+        const strategy gm = genetic_algorithm;
+        const char* genetic_algorithm_name = "Genetic Algorithm with max";
+        total_average_time_stationary = 0;
+        total_maximum_time_stationary = 0;
+        for (int i = 0; i < NUM_STRATEGY_CALLS; i++) {
+            intersection_evaluation* returned_evaluation = simulate_traffic(gm, optimal_data);
+            total_average_time_stationary += (double)(returned_evaluation->total_average_time_stationary);
+            total_maximum_time_stationary += (double)(returned_evaluation->total_maximum_time_stationary);
+        }
+        total_average_time_stationary /= NUM_STRATEGY_CALLS;
+        total_maximum_time_stationary /= NUM_STRATEGY_CALLS;
+        fprintf(output_file, "Strategy: %s Total Average Time: %lf, Total Maximum Time: %lf\n", genetic_algorithm_name, total_average_time_stationary, total_maximum_time_stationary);
         fclose(output_file);
         return EXIT_SUCCESS;
     } else if (argc == 3) {
@@ -77,6 +105,19 @@ int main(int argc, char **argv) {
         }
         else if (strcmp(command, "train_model_on_max") == 0) {
             *optimal_data = train_genetic_algorithm(false);
+            printf("succesfully trained\n");
+            const strategy s = genetic_algorithm;
+            const char* strategy_name = "Genetic Algorithm with max";
+            double total_average_time_stationary = 0;
+            double total_maximum_time_stationary = 0;
+            for (int i = 0; i < NUM_STRATEGY_CALLS; i++) {
+                intersection_evaluation* returned_evaluation = simulate_traffic(s, optimal_data);
+                total_average_time_stationary += (double)(returned_evaluation->total_average_time_stationary);
+                total_maximum_time_stationary += (double)(returned_evaluation->total_maximum_time_stationary);
+            }
+            total_average_time_stationary /= NUM_STRATEGY_CALLS;
+            total_maximum_time_stationary /= NUM_STRATEGY_CALLS;
+            fprintf(output_file, "Strategy: %s Total Average Time: %lf, Total Maximum Time: %lf\n", strategy_name, total_average_time_stationary, total_maximum_time_stationary);
         }
         else {
             // Assume strategy

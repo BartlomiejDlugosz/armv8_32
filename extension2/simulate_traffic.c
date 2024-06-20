@@ -50,7 +50,6 @@ intersection_evaluation* simulate_traffic(strategy s, Chromosome *optimal_data) 
     init_radar();
     #endif // RPI
 
-    srand(time(NULL));   // Initialization, should only be called once.
 
     // initialise all the structures
 #ifdef RPI

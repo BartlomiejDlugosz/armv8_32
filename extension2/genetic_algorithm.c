@@ -2,6 +2,7 @@
 #include <stdlib.h>
 #include <time.h>
 #include <stdbool.h>
+#include <assert.h>
 #include "intersection.h"
 #include "strategies.h"
 #include "states.h"
@@ -9,14 +10,16 @@
 #include "simulate_traffic.h"
 #include "genetic_algorithm.h"
 
-#define POP_SIZE 10
+#define POP_SIZE 100
 #define NUM_STATES 6
-#define MAX_GENERATIONS 5
+#define MAX_GENERATIONS 10
 #define MUTATION_RATE 0.1
 #define CROSSOVER_RATE 0.7
-#define MAX_DURATION 45
+#define MAX_DURATION 50
 #define NUM_ROADS 4
-#define CHROMOSOME_EVAL_NUM 1
+#define CHROMOSOME_EVAL_NUM 5
+
+
 
 // this selects the best data set from a population
 static Chromosome get_best_chromosome(Chromosome *population) {
@@ -28,6 +31,7 @@ static Chromosome get_best_chromosome(Chromosome *population) {
     }
     return best;
 }
+
 // to evaluate fitness it needs to run the chromosome through simulate traffic 10 times then calculate the average fitness
 static void evaluate_fitness(Chromosome *chromo, bool is_avg) {
     for (int i = 0; i < CHROMOSOME_EVAL_NUM; i++) {
@@ -58,10 +62,14 @@ static void crossover(Chromosome *parent1, Chromosome *parent2, Chromosome *chil
     if (((double)rand() / RAND_MAX) < CROSSOVER_RATE) {
         int crossover_point = rand() % NUM_STATES;
         for (int i = 0; i < crossover_point; i++) {
+            child1->durations[i] = 0;
+            child2->durations[i] = 0;
             child1->durations[i] = parent1->durations[i];
             child2->durations[i] = parent2->durations[i];
         }
         for (int i = crossover_point; i < NUM_STATES; i++) {
+            child1->durations[i] = 0;
+            child2->durations[i] = 0;
             child1->durations[i] = parent2->durations[i];
             child2->durations[i] = parent1->durations[i];
         }
@@ -69,13 +77,16 @@ static void crossover(Chromosome *parent1, Chromosome *parent2, Chromosome *chil
         *child1 = *parent1;
         *child2 = *parent2;
     }
+    child1->fitness = 0;
+    child2->fitness = 0;
 }
 
 // randomly mutatues a chromosome
 static void mutate(Chromosome *chromo) {
     for (int i = 0; i < NUM_STATES; i++) {
         if (((double)rand() / RAND_MAX) < MUTATION_RATE) {
-            chromo->durations[i] = rand() % MAX_DURATION + 1; // Random mutation
+            chromo->durations[i] = 0;
+            chromo->durations[i] = (rand() % MAX_DURATION) + 1; // Random mutation
         }
     }
 }
@@ -83,6 +94,12 @@ static void mutate(Chromosome *chromo) {
 // creates a new population given two parents and 2 children
 static void create_new_population(Chromosome *population) {
     Chromosome new_population[POP_SIZE];
+    for (int i = 0; i < POP_SIZE; i++) {
+        for (int j = 0; j < NUM_STATES; j++) {
+            new_population[i].durations[j] = 0;
+        }
+        new_population[i].fitness = 0;
+    }
     for (int i = 0; i < POP_SIZE / 2; i++) {
         Chromosome parent1, parent2, child1, child2;
         select_parents(population, &parent1, &parent2);
@@ -97,13 +114,17 @@ static void create_new_population(Chromosome *population) {
     }
 }
 
-
 Chromosome train_genetic_algorithm(bool is_avg) {
     Chromosome population[POP_SIZE];
     for (int i = 0; i < POP_SIZE; i++) {
         for (int j = 0; j < NUM_STATES; j++) {
-            population[i].durations[j] = rand() % MAX_DURATION + 1; // Random duration between 1 and MAX_DURATION
+            population[i].durations[j] = 0;
+            population[i].durations[j] = (rand() % MAX_DURATION) + 1; // Random duration between 1 and MAX_DURATION
+            // while (population[i].durations[j] <= 0 || population[i].durations[j] > MAX_DURATION) {  
+            //     population[i].durations[j] = rand() % (MAX_DURATION + 1); // Random duration between 1 and MAX_DURATION
+            // }
         }
+        population[i].fitness = 0;
     }
     for (int generation =  0; generation < MAX_GENERATIONS; generation++) {
         for (int i = 0; i < POP_SIZE; i++) {
