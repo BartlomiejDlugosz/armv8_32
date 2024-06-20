@@ -9,20 +9,17 @@ CFLAGS  ?= -std=c17 -g\
 
 all: assemble emulate
 
-assemble: assemble.o
-emulate: emulate.o
-
 solution:
 	mkdir -p ../armv8_testsuite/solution/
 
 clean:
 	$(RM) *.o assemble emulate
 
-emulate2: solution
+emulate: solution
 	gcc -Wall emulator/*.c -o emulate -g --debug
 	cp emulate ../armv8_testsuite/solution/
 
-assemble2: solution
+assemble: solution
 	gcc -Wall assembler/*.c -o assemble -g --debug
 	cp assemble ../armv8_testsuite/solution/
 
@@ -35,8 +32,8 @@ assemble_with_valgrind:
          --log-file=assemble.txt \
          ./assemble ../armv8_testsuite/test/test_cases/general/example.s test.bin
 
-test: assemble2
-	cd ../armv8_testsuite && ./run -Apf
+tests: emulate assemble
+	cd ../armv8_testsuite && ./run -pf
 
 led_blink: assemble2
 	./assemble ../programs/led_blink.s ../programs/kernel8.img
