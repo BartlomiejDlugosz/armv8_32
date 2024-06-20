@@ -46,10 +46,7 @@ bool basic_plus (intersection *isec, time_t time_since_change, Chromosome *optim
     if (amber_lights(isec) && time_since_change > TIME_TO_CHANGE_AMBER) {
         return true;
     } else if (time_since_change > TIME_TO_CHANGE_BASIC * sensor_significance(isec)) {
-        if(cars_waiting(isec)) {
-            return true;
-        }
-        return true;
+        return cars_waiting(isec);
     }
     return false;
 }
