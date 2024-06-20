@@ -158,5 +158,10 @@ intersection_evaluation* simulate_traffic(strategy s, Chromosome *optimal_data) 
     terminate_gpio();
     #endif // RPI
 
+    fclose(f0);
+    fclose(f1);
+    fclose(f2);
+    fclose(f3);
+
     return isec_eval;
 }
