@@ -46,10 +46,7 @@ bool basic_plus (intersection *isec, time_t time_since_change, Chromosome *optim
     if (amber_lights(isec) && time_since_change > TIME_TO_CHANGE_AMBER) {
         return true;
     } else if (time_since_change > TIME_TO_CHANGE_BASIC * sensor_significance(isec)) {
-        if(cars_waiting(isec)) {
-            return true;
-        }
-        return true;
+        return cars_waiting(isec);
     }
     return false;
 }
@@ -58,10 +55,9 @@ bool basic_plus (intersection *isec, time_t time_since_change, Chromosome *optim
 bool genetic_algorithm (intersection *isec, time_t time_since_change, Chromosome *optimal_data) {
     if(amber_lights(isec) && time_since_change > TIME_TO_CHANGE_AMBER) {
         return true;
-    } else if(!amber_lights(isec) && (optimal_data->durations[isec->state_index] * sensor_significance(isec) < time_since_change)) {
-        return true;
+    } else {
+        return !amber_lights(isec) && (optimal_data->durations[isec->state_index] * sensor_significance(isec) < time_since_change);
     }
-    return false;
 }
 
 strategy strategies[NUM_STRATEGIES] = {basic, basic_plus, genetic_algorithm};
