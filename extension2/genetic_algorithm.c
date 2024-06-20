@@ -32,6 +32,13 @@ static Chromosome get_best_chromosome(Chromosome *population) {
     return best;
 }
 
+// static void print_chromosome(Chromosome *chromo) {
+//     for (int i = 0; i < NUM_STATES; i++) {
+//         printf("state %i, duration %i\n", i ,chromo->durations[i]);
+//     }
+//     printf("\n\nfitness %lf\n", chromo->fitness);
+// }
+
 // to evaluate fitness it needs to run the chromosome through simulate traffic 10 times then calculate the average fitness
 static void evaluate_fitness(Chromosome *chromo, bool is_avg) {
     for (int i = 0; i < CHROMOSOME_EVAL_NUM; i++) {
@@ -136,5 +143,7 @@ Chromosome train_genetic_algorithm(bool is_avg) {
     for (int i = 0; i < POP_SIZE; i++) {
             evaluate_fitness(&population[i], is_avg);
     }
+    // Chromosome best = get_best_chromosome(population);
+    // print_chromosome(&best);
     return get_best_chromosome(population);
 }
