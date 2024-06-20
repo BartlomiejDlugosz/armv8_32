@@ -65,6 +65,7 @@ int main(int argc, char **argv) {
             intersection_evaluation* returned_evaluation = simulate_traffic(ga, optimal_data);
             total_average_time_stationary += (double)(returned_evaluation->total_average_time_stationary);
             total_maximum_time_stationary += (double)(returned_evaluation->total_maximum_time_stationary);
+            free(returned_evaluation);
         }
         total_average_time_stationary /= NUM_STRATEGY_CALLS;
         total_maximum_time_stationary /= NUM_STRATEGY_CALLS;
@@ -79,6 +80,7 @@ int main(int argc, char **argv) {
             intersection_evaluation* returned_evaluation = simulate_traffic(gm, optimal_data);
             total_average_time_stationary += (double)(returned_evaluation->total_average_time_stationary);
             total_maximum_time_stationary += (double)(returned_evaluation->total_maximum_time_stationary);
+            free(returned_evaluation);
         }
         total_average_time_stationary /= NUM_STRATEGY_CALLS;
         total_maximum_time_stationary /= NUM_STRATEGY_CALLS;
@@ -117,6 +119,7 @@ int main(int argc, char **argv) {
                 intersection_evaluation* returned_evaluation = simulate_traffic(s, optimal_data);
                 total_average_time_stationary += (double)(returned_evaluation->total_average_time_stationary);
                 total_maximum_time_stationary += (double)(returned_evaluation->total_maximum_time_stationary);
+                free(returned_evaluation);
             }
             total_average_time_stationary /= NUM_STRATEGY_CALLS;
             total_maximum_time_stationary /= NUM_STRATEGY_CALLS;
