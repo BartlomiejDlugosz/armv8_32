@@ -114,6 +114,13 @@ intersection_evaluation* simulate_traffic(strategy s, Chromosome *optimal_data) 
         //     printf("\n\n\n\nSTART OF ITERATION MOD 100\n");
         //     print_intersection(isec);
         // }
+        if (iter % 1000 == 0) {
+            fprintf(f0, "%d,", isec->roads[0]->num_cars);
+            fprintf(f1, "%d,", isec->roads[1]->num_cars);
+            fprintf(f2, "%d,", isec->roads[2]->num_cars);
+            fprintf(f3, "%d,", isec->roads[3]->num_cars);
+        }
+
         #ifdef RPI
         update_leds(isec->state_index);
         isec->roads[0]->light->sensor_distance = get_radar();
