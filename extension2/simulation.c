@@ -152,6 +152,7 @@ int main(int argc, char **argv) {
         }
     } else {
         fprintf(stderr, "Incorrect command line input. See README for details on inputs");
+        fclose(output_file);
         return EXIT_FAILURE;
     }
 
