@@ -33,7 +33,12 @@ static Chromosome get_best_chromosome(Chromosome *population) {
     return best;
 }
 
-static void print_chromosome(Chromosome *chromo) {
+static void print_chromosome(Chromosome *chromo, bool is_avg) {
+    if(is_avg) {
+        printf("Best chromosome for minimising average waiting time per car\n");
+    } else {
+        printf("Best chromosome for minimising maximum waiting time per car\n");
+    }
     for (int i = 0; i < NUM_STATES; i++) {
         printf("state %i, duration %i\n", i ,chromo->durations[i]);
     }
@@ -142,6 +147,6 @@ Chromosome train_genetic_algorithm(bool is_avg) {
             evaluate_fitness(&population[i], is_avg);
     }
     Chromosome best = get_best_chromosome(population);
-    print_chromosome(&best);
+    print_chromosome(&best, is_avg);
     return get_best_chromosome(population);
 }
