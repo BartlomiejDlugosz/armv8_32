@@ -5,7 +5,7 @@
 #include "states.h"
 #include "intersection.h"
 #include "genetic_algorithm.h"
-#define NUM_STRATEGIES 3
+#define NUM_STRATEGIES 4
 #define TIME_TO_CHANGE_BASIC 30
 #define TIME_TO_CHANGE_AMBER 2
 // every strategy:
