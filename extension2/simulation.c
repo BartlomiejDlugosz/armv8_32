@@ -2,7 +2,7 @@
 #include <string.h>
 #include "simulate_traffic.h"
 #include "strategies.h"
-#define NUM_STRATEGY_CALLS 100
+#define NUM_STRATEGY_CALLS  2 //100
 
 // One strategy
 // ./simulation (FILE) strategy
