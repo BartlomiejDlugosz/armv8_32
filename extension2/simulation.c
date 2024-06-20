@@ -145,6 +145,10 @@ int main(int argc, char **argv) {
                 fclose(output_file);
                 return EXIT_FAILURE;
             }
+
+            fclose(output_file);
+            return EXIT_SUCCESS;
+
         }
     } else {
         fprintf(stderr, "Incorrect command line input. See README for details on inputs");
