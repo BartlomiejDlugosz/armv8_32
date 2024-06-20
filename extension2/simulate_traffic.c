@@ -1,4 +1,5 @@
 #include <stdbool.h>
+#include <string.h>
 #include <time.h>
 #include <stdlib.h>
 #include <stdint.h>
@@ -43,7 +44,7 @@
 
 
 
-intersection_evaluation* simulate_traffic(strategy s, Chromosome *optimal_data) {
+intersection_evaluation* simulate_traffic(strategy s, Chromosome *optimal_data, char * strategy_name) {
     #ifdef RPI
     init_gpio();
     init_leds();
@@ -107,17 +108,21 @@ intersection_evaluation* simulate_traffic(strategy s, Chromosome *optimal_data) 
     time_t *time_since_change;
     time_since_change = &initial_time_since_change;
 
+    char f0name[50];
+    sprintf(f0name, "./graphing/%s-road0.txt", strategy_name);
+    char f1name[50];
+    sprintf(f1name, "./graphing/%s-road1.txt", strategy_name);
+    char f2name[50];
+    sprintf(f2name, "./graphing/%s-road2.txt", strategy_name);
+    char f3name[50];
+    sprintf(f3name, "./graphing/%s-road3.txt", strategy_name);
 
-    FILE *f0 = fopen("./graphing/road0.txt", "w"); 
-    FILE *f1 = fopen("./graphing/road1.txt", "w"); 
-    FILE *f2 = fopen("./graphing/road2.txt", "w"); 
-    FILE *f3 = fopen("./graphing/road3.txt", "w"); 
+    FILE *f0 = fopen(f0name, "w"); 
+    FILE *f1 = fopen(f1name, "w"); 
+    FILE *f2 = fopen(f2name, "w"); 
+    FILE *f3 = fopen(f3name, "w"); 
 
     for (uint64_t iter = 0; iter < MAX_ITERATIONS; iter++) { // timestep
-        // if (iter % 100 == 0) {
-        //     printf("\n\n\n\nSTART OF ITERATION MOD 100\n");
-        //     print_intersection(isec);
-        // }
         if (iter % 1000 == 0) {
             fprintf(f0, "%d,", isec->roads[0]->num_cars);
             fprintf(f1, "%d,", isec->roads[1]->num_cars);

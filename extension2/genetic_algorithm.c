@@ -18,6 +18,7 @@
 #define MAX_DURATION 50
 #define NUM_ROADS 4
 #define CHROMOSOME_EVAL_NUM 5
+#define TRAINING "training"
 
 
 
@@ -42,7 +43,7 @@ static Chromosome get_best_chromosome(Chromosome *population) {
 // to evaluate fitness it needs to run the chromosome through simulate traffic 10 times then calculate the average fitness
 static void evaluate_fitness(Chromosome *chromo, bool is_avg) {
     for (int i = 0; i < CHROMOSOME_EVAL_NUM; i++) {
-        intersection_evaluation *isec_eval = simulate_traffic(genetic_algorithm, chromo);
+        intersection_evaluation *isec_eval = simulate_traffic(genetic_algorithm, chromo, TRAINING);
         if(is_avg) {
             chromo->fitness += isec_eval->total_average_time_stationary;
         } else {

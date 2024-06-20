@@ -1,6 +1,6 @@
 from functions import *
 
-yss = [genxy(file) for file in [ 'road0.txt', 'road1.txt', 'road2.txt', 'road3.txt' ]]
+yss = [genxy(file) for file in [ 'Genetic Algorithm Avg-road0.txt', 'Genetic Algorithm Avg-road1.txt', 'Genetic Algorithm Avg-road2.txt', 'Genetic Algorithm Avg-road3.txt' ]]
 xs = np.linspace(0, len(yss[0]), len(yss[0]), endpoint=False)
 
 ys_isec = yss[0]
