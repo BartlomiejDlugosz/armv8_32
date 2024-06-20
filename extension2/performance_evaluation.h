@@ -17,6 +17,6 @@ typedef struct {
 
 void evaluate_road(car *car_crossed, intersection_evaluation *isec_eval, int road_num);
 
-intersection_evaluation *evaluate_intersection(intersection_evaluation *isec_eval);
+void evaluate_intersection(intersection_evaluation *isec_eval);
 
 #endif // PERFORMANCE_EVALUATION_H

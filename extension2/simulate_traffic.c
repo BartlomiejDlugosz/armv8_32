@@ -81,10 +81,14 @@ intersection_evaluation* simulate_traffic(strategy s, Chromosome *optimal_data) 
     road_evaluation road2_eval = {0};
     road_evaluation road3_eval = {0};
     
-    intersection_evaluation isec_eval_struct;
-    intersection_evaluation *isec_eval;
-    
-    isec_eval = &isec_eval_struct;
+//    intersection_evaluation isec_eval_struct;
+    intersection_evaluation *isec_eval = malloc(sizeof(intersection_evaluation));
+
+    if (isec_eval == NULL) {
+        fprintf(stderr, "Unable to allocate memory");
+        exit(1);
+    }
+
     isec_eval->road_evals[0] = &road0_eval;
     isec_eval->road_evals[1] = &road1_eval;
     isec_eval->road_evals[2] = &road2_eval;
@@ -132,7 +136,7 @@ intersection_evaluation* simulate_traffic(strategy s, Chromosome *optimal_data) 
         sleep(DT);
         #endif // RPI
     }
-    intersection_evaluation* values_to_write_to_file = evaluate_intersection(isec_eval);
+    evaluate_intersection(isec_eval);
     for (int i = 0; i < NUM_ROADS; i++) {
         free_all_cars(isec->roads[i]->head_car);
     }
@@ -140,5 +144,5 @@ intersection_evaluation* simulate_traffic(strategy s, Chromosome *optimal_data) 
     terminate_gpio();
     #endif // RPI
 
-    return values_to_write_to_file;
+    return isec_eval;
 }
