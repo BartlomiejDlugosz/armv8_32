@@ -32,10 +32,10 @@
 
 #define ROAD0_SPEED_LIMIT 60
 #define ROAD1_SPEED_LIMIT 75
-#define ROAD2_SPEED_LIMIT 50
-#define ROAD3_SPEED_LIMIT 65
+#define ROAD2_SPEED_LIMIT 38
+#define ROAD3_SPEED_LIMIT 40
 
-#define FOLLOW_DIST_SF 15
+#define FOLLOW_DIST_SF 3
 #define ROAD0_FOLLOW_DIST (int)(ROAD0_SPEED_LIMIT / FOLLOW_DIST_SF)
 #define ROAD1_FOLLOW_DIST (int)(ROAD1_SPEED_LIMIT / FOLLOW_DIST_SF)
 #define ROAD2_FOLLOW_DIST (int)(ROAD2_SPEED_LIMIT / FOLLOW_DIST_SF)
@@ -52,11 +52,12 @@ intersection_evaluation* simulate_traffic(strategy s, Chromosome *optimal_data) 
 
 
     // initialise all the structures
-#ifdef RPI
+    #ifdef RPI
     traffic_light light0 = {.clr = RED, .has_arrow = false, .has_sensor = true, .sensor_distance = get_radar() };
-#else
-    traffic_light light0 = {.clr = RED, .has_arrow = false, .has_sensor = false};
-#endif // RPI
+    #else 
+    traffic_light light0 = {.clr = RED, .has_arrow = false, .has_sensor = false };
+    #endif
+
     traffic_light light1 = {.clr = GREEN, .has_arrow = false, .has_sensor = false};
     traffic_light light2 = {.clr = RED, .has_arrow = false, .has_sensor = false};
     traffic_light light3 = {.clr = GREEN, .has_arrow = false, .has_sensor = false};
@@ -106,11 +107,24 @@ intersection_evaluation* simulate_traffic(strategy s, Chromosome *optimal_data) 
     time_t *time_since_change;
     time_since_change = &initial_time_since_change;
 
+
+    FILE *f0 = fopen("./graphing/road0.txt", "w"); 
+    FILE *f1 = fopen("./graphing/road1.txt", "w"); 
+    FILE *f2 = fopen("./graphing/road2.txt", "w"); 
+    FILE *f3 = fopen("./graphing/road3.txt", "w"); 
+
     for (uint64_t iter = 0; iter < MAX_ITERATIONS; iter++) { // timestep
-        // if (iter % 100 == 0) {
-        //     printf("\n\n\n\nSTART OF ITERATION MOD 100\n");
-        //     print_intersection(isec);
-        // }
+        if (iter % 100 == 0) {
+            printf("\n\n\n\nSTART OF ITERATION MOD 100\n");
+            print_intersection(isec);
+        }
+        if (iter % 1000 == 0) {
+            fprintf(f0, "%d,", isec->roads[0]->num_cars);
+            fprintf(f1, "%d,", isec->roads[1]->num_cars);
+            fprintf(f2, "%d,", isec->roads[2]->num_cars);
+            fprintf(f3, "%d,", isec->roads[3]->num_cars);
+        }
+
         #ifdef RPI
         update_leds(isec->state_index);
         isec->roads[0]->light->sensor_distance = get_radar();
