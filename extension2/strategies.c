@@ -60,5 +60,5 @@ bool genetic_algorithm (intersection *isec, time_t time_since_change, Chromosome
     }
 }
 
-strategy strategies[NUM_STRATEGIES] = {basic, basic_plus, genetic_algorithm};
-char* strategy_names[NUM_STRATEGIES] = {"Basic", "Basic Plus", "Genetic Algorithm"};
+strategy strategies[NUM_STRATEGIES] = {basic, basic_plus};
+char* strategy_names[NUM_STRATEGIES] = {"Basic", "Basic Plus"};
