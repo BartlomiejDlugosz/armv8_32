@@ -33,12 +33,17 @@ static Chromosome get_best_chromosome(Chromosome *population) {
     return best;
 }
 
-// static void print_chromosome(Chromosome *chromo) {
-//     for (int i = 0; i < NUM_STATES; i++) {
-//         printf("state %i, duration %i\n", i ,chromo->durations[i]);
-//     }
-//     printf("\n\nfitness %lf\n", chromo->fitness);
-// }
+static void print_chromosome(Chromosome *chromo, bool is_avg) {
+    if(is_avg) {
+        printf("Best chromosome for minimising average waiting time per car\n");
+    } else {
+        printf("Best chromosome for minimising maximum waiting time per car\n");
+    }
+    for (int i = 0; i < NUM_STATES; i++) {
+        printf("state %i, duration %i\n", i ,chromo->durations[i]);
+    }
+    printf("\n\nfitness %lf\n", chromo->fitness);
+}
 
 // to evaluate fitness it needs to run the chromosome through simulate traffic 10 times then calculate the average fitness
 static void evaluate_fitness(Chromosome *chromo, bool is_avg) {
@@ -128,10 +133,7 @@ Chromosome train_genetic_algorithm(bool is_avg) {
     for (int i = 0; i < POP_SIZE; i++) {
         for (int j = 0; j < NUM_STATES; j++) {
             population[i].durations[j] = 0;
-            population[i].durations[j] = (rand() % MAX_DURATION) + 1; // Random duration between 1 and MAX_DURATION
-            // while (population[i].durations[j] <= 0 || population[i].durations[j] > MAX_DURATION) {  
-            //     population[i].durations[j] = rand() % (MAX_DURATION + 1); // Random duration between 1 and MAX_DURATION
-            // }
+            population[i].durations[j] = (rand() % MAX_DURATION) + 1;
         }
         population[i].fitness = 0;
     }
@@ -144,7 +146,7 @@ Chromosome train_genetic_algorithm(bool is_avg) {
     for (int i = 0; i < POP_SIZE; i++) {
             evaluate_fitness(&population[i], is_avg);
     }
-    // Chromosome best = get_best_chromosome(population);
-    // print_chromosome(&best);
+    Chromosome best = get_best_chromosome(population);
+    print_chromosome(&best, is_avg);
     return get_best_chromosome(population);
 }
