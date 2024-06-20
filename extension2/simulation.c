@@ -103,7 +103,8 @@ int main(int argc, char **argv) {
             total_average_time_stationary /= NUM_STRATEGY_CALLS;
             total_maximum_time_stationary /= NUM_STRATEGY_CALLS;
             fprintf(output_file, "Strategy: %s Total Average Time: %lf, Total Maximum Time: %lf\n", strategy_name, total_average_time_stationary, total_maximum_time_stationary);
-
+            fclose(output_file);
+            return EXIT_SUCCESS;
         }
         else if (strcmp(command, "train_model_on_max") == 0) {
             *optimal_data = train_genetic_algorithm(false);
@@ -120,6 +121,8 @@ int main(int argc, char **argv) {
             total_average_time_stationary /= NUM_STRATEGY_CALLS;
             total_maximum_time_stationary /= NUM_STRATEGY_CALLS;
             fprintf(output_file, "Strategy: %s Total Average Time: %lf, Total Maximum Time: %lf\n", strategy_name, total_average_time_stationary, total_maximum_time_stationary);
+            fclose(output_file);
+            return EXIT_SUCCESS;        
         }
         else {
             // Assume strategy
@@ -148,5 +151,5 @@ int main(int argc, char **argv) {
         return EXIT_FAILURE;
     }
 
-    return 0;
+    return EXIT_SUCCESS;
 }
