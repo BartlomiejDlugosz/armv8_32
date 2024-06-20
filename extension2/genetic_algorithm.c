@@ -39,8 +39,9 @@ static void evaluate_fitness(Chromosome *chromo, bool is_avg) {
         if(is_avg) {
             chromo->fitness += isec_eval->total_average_time_stationary;
         } else {
-            chromo->fitness += isec_eval->total_maximum_time_stationary;
+            chromo->fitness += (double)isec_eval->total_maximum_time_stationary;
         }
+        free(isec_eval);
     }
     chromo->fitness = chromo->fitness / CHROMOSOME_EVAL_NUM;
 }

@@ -1,13 +1,14 @@
 #include <stdlib.h>
 #include <stdio.h>
 #include <sys/param.h>
+#include <assert.h>
 #include "road.h"
 
 void update_distances(road* update_road, time_t dt) {   
     if (update_road->head_car == NULL) return;
     int speed_limit = update_road->speed_limit;
     // Maximum distance a car is able to cover in the time and speed limit given
-    int distance_covered = speed_limit * dt;
+    int distance_covered = speed_limit * (int)dt;
     // Dealing with case light is red
     if (update_road->light->clr == RED) {
         // Dealing with the HEAD
@@ -121,6 +122,7 @@ bool maybe_add_car(road *update_road)
         prev_car = current_car;
         current_car = current_car->next;
     }
+    assert(update_road->head_car == NULL || prev_car != NULL);
     // current_car = NULL
     // prev_car is last car in ll
 

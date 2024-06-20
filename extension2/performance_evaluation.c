@@ -17,7 +17,7 @@ void evaluate_road(car *car_crossed, intersection_evaluation *isec_eval, int roa
     evaluate_road(car_crossed->next, isec_eval, road_num);
 }
 
-intersection_evaluation *evaluate_intersection(intersection_evaluation *isec_eval) {
+void evaluate_intersection(intersection_evaluation *isec_eval) {
     double average_times_stationary[NUM_ROADS];
     for (int i = 0; i < NUM_ROADS; i++) {
         average_times_stationary[i] = (double) isec_eval->road_evals[i]->total_time_stationary / (double) isec_eval->road_evals[i]->num_cars_crossed;
@@ -29,5 +29,4 @@ intersection_evaluation *evaluate_intersection(intersection_evaluation *isec_eva
     }
     isec_eval->total_average_time_stationary = isec_eval->total_average_time_stationary / NUM_ROADS;
     // printf("\nAverage across roads %lf, longest waiting time %ld\n", isec_eval->total_average_time_stationary, isec_eval->total_maximum_time_stationary);
-    return isec_eval;
 }
