@@ -4,7 +4,7 @@
 
 #include "road.h"
 
-#define MAX(num1, num2) num1 > num2 ? num1 : num2
+#define MAX(num1, num2) (((num1) > (num2)) ? (num1) : (num2))
 
 void update_distances(road *update_road, time_t dt) {
     if (update_road->head_car == NULL) {

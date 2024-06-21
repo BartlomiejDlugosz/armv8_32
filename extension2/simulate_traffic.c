@@ -137,7 +137,7 @@ intersection_evaluation *simulate_traffic(strategy target_strategy, Chromosome *
         return NULL;
     }
 
-    if (!initialise_isec_eval(isec_eval)) {
+    if (initialise_isec_eval(isec_eval) == 0) {
         return NULL;
     }
 
