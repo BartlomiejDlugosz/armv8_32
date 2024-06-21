@@ -55,7 +55,7 @@ double get_radar() {
 
     // Calculate the difference in time and calculate the distance
     int difference = change_in_time.end_time - change_in_time.start_time;
-    double distance = difference * DISTANCE_SF;
+    double distance = difference * DISTANCE_SCALEFACTOR;
 
     return distance;
 }

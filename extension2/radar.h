@@ -14,7 +14,7 @@
 #define FALLING_EDGE_LEVEL 0
 #define PULSE_TIME 10
 #define DELAY_PER_ITER 100
-#define DISTANCE_SF (0.034 * 0.5)
+#define DISTANCE_SCALEFACTOR (0.034 * 0.5)
 
 double get_radar();
 void init_radar();
