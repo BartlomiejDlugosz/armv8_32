@@ -23,7 +23,8 @@
 #define INITIAL_STATE_INDEX 0
 #define INITIAL_NUM_CARS 0
 #define MAX_ITERATIONS 100000
-#define NUMBER_OF_ROADS 4
+#define MAX_FILE_NAME_SIZE 50
+#define PRINT_EVERY_ITER 1000
 
 #define ROAD0_LENGTH 500
 #define ROAD1_LENGTH 720
@@ -43,19 +44,19 @@
 
 // Frees a intersection_evaluation
 void free_isec_eval(intersection_evaluation *isec_eval) {
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < NUM_ROADS; i++) {
         free(isec_eval->road_evals[i]);
     }
     free(isec_eval);
 }
 
 // Initialises the intersection evaluation by allocating memory for
-// each road. Returns true if successfull
+// each road. Returns true if successfull, false if failed to malloc
 bool initialise_isec_eval(intersection_evaluation *isec_eval) {
-    for (int i = 0; i < 4; i++) {
+    for (int i = 0; i < NUM_ROADS; i++) {
         isec_eval->road_evals[i] = malloc(sizeof(road_evaluation));
 
-        // Free entire isec_eval and exit
+        // Free entire isec_eval and exit since malloc failed
         if (isec_eval->road_evals[i] == NULL) {
             free_isec_eval(isec_eval);
 
@@ -63,6 +64,7 @@ bool initialise_isec_eval(intersection_evaluation *isec_eval) {
             return false;
         }
 
+        // Initialize to 0, else causes bugs on different systems
         memset(isec_eval->road_evals[i], 0, sizeof(road_evaluation));
     }
     isec_eval->total_average_time_stationary = 0;
@@ -147,18 +149,18 @@ intersection_evaluation *simulate_traffic(strategy target_strategy, Chromosome *
     time_t time_since_change = 0;
 
     // Strategy names no longer than 25 characters
-    char fname[50];
-    FILE *files[NUMBER_OF_ROADS];
+    char fname[MAX_FILE_NAME_SIZE];
+    FILE *files[NUM_ROADS];
 
-    for (int i = 0; i < NUMBER_OF_ROADS; i++) {
+    for (int i = 0; i < NUM_ROADS; i++) {
         sprintf(fname, "./graphing/%s-road%i.txt", strategy_name, i);
         files[i] = fopen(fname, "w");
     }
 
     for (uint64_t iter = 0; iter < MAX_ITERATIONS; iter++) {  // timestep
         // Every number of iterations write the number of cars on the road
-        if (iter % 1000 == 0) {
-            for (int i = 0; i < NUMBER_OF_ROADS; i++) {
+        if (iter % PRINT_EVERY_ITER == 0) {
+            for (int i = 0; i < NUM_ROADS; i++) {
                 fprintf(files[i], "%d,", isec.roads[i]->num_cars);
             }
         }
@@ -206,7 +208,7 @@ intersection_evaluation *simulate_traffic(strategy target_strategy, Chromosome *
     terminate_gpio();
 #endif  // RPI
 
-    for (int i = 0; i < NUMBER_OF_ROADS; i++) {
+    for (int i = 0; i < NUM_ROADS; i++) {
         fclose(files[i]);
     }
 

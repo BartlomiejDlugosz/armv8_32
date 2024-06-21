@@ -75,6 +75,7 @@ int main(int argc, char** argv) {
                 total_maximum_time_stationary +=
                     (double)returned_evaluation
                                  ->total_maximum_time_stationary;
+                // Free the malloced intersection
                 free_isec_eval(returned_evaluation);
             }
             total_average_time_stationary /= NUM_STRATEGY_CALLS;
