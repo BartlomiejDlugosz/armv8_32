@@ -10,28 +10,30 @@ struct time_change {
 };
 
 // Initialise ultrasonic sensors pins
-void init_radar() {
+void init_radar(void) {
     gpioSetMode(TRIG_PIN, PI_OUTPUT);
     gpioSetMode(ECHO_PIN, PI_INPUT);
 }
 
 // Used as a callback function when echo pin changes state
-static void updateTimer(int gpio, int level, uint32_t tick, void* timer) {
-    struct time_change *change_in_time = (struct time_change *) timer;
+static void updateTimer(int gpio, int level, uint32_t tick, void *timer) {
+    struct time_change *change_in_time = (struct time_change *)timer;
     // Make sure we are handling the echo pin
     if (gpio == ECHO_PIN) {
         if (level == RISING_EDGE_LEVEL) {
-            // If a rising edge then set the start to the current tick (microseconds)
+            // If a rising edge then set the start to the current tick
+            // (microseconds)
             change_in_time->start_time = tick;
         } else if (level == FALLING_EDGE_LEVEL) {
-            // If falling edge then set end time to the current tick (microseconds)
+            // If falling edge then set end time to the current tick
+            // (microseconds)
             change_in_time->end_time = tick;
         }
     }
 }
 
 // Reads the distance from the ultrasonic sensor
-double get_radar() {
+double get_radar(void) {
     // Set trigger pin to low to ensure it's off
     gpioWrite(TRIG_PIN, 0);
 
@@ -55,9 +57,9 @@ double get_radar() {
 
     // Calculate the difference in time and calculate the distance
     int difference = change_in_time.end_time - change_in_time.start_time;
-    double distance = difference * DISTANCE_SF;
+    double distance = difference * DISTANCE_SCALEFACTOR;
 
     return distance;
 }
 
-#endif // RPI
+#endif  // RPI

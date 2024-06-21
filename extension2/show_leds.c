@@ -10,7 +10,7 @@ int light_4_pins[] = {LIGHT_4_RED, LIGHT_4_AMBER, LIGHT_4_GREEN};
 // This sets a light to the specified color
 // Pre: len(pins) == 3
 static void set_light(int pins[], colour clr) {
-    switch(clr) {
+    switch (clr) {
         case RED:
             gpioWrite(pins[0], 1);
             gpioWrite(pins[1], 0);
@@ -33,23 +33,16 @@ static void set_light(int pins[], colour clr) {
             break;
         default:
             fprintf(stderr, "UNKNOWN COLOUR %i\n", clr);
-            exit(1);
     }
 }
 
 // Initialises/Terminates the gpio
-void init_gpio(void) {
-    gpioInitialise();
-}
+void init_gpio(void) { gpioInitialise(); }
 
-void terminate_gpio(void) {
-    gpioTerminate();
-}
+void terminate_gpio(void) { gpioTerminate(); }
 
 // Function to sleep to be used from other files which don't include pigpio
-void sleep(int seconds) {
-    gpioSleep(PI_TIME_RELATIVE, seconds, 0);
-}
+void sleep(int seconds) { gpioSleep(PI_TIME_RELATIVE, seconds, 0); }
 
 // This updates all the lights to the color they should be according to
 // the current state index
@@ -77,4 +70,4 @@ void init_leds(void) {
     }
 }
 
-#endif // RPI
+#endif  // RPI

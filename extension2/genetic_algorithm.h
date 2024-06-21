@@ -1,7 +1,7 @@
 #ifndef GENETIC_ALGORITHM_H
 #define GENETIC_ALGORITHM_H
-#include "states.h"
 
+#include "states.h"
 
 typedef struct {
     int durations[NUM_STATES];
@@ -10,4 +10,4 @@ typedef struct {
 
 Chromosome train_genetic_algorithm(bool is_avg);
 
-#endif // GENETIC_ALGORITHM_H
+#endif  // GENETIC_ALGORITHM_H

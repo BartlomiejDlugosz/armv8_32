@@ -8,4 +8,4 @@
 
 extern colour states[NUM_STATES][NUM_ROADS];
 
-#endif // STATES_H
+#endif  // STATES_H
