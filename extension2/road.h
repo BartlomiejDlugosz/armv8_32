@@ -13,7 +13,7 @@ typedef struct {
     int num_cars;
 } road;
 
-void update_distances(road *update_road, time_t dt);
+void update_distances(road *road_to_update, time_t dt);
 
 car *remove_crossed(road *cur_road);
 

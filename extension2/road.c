@@ -6,39 +6,40 @@
 
 #define MAX(num1, num2) (((num1) > (num2)) ? (num1) : (num2))
 
-void update_distances(road *update_road, time_t dt) {
-    if (update_road->head_car == NULL) {
+// Updates the distances for all cars on a given road
+void update_distances(road *road_to_update, time_t dt) {
+    if (road_to_update->head_car == NULL) {
         return;
     }
 
-    int speed_limit = update_road->speed_limit;
+    int speed_limit = road_to_update->speed_limit;
 
     // Maximum distance a car is able to cover in the time and speed limit given
     int distance_covered = speed_limit * (int)dt;
 
     // Dealing with case light is red
-    if (update_road->light->clr == RED) {
+    if (road_to_update->light->clr == RED) {
         // Dealing with the HEAD
-        int cur_distance = update_road->head_car->distance_to_car_in_front;
+        int cur_distance = road_to_update->head_car->distance_to_car_in_front;
         int new_distance = cur_distance - distance_covered;
         // Either the HEAD reaches the light or covers some distance
-        update_road->head_car->distance_to_car_in_front = MAX(new_distance, 0);
+        road_to_update->head_car->distance_to_car_in_front = MAX(new_distance, 0);
         // If the cars in front are stationary, the cars behind can still move
         // If the cars in front are not stationary, the cars behind still move
         // regardless So don't add time stationary for any cars behind
         bool all_cars_in_front_are_stationary = false;
         // If the car hasn't moved, add to time stationary (same logic is used
         // in while loop)
-        if (cur_distance == update_road->head_car->distance_to_car_in_front) {
+        if (cur_distance == road_to_update->head_car->distance_to_car_in_front) {
             all_cars_in_front_are_stationary = true;
         }
         // The distance covered is now reduced by the distance covered by the
         // HEAD car
         distance_covered -=
-            cur_distance - update_road->head_car->distance_to_car_in_front;
+            cur_distance - road_to_update->head_car->distance_to_car_in_front;
         // Dealing with the rest of the cars
-        car *next_car = update_road->head_car->next;
-        int follow_distance = update_road->follow_distance;
+        car *next_car = road_to_update->head_car->next;
+        int follow_distance = road_to_update->follow_distance;
         // Distances are relative so only cover the distance available
         while (next_car != NULL && distance_covered > 0) {
             // Previous Distance
@@ -73,7 +74,7 @@ void update_distances(road *update_road, time_t dt) {
     else {
         // Only need to update HEAD car as distances are relative
         // They all move the saem distance
-        update_road->head_car->distance_to_car_in_front -= distance_covered;
+        road_to_update->head_car->distance_to_car_in_front -= distance_covered;
     }
 }
 

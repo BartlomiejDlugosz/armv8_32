@@ -1,5 +1,4 @@
 #include <string.h>
-#include <time.h>
 #include <stdlib.h>
 #include <stdint.h>
 
@@ -139,7 +138,7 @@ intersection_evaluation *simulate_traffic(strategy target_strategy, Chromosome *
         return NULL;
     }
 
-    if (initialise_isec_eval(isec_eval) == 0) {
+    if (!initialise_isec_eval(isec_eval)) {
         return NULL;
     }
 

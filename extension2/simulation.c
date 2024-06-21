@@ -29,7 +29,7 @@ int main(int argc, char** argv) {
 
     // Defines a chromosone which will hold the optimal durations
     // Initialise it with default durations
-    Chromosome optimal_data;
+    Chromosome optimal_data = {0};
     for (int i = 0; i < NUM_STATES; i++) {
         optimal_data.durations[i] = basic_durations[i];
     }
