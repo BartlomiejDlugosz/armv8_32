@@ -10,15 +10,13 @@
 // One strategy
 // ./simulation (FILE) strategy
 
+// All strategies
 //  ./simulation (FILE)
 
-// Call simulate traffic multiple times eg 10 times with a certain max iteration
-// in simulate_traffic.c Know the avg stationary time for each road and the max
-
+// Genetic Algorithms
 // ./simulation (FILE) train_model_on_avg
 // ./simulation (FILE) train_model_on_max
-// call the function with the parameters (avg stationary time for each road and
-// the max) do not call it is trained
+
 int main(int argc, char** argv) {
     srand(time(NULL));  // Initialization, should only be called once.
     // Calling all strategies and writing to a file
