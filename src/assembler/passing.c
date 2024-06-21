@@ -23,7 +23,7 @@ void first_pass(FILE* in, symbol_table* table) {
         instruction* instr = parse(line, &address);
         if (instr->complete && strlen(getString(instr->label)) > 0) {
             // Add the symbol to the table along with its address
-            dynamicString* lbl = createNewDynamicString(10);
+            dynamic_string* lbl = createNewDynamicString(10);
             addString(lbl, getString(instr->label));
             add_entry(table, lbl, address);
         }
@@ -50,7 +50,7 @@ void second_pass(FILE* in, FILE* out, const symbol_table* table) {
         instr = parse(line, &address);
         if (instr->complete) {
             for (int i = 0; i < 4; i++) {
-                dynamicString* operand = instr->operands[i];
+                dynamic_string* operand = instr->operands[i];
                 if (operand->current_size > 0) {
                     uint64_t entry_address = find_entry(table, operand);
                     if (entry_address != UINT64_MAX) {  // Check if entry exists

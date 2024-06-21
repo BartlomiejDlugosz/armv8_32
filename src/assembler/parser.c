@@ -6,7 +6,7 @@
 #include <stdint.h>
 #include <stdlib.h>
 #include <stdbool.h>
-#include "dynamicString.h"
+#include "dynamic_string.h"
 #include "parser.h"
 
 #define DEFAULT_LABEL_SIZE 10

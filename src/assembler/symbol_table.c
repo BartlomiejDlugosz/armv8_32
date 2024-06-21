@@ -3,7 +3,7 @@
 #include <assert.h>
 
 #include "symbol_table.h"
-#include "dynamicString.h"
+#include "dynamic_string.h"
 
 #define CHECK_ALLOCATION(ptr)                                    \
     if (ptr == NULL) {                                           \
@@ -33,7 +33,7 @@ static void resize_table(symbol_table *table, size_t capacity_scale_factor) {
 }
 
 // automatically resizes if necessary
-void add_entry(symbol_table *table, dynamicString *label, uint64_t address) {
+void add_entry(symbol_table *table, dynamic_string *label, uint64_t address) {
     if (table->size >= table->capacity) {
         resize_table(table, RESIZE_FACTOR);
     }
@@ -46,7 +46,7 @@ void add_entry(symbol_table *table, dynamicString *label, uint64_t address) {
     table->symbols[table->size++] = new_entry;
 }
 
-uint64_t find_entry(const symbol_table *table, dynamicString *search_label) {
+uint64_t find_entry(const symbol_table *table, dynamic_string *search_label) {
     for (int i = 0; i < table->size; i++) {
         if (strcmp(getString(table->symbols[i]->label),
                    getString(search_label)) == 0) {
