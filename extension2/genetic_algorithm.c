@@ -1,11 +1,8 @@
 #include <stdio.h>
 #include <stdlib.h>
-#include <time.h>
 #include <stdbool.h>
-#include <assert.h>
-#include "intersection.h"
+
 #include "strategies.h"
-#include "states.h"
 #include "performance_evaluation.h"
 #include "simulate_traffic.h"
 #include "genetic_algorithm.h"
@@ -54,7 +51,7 @@ static void evaluate_fitness(Chromosome *chromo, bool is_avg) {
         } else {
             chromo->fitness += (double)isec_eval->total_maximum_time_stationary;
         }
-        free(isec_eval);
+        free_isec_eval(isec_eval);
     }
     chromo->fitness = chromo->fitness / CHROMOSOME_EVAL_NUM;
 }

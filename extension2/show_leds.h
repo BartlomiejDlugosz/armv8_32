@@ -10,6 +10,8 @@
 #include "states.h"
 #include "traffic_light.h"
 
+// How many seperate physical lights for one traffic light
+// e.g. red, amber, green
 #define PINS_PER_LIGHT 3
 
 // These are the GPIO pin numbers, not physical

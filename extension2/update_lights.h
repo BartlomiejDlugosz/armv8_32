@@ -2,7 +2,7 @@
 #define UPDATE_LIGHTS_H
 #include <stdbool.h>
 #include <time.h>
-#include "states.h"
+
 #include "intersection.h"
 #include "strategies.h"
 

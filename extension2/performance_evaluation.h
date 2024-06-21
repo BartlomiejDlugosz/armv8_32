@@ -1,8 +1,11 @@
 #ifndef PERFORMANCE_EVALUATION_H
 #define PERFORMANCE_EVALUATION_H
+
 #include <time.h>
+
 #include "states.h"
 #include "car.h"
+
 typedef struct {
     time_t total_time_stationary;
     int num_cars_crossed;

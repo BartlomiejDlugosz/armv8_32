@@ -10,7 +10,7 @@ struct time_change {
 };
 
 // Initialise ultrasonic sensors pins
-void init_radar() {
+void init_radar(void) {
     gpioSetMode(TRIG_PIN, PI_OUTPUT);
     gpioSetMode(ECHO_PIN, PI_INPUT);
 }
@@ -33,7 +33,7 @@ static void updateTimer(int gpio, int level, uint32_t tick, void *timer) {
 }
 
 // Reads the distance from the ultrasonic sensor
-double get_radar() {
+double get_radar(void) {
     // Set trigger pin to low to ensure it's off
     gpioWrite(TRIG_PIN, 0);
 

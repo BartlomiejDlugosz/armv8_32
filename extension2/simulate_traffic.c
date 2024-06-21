@@ -42,24 +42,45 @@
 #define ROAD2_FOLLOW_DIST (int)(ROAD2_SPEED_LIMIT / FOLLOW_DIST_SF)
 #define ROAD3_FOLLOW_DIST (int)(ROAD3_SPEED_LIMIT / FOLLOW_DIST_SF)
 
-intersection_evaluation *simulate_traffic(strategy s, Chromosome *optimal_data,
+void free_isec_eval(intersection_evaluation *isec_eval) {
+    for (int i = 0; i < 4; i++) {
+        free(isec_eval->road_evals[i]);
+    }
+    free(isec_eval);
+}
+
+void initialise_isec_eval(intersection_evaluation *isec_eval) {
+    for (int i = 0; i < 4; i++) {
+        isec_eval->road_evals[i] = malloc(sizeof(road_evaluation));
+
+        if (isec_eval->road_evals[i] == NULL) {
+            free_isec_eval(isec_eval);
+
+            fprintf(stderr, "Failed to allocate memory");
+            exit(1);
+        }
+    }
+    isec_eval->total_average_time_stationary = 0;
+    isec_eval->total_maximum_time_stationary = 0;
+}
+
+intersection_evaluation *simulate_traffic(strategy target_strategy, Chromosome *optimal_data,
                                           char *strategy_name) {
 #ifdef RPI
     init_gpio();
     init_leds();
     init_radar();
-#endif  // RPI
 
-// initialise all the structures
-#ifdef RPI
+    // Add the sensor to trafic light 0 if the raspberry pi
+    // is connected
     traffic_light light0 = {.clr = RED,
                             .has_arrow = false,
                             .has_sensor = true,
                             .sensor_distance = get_radar()};
-#else
+#else // RPI
     traffic_light light0 = {
         .clr = RED, .has_arrow = false, .has_sensor = false};
-#endif
+#endif // RPI
 
     traffic_light light1 = {
         .clr = GREEN, .has_arrow = false, .has_sensor = false};
@@ -93,84 +114,68 @@ intersection_evaluation *simulate_traffic(strategy s, Chromosome *optimal_data,
                   .light = &light3,
                   .num_cars = INITIAL_NUM_CARS};
 
-    intersection isec_struct;
-    intersection *isec;
+    intersection isec = {0};
 
-    isec = &isec_struct;
-    isec->roads[0] = &road0;
-    isec->roads[1] = &road1;
-    isec->roads[2] = &road2;
-    isec->roads[3] = &road3;
-    isec->state_index = INITIAL_STATE_INDEX;
+    isec.roads[0] = &road0;
+    isec.roads[1] = &road1;
+    isec.roads[2] = &road2;
+    isec.roads[3] = &road3;
+    isec.state_index = INITIAL_STATE_INDEX;
 
-    road_evaluation road0_eval = {0};
-    road_evaluation road1_eval = {0};
-    road_evaluation road2_eval = {0};
-    road_evaluation road3_eval = {0};
-
-    //    intersection_evaluation isec_eval_struct;
-    intersection_evaluation *isec_eval =
-        malloc(sizeof(intersection_evaluation));
+    // Need to malloc since pointer is returned
+    intersection_evaluation *isec_eval = malloc(sizeof(intersection_evaluation));
 
     if (isec_eval == NULL) {
-        fprintf(stderr, "Unable to allocate memory");
+        fprintf(stderr, "Failed to allocate memory");
         exit(1);
     }
 
-    isec_eval->road_evals[0] = &road0_eval;
-    isec_eval->road_evals[1] = &road1_eval;
-    isec_eval->road_evals[2] = &road2_eval;
-    isec_eval->road_evals[3] = &road3_eval;
-    isec_eval->total_average_time_stationary = 0;
-    isec_eval->total_maximum_time_stationary = 0;
+    initialise_isec_eval(isec_eval);
 
-    // strategy s = basic_plus;
+    // strategy target_strategy = basic_plus;
 
-    road *current_road;
-    car *head_of_crossed;
+    time_t time_since_change = 0;
 
-    time_t initial_time_since_change = 0;
-    time_t *time_since_change;
-    time_since_change = &initial_time_since_change;
+    // Strategy names no longer than 25 characters
+    char fname[50];
 
-    char f0name[50];
-    sprintf(f0name, "./graphing/%s-road0.txt", strategy_name);
-    char f1name[50];
-    sprintf(f1name, "./graphing/%s-road1.txt", strategy_name);
-    char f2name[50];
-    sprintf(f2name, "./graphing/%s-road2.txt", strategy_name);
-    char f3name[50];
-    sprintf(f3name, "./graphing/%s-road3.txt", strategy_name);
+    sprintf(fname, "./graphing/%s-road0.txt", strategy_name);
+    FILE *f0 = fopen(fname, "w");
 
-    FILE *f0 = fopen(f0name, "w");
-    FILE *f1 = fopen(f1name, "w");
-    FILE *f2 = fopen(f2name, "w");
-    FILE *f3 = fopen(f3name, "w");
+    sprintf(fname, "./graphing/%s-road1.txt", strategy_name);
+    FILE *f1 = fopen(fname, "w");
+
+    sprintf(fname, "./graphing/%s-road2.txt", strategy_name);
+    FILE *f2 = fopen(fname, "w");
+
+    sprintf(fname, "./graphing/%s-road3.txt", strategy_name);
+    FILE *f3 = fopen(fname, "w");
 
     for (uint64_t iter = 0; iter < MAX_ITERATIONS; iter++) {  // timestep
         if (iter % 1000 == 0) {
-            fprintf(f0, "%d,", isec->roads[0]->num_cars);
-            fprintf(f1, "%d,", isec->roads[1]->num_cars);
-            fprintf(f2, "%d,", isec->roads[2]->num_cars);
-            fprintf(f3, "%d,", isec->roads[3]->num_cars);
+            fprintf(f0, "%d,", isec.roads[0]->num_cars);
+            fprintf(f1, "%d,", isec.roads[1]->num_cars);
+            fprintf(f2, "%d,", isec.roads[2]->num_cars);
+            fprintf(f3, "%d,", isec.roads[3]->num_cars);
         }
 
 #ifdef RPI
+        // Update physical leds and the sensor reading
         update_leds(isec->state_index);
         isec->roads[0]->light->sensor_distance = get_radar();
 #endif  // RPI
 
         // NOTE: also deals with updating physical LEDs
-        update_lights_to_next_state(isec, DT, time_since_change, s,
+        update_lights_to_next_state(&isec, DT, &time_since_change, target_strategy,
                                     optimal_data);  // takes a strategy
 
         for (int i = 0; i < NUM_ROADS; i++) {
-            current_road = isec->roads[i];
+            road *current_road = isec.roads[i];
 
             update_distances(current_road,
                              DT);  // let cars roll forward if possible (note
                                    // special case for first car)
-            head_of_crossed = remove_crossed(
+            car *head_of_crossed = remove_crossed(
                 current_road);  // pop off ANY cars which have passed stop line.
                                 // return the number of cars that crossed
             evaluate_road(head_of_crossed, isec_eval, i);
@@ -189,7 +194,7 @@ intersection_evaluation *simulate_traffic(strategy s, Chromosome *optimal_data,
     }
     evaluate_intersection(isec_eval);
     for (int i = 0; i < NUM_ROADS; i++) {
-        free_all_cars(isec->roads[i]->head_car);
+        free_all_cars(isec.roads[i]->head_car);
     }
 #ifdef RPI
     terminate_gpio();

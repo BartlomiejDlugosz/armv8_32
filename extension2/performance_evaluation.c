@@ -1,11 +1,10 @@
 #include <stdio.h>
+
 #include "performance_evaluation.h"
 #include "car.h"
+
 void evaluate_road(car *car_crossed, intersection_evaluation *isec_eval,
                    int road_num) {
-    // printf("STARTED EVALUATING ROAD");
-    // print_car(car_crossed);
-    // printf("\n\n");
     if (car_crossed == NULL) {
         return;
     }
@@ -26,9 +25,7 @@ void evaluate_intersection(intersection_evaluation *isec_eval) {
         average_times_stationary[i] =
             (double)isec_eval->road_evals[i]->total_time_stationary /
             (double)isec_eval->road_evals[i]->num_cars_crossed;
-        // printf("Road %d, average time stationary %lf, longest waiting time
-        // %ld\n", i, average_times_stationary[i],
-        // isec_eval->road_evals[i]->maximum_time_stationary);
+
         if (isec_eval->road_evals[i]->maximum_time_stationary >
             isec_eval->total_maximum_time_stationary) {
             isec_eval->total_maximum_time_stationary =
@@ -38,7 +35,5 @@ void evaluate_intersection(intersection_evaluation *isec_eval) {
     }
     isec_eval->total_average_time_stationary =
         isec_eval->total_average_time_stationary / NUM_ROADS;
-    // printf("\nAverage across roads %lf, longest waiting time %ld\n",
-    // isec_eval->total_average_time_stationary,
-    // isec_eval->total_maximum_time_stationary);
+
 }

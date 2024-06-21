@@ -23,15 +23,14 @@ int main(int argc, char** argv) {
     int basic_durations[NUM_STATES] = {
         TIME_TO_CHANGE_BASIC, TIME_TO_CHANGE_AMBER, TIME_TO_CHANGE_AMBER,
         TIME_TO_CHANGE_BASIC, TIME_TO_CHANGE_AMBER, TIME_TO_CHANGE_AMBER};
-    Chromosome optimal_data_struct;
-    Chromosome* optimal_data;
-    optimal_data = &optimal_data_struct;
-    optimal_data->durations[0] = basic_durations[0];
-    optimal_data->durations[1] = basic_durations[1];
-    optimal_data->durations[2] = basic_durations[2];
-    optimal_data->durations[3] = basic_durations[3];
-    optimal_data->durations[4] = basic_durations[4];
-    optimal_data->durations[5] = basic_durations[5];
+
+    Chromosome optimal_data;
+    optimal_data.durations[0] = basic_durations[0];
+    optimal_data.durations[1] = basic_durations[1];
+    optimal_data.durations[2] = basic_durations[2];
+    optimal_data.durations[3] = basic_durations[3];
+    optimal_data.durations[4] = basic_durations[4];
+    optimal_data.durations[5] = basic_durations[5];
 
     FILE* output_file = fopen(argv[1], "w");
     if (output_file == NULL) {
@@ -43,25 +42,25 @@ int main(int argc, char** argv) {
     // withe parameters mentioned above
     if (argc == 2) {
         for (int i = 0; i < NUM_STRATEGIES; i++) {
-            strategy s = strategies[i];
+            strategy target_strategy = strategies[i];
             char* strategy_name = strategy_names[i];
             if (strcmp(strategy_name, "Genetic Algorithm Avg") == 0) {
-                *optimal_data = train_genetic_algorithm(true);
+                optimal_data = train_genetic_algorithm(true);
             } else if (strcmp(strategy_name, "Genetic Algorithm Max") == 0) {
-                *optimal_data = train_genetic_algorithm(false);
+                optimal_data = train_genetic_algorithm(false);
             }
             double total_average_time_stationary = 0;
             double total_maximum_time_stationary = 0;
-            for (int i = 0; i < NUM_STRATEGY_CALLS; i++) {
+            for (int j = 0; j < NUM_STRATEGY_CALLS; j++) {
                 intersection_evaluation* returned_evaluation =
-                    simulate_traffic(s, optimal_data, strategy_name);
+                    simulate_traffic(target_strategy, &optimal_data, strategy_name);
                 total_average_time_stationary +=
-                    (double)(returned_evaluation
-                                 ->total_average_time_stationary);
+                    returned_evaluation
+                                 ->total_average_time_stationary;
                 total_maximum_time_stationary +=
-                    (double)(returned_evaluation
-                                 ->total_maximum_time_stationary);
-                free(returned_evaluation);
+                    (double)returned_evaluation
+                                 ->total_maximum_time_stationary;
+                free_isec_eval(returned_evaluation);
             }
             total_average_time_stationary /= NUM_STRATEGY_CALLS;
             total_maximum_time_stationary /= NUM_STRATEGY_CALLS;
@@ -73,14 +72,15 @@ int main(int argc, char** argv) {
         }
         fclose(output_file);
         return EXIT_SUCCESS;
-    } else if (argc == 3) {
+    }
+    if (argc == 3) {
         char* strategy_name = argv[2];
         if (strcmp(strategy_name, "train_model_on_avg") == 0) {
-            *optimal_data = train_genetic_algorithm(true);
+            optimal_data = train_genetic_algorithm(true);
             strategy_name = "Genetic Algorithm with avg";
         }
         if (strcmp(strategy_name, "train_model_on_max") == 0) {
-            *optimal_data = train_genetic_algorithm(false);
+            optimal_data = train_genetic_algorithm(false);
             strategy_name = "Genetic Algorithm with max";
         }
 
@@ -88,22 +88,22 @@ int main(int argc, char** argv) {
         bool strategy_found = false;
         for (int i = 0; i < NUM_STRATEGIES; i++) {
             if (strcmp(strategy_name, strategy_names[i]) == 0) {
-                strategy s = strategies[i];
+                strategy target_strategy = strategies[i];
                 intersection_evaluation* returned_evaluation =
-                    simulate_traffic(s, optimal_data, strategy_name);
+                    simulate_traffic(target_strategy, &optimal_data, strategy_name);
                 double total_average_time_stationary =
-                    (double)(returned_evaluation
-                                 ->total_average_time_stationary);
+                    returned_evaluation
+                                 ->total_average_time_stationary;
                 double total_maximum_time_stationary =
-                    (double)(returned_evaluation
-                                 ->total_maximum_time_stationary);
+                    (double)returned_evaluation
+                                 ->total_maximum_time_stationary;
                 fprintf(output_file,
                         "Strategy: %s Total Average Time: %lf, Total Maximum "
                         "Time: %lf\n",
                         strategy_name, total_average_time_stationary,
                         total_maximum_time_stationary);
                 strategy_found = true;
-                free(returned_evaluation);
+                free_isec_eval(returned_evaluation);
                 break;
             }
         }
@@ -115,13 +115,9 @@ int main(int argc, char** argv) {
 
         fclose(output_file);
         return EXIT_SUCCESS;
-    } else {
-        fprintf(
-            stderr,
-            "Incorrect command line input. See README for details on inputs");
-        fclose(output_file);
-        return EXIT_FAILURE;
     }
 
-    return EXIT_SUCCESS;
+    fprintf(stderr,"Incorrect command line input. See README for details on inputs");
+    fclose(output_file);
+    return EXIT_FAILURE;
 }

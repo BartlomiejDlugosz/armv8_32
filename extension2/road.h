@@ -1,6 +1,6 @@
 #ifndef ROAD_H
 #define ROAD_H
-#include <stdint.h>
+
 #include "car.h"
 #include "traffic_light.h"
 

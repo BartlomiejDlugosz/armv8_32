@@ -16,8 +16,8 @@
 #define DELAY_PER_ITER 100
 #define DISTANCE_SCALEFACTOR (0.034 * 0.5)
 
-double get_radar();
-void init_radar();
+void init_radar(void);
+double get_radar(void);
 
 #endif  // RADAR_H
 #endif  // RPI
