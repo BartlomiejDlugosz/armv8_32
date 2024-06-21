@@ -1,8 +1,12 @@
 # How to run the simulation
 First use 
 
-`make simulation` for making the simulation
-`make simulation_rpi` for linking the gpio module
+```make simulation``` for making the simulation
+
+or 
+
+
+```make simulation_rpi``` for linking the gpio module
 
 then execute with
 
@@ -12,7 +16,7 @@ then execute with
 This will generate the necessary text files to create the graphs,
 which can be made using 
 
-`make graphs`
+```make graphs```
 
 and will appear in the graphing subdirectory.
 
