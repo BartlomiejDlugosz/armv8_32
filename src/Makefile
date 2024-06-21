@@ -21,6 +21,7 @@ emulate: solution
 
 assemble: solution
 	gcc -Wall assembler/*.c -o assemble -g --debug	cp assemble ../armv8_testsuite/solution/
+	cp assemble ../armv8_testsuite/solution/
 
 assemble_with_valgrind:
 	gcc -Wall assembler/*.c -o assemble -ggdb3
