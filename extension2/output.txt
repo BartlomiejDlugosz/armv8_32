@@ -1,4 +1,0 @@
-Strategy: Basic Total Average Time: 6.684007, Total Maximum Time: 39.000000
-Strategy: Basic Plus Total Average Time: 6.750644, Total Maximum Time: 39.000000
-Strategy: Genetic Algorithm Avg Total Average Time: 0.349173, Total Maximum Time: 7.000000
-Strategy: Genetic Algorithm Max Total Average Time: 0.316471, Total Maximum Time: 6.000000
