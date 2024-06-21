@@ -23,14 +23,16 @@ void update_distances(road *road_to_update, time_t dt) {
         int cur_distance = road_to_update->head_car->distance_to_car_in_front;
         int new_distance = cur_distance - distance_covered;
         // Either the HEAD reaches the light or covers some distance
-        road_to_update->head_car->distance_to_car_in_front = MAX(new_distance, 0);
+        road_to_update->head_car->distance_to_car_in_front =
+            MAX(new_distance, 0);
         // If the cars in front are stationary, the cars behind can still move
         // If the cars in front are not stationary, the cars behind still move
         // regardless So don't add time stationary for any cars behind
         bool all_cars_in_front_are_stationary = false;
         // If the car hasn't moved, add to time stationary (same logic is used
         // in while loop)
-        if (cur_distance == road_to_update->head_car->distance_to_car_in_front) {
+        if (cur_distance ==
+            road_to_update->head_car->distance_to_car_in_front) {
             all_cars_in_front_are_stationary = true;
         }
         // The distance covered is now reduced by the distance covered by the
