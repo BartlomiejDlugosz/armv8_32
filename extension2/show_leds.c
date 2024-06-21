@@ -33,7 +33,6 @@ static void set_light(int pins[], colour clr) {
             break;
         default:
             fprintf(stderr, "UNKNOWN COLOUR %i\n", clr);
-            exit(1);
     }
 }
 

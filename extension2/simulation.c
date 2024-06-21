@@ -1,7 +1,10 @@
 #include <stdlib.h>
 #include <string.h>
+#include <stdio.h>
+
 #include "simulate_traffic.h"
 #include "strategies.h"
+
 #define NUM_STRATEGY_CALLS 2  // 100
 
 // One strategy
@@ -24,14 +27,14 @@ int main(int argc, char** argv) {
         TIME_TO_CHANGE_BASIC, TIME_TO_CHANGE_AMBER, TIME_TO_CHANGE_AMBER,
         TIME_TO_CHANGE_BASIC, TIME_TO_CHANGE_AMBER, TIME_TO_CHANGE_AMBER};
 
+    // Defines a chromosone which will hold the optimal durations
+    // Initialise it with default durations
     Chromosome optimal_data;
-    optimal_data.durations[0] = basic_durations[0];
-    optimal_data.durations[1] = basic_durations[1];
-    optimal_data.durations[2] = basic_durations[2];
-    optimal_data.durations[3] = basic_durations[3];
-    optimal_data.durations[4] = basic_durations[4];
-    optimal_data.durations[5] = basic_durations[5];
+    for (int i = 0; i < NUM_STATES; i++) {
+        optimal_data.durations[i] = basic_durations[i];
+    }
 
+    // Open file which will be used to output the results
     FILE* output_file = fopen(argv[1], "w");
     if (output_file == NULL) {
         fprintf(stderr, "Failed to open input file\n");
@@ -39,21 +42,33 @@ int main(int argc, char** argv) {
     }
 
     // performance_evaluation will return a pointer to intersection evaluation
-    // withe parameters mentioned above
+    // with the parameters mentioned above
     if (argc == 2) {
         for (int i = 0; i < NUM_STRATEGIES; i++) {
+            // Gets the current strategy and name
             strategy target_strategy = strategies[i];
             char* strategy_name = strategy_names[i];
+
+            // If one of genetic algorithms then it trains them
             if (strcmp(strategy_name, "Genetic Algorithm Avg") == 0) {
                 optimal_data = train_genetic_algorithm(true);
             } else if (strcmp(strategy_name, "Genetic Algorithm Max") == 0) {
                 optimal_data = train_genetic_algorithm(false);
             }
+
+            // Evaluates the performance of the strategy
             double total_average_time_stationary = 0;
             double total_maximum_time_stationary = 0;
+
+            // Simulates the given strategy a number of times and calculates an average
             for (int j = 0; j < NUM_STRATEGY_CALLS; j++) {
                 intersection_evaluation* returned_evaluation =
                     simulate_traffic(target_strategy, &optimal_data, strategy_name);
+                if (returned_evaluation == NULL) {
+                    fclose(output_file);
+                    return EXIT_FAILURE;
+                }
+
                 total_average_time_stationary +=
                     returned_evaluation
                                  ->total_average_time_stationary;
@@ -64,6 +79,8 @@ int main(int argc, char** argv) {
             }
             total_average_time_stationary /= NUM_STRATEGY_CALLS;
             total_maximum_time_stationary /= NUM_STRATEGY_CALLS;
+
+            // Outputs the results to the file
             fprintf(output_file,
                     "Strategy: %s Total Average Time: %lf, Total Maximum Time: "
                     "%lf\n",
@@ -74,7 +91,9 @@ int main(int argc, char** argv) {
         return EXIT_SUCCESS;
     }
     if (argc == 3) {
+        // Get the strategy name from the command line argumantes
         char* strategy_name = argv[2];
+        // Check if related to genetic algorithm
         if (strcmp(strategy_name, "train_model_on_avg") == 0) {
             optimal_data = train_genetic_algorithm(true);
             strategy_name = "Genetic Algorithm with avg";
@@ -84,29 +103,39 @@ int main(int argc, char** argv) {
             strategy_name = "Genetic Algorithm with max";
         }
 
-        // Assume strategy
+        // Finds the strategy passed in through the command line
         bool strategy_found = false;
         for (int i = 0; i < NUM_STRATEGIES; i++) {
             if (strcmp(strategy_name, strategy_names[i]) == 0) {
+                // Simulates the target strategy
                 strategy target_strategy = strategies[i];
+
                 intersection_evaluation* returned_evaluation =
                     simulate_traffic(target_strategy, &optimal_data, strategy_name);
+                if (returned_evaluation == NULL) {
+                    fclose(output_file);
+                    return EXIT_FAILURE;
+                }
+
                 double total_average_time_stationary =
                     returned_evaluation
                                  ->total_average_time_stationary;
                 double total_maximum_time_stationary =
                     (double)returned_evaluation
                                  ->total_maximum_time_stationary;
+
+                free_isec_eval(returned_evaluation);
+
                 fprintf(output_file,
                         "Strategy: %s Total Average Time: %lf, Total Maximum "
                         "Time: %lf\n",
                         strategy_name, total_average_time_stationary,
                         total_maximum_time_stationary);
                 strategy_found = true;
-                free_isec_eval(returned_evaluation);
                 break;
             }
         }
+        // Throw error if strategy not foudn
         if (!strategy_found) {
             fprintf(stderr, "Unknown strategy: %s\n", strategy_name);
             fclose(output_file);
@@ -117,6 +146,7 @@ int main(int argc, char** argv) {
         return EXIT_SUCCESS;
     }
 
+    // Unknown command line arguments
     fprintf(stderr,"Incorrect command line input. See README for details on inputs");
     fclose(output_file);
     return EXIT_FAILURE;

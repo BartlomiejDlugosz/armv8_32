@@ -46,6 +46,11 @@ static void evaluate_fitness(Chromosome *chromo, bool is_avg) {
     for (int i = 0; i < CHROMOSOME_EVAL_NUM; i++) {
         intersection_evaluation *isec_eval =
             simulate_traffic(genetic_algorithm, chromo, TRAINING);
+        if (isec_eval == NULL) {
+            // Failed to allocate memory
+            // Undefined behaviour here so just return
+            return;
+        }
         if (is_avg) {
             chromo->fitness += isec_eval->total_average_time_stationary;
         } else {

@@ -43,7 +43,13 @@ bool basic(intersection *isec, time_t time_since_change,
 
 bool basic_plus(intersection *isec, time_t time_since_change,
                          Chromosome *optimal_data) {
-    return (amber_lights(isec) && time_since_change > TIME_TO_CHANGE_AMBER) || (time_since_change > TIME_TO_CHANGE_BASIC * sensor_significance(isec));
+    if (amber_lights(isec) && time_since_change > TIME_TO_CHANGE_AMBER) {
+        return true;
+    }
+    if (time_since_change > TIME_TO_CHANGE_BASIC * sensor_significance(isec)) {
+        return cars_waiting(isec);
+    }
+    return false;
 }
 
 // what i need: duration to hold for each traffic light state where it's green

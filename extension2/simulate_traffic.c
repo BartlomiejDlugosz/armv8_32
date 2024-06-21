@@ -1,4 +1,3 @@
-#include <stdbool.h>
 #include <string.h>
 #include <time.h>
 #include <stdlib.h>
@@ -25,6 +24,7 @@
 #define INITIAL_STATE_INDEX 0
 #define INITIAL_NUM_CARS 0
 #define MAX_ITERATIONS 100000
+#define NUMBER_OF_ROADS 4
 
 #define ROAD0_LENGTH 500
 #define ROAD1_LENGTH 720
@@ -42,6 +42,7 @@
 #define ROAD2_FOLLOW_DIST (int)(ROAD2_SPEED_LIMIT / FOLLOW_DIST_SF)
 #define ROAD3_FOLLOW_DIST (int)(ROAD3_SPEED_LIMIT / FOLLOW_DIST_SF)
 
+// Frees a intersection_evaluation
 void free_isec_eval(intersection_evaluation *isec_eval) {
     for (int i = 0; i < 4; i++) {
         free(isec_eval->road_evals[i]);
@@ -49,19 +50,23 @@ void free_isec_eval(intersection_evaluation *isec_eval) {
     free(isec_eval);
 }
 
-void initialise_isec_eval(intersection_evaluation *isec_eval) {
+// Initialises the intersection evaluation by allocating memory for
+// each road. Returns true if successfull
+bool initialise_isec_eval(intersection_evaluation *isec_eval) {
     for (int i = 0; i < 4; i++) {
         isec_eval->road_evals[i] = malloc(sizeof(road_evaluation));
 
+        // Free entire isec_eval and exit
         if (isec_eval->road_evals[i] == NULL) {
             free_isec_eval(isec_eval);
 
-            fprintf(stderr, "Failed to allocate memory");
-            exit(1);
+            fprintf(stderr, "Failed to allocate memory for roads");
+            return false;
         }
     }
     isec_eval->total_average_time_stationary = 0;
     isec_eval->total_maximum_time_stationary = 0;
+    return true;
 }
 
 intersection_evaluation *simulate_traffic(strategy target_strategy, Chromosome *optimal_data,
@@ -125,12 +130,16 @@ intersection_evaluation *simulate_traffic(strategy target_strategy, Chromosome *
     // Need to malloc since pointer is returned
     intersection_evaluation *isec_eval = malloc(sizeof(intersection_evaluation));
 
+    // Return NULL if failed to allocate memory anywhere since
+    // we can't do anything and need to ensure all files get closed
     if (isec_eval == NULL) {
-        fprintf(stderr, "Failed to allocate memory");
-        exit(1);
+        fprintf(stderr, "Failed to allocate memory for intersection evaluation");
+        return NULL;
     }
 
-    initialise_isec_eval(isec_eval);
+    if (!initialise_isec_eval(isec_eval)) {
+        return NULL;
+    }
 
     // strategy target_strategy = basic_plus;
 
@@ -138,30 +147,23 @@ intersection_evaluation *simulate_traffic(strategy target_strategy, Chromosome *
 
     // Strategy names no longer than 25 characters
     char fname[50];
+    FILE *files[NUMBER_OF_ROADS];
 
-    sprintf(fname, "./graphing/%s-road0.txt", strategy_name);
-    FILE *f0 = fopen(fname, "w");
-
-    sprintf(fname, "./graphing/%s-road1.txt", strategy_name);
-    FILE *f1 = fopen(fname, "w");
-
-    sprintf(fname, "./graphing/%s-road2.txt", strategy_name);
-    FILE *f2 = fopen(fname, "w");
-
-    sprintf(fname, "./graphing/%s-road3.txt", strategy_name);
-    FILE *f3 = fopen(fname, "w");
+    for (int i = 0; i < NUMBER_OF_ROADS; i++) {
+        sprintf(fname, "./graphing/%s-road%i.txt", strategy_name, i);
+        files[i] = fopen(fname, "w");
+    }
 
     for (uint64_t iter = 0; iter < MAX_ITERATIONS; iter++) {  // timestep
+        // Every number of iterations write the number of cars on the road
         if (iter % 1000 == 0) {
-            fprintf(f0, "%d,", isec.roads[0]->num_cars);
-            fprintf(f1, "%d,", isec.roads[1]->num_cars);
-            fprintf(f2, "%d,", isec.roads[2]->num_cars);
-            fprintf(f3, "%d,", isec.roads[3]->num_cars);
+            for (int i = 0; i < NUMBER_OF_ROADS; i++) {
+                fprintf(files[i], "%d,", isec.roads[i]->num_cars);
+            }
         }
 
 #ifdef RPI
-        // Update physical leds and the sensor reading
-        update_leds(isec->state_index);
+        // Update the sensor reading
         isec->roads[0]->light->sensor_distance = get_radar();
 #endif  // RPI
 
@@ -189,21 +191,23 @@ intersection_evaluation *simulate_traffic(strategy target_strategy, Chromosome *
         }
 
 #ifdef RPI
+        // Sleep for number of seconds
         sleep(DT);
 #endif  // RPI
     }
     evaluate_intersection(isec_eval);
+
     for (int i = 0; i < NUM_ROADS; i++) {
         free_all_cars(isec.roads[i]->head_car);
     }
 #ifdef RPI
+    // Terminate gpio
     terminate_gpio();
 #endif  // RPI
 
-    fclose(f0);
-    fclose(f1);
-    fclose(f2);
-    fclose(f3);
+    for (int i = 0; i < NUMBER_OF_ROADS; i++) {
+        fclose(files[i]);
+    }
 
     return isec_eval;
 }

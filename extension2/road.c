@@ -1,6 +1,5 @@
 #include <stdlib.h>
 #include <stdio.h>
-#include <math.h>
 #include <assert.h>
 
 #include "road.h"
@@ -8,10 +7,15 @@
 #define MAX(num1, num2) num1 > num2 ? num1 : num2
 
 void update_distances(road *update_road, time_t dt) {
-    if (update_road->head_car == NULL) return;
+    if (update_road->head_car == NULL) {
+        return;
+    }
+
     int speed_limit = update_road->speed_limit;
+
     // Maximum distance a car is able to cover in the time and speed limit given
     int distance_covered = speed_limit * (int)dt;
+
     // Dealing with case light is red
     if (update_road->light->clr == RED) {
         // Dealing with the HEAD
