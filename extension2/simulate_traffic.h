@@ -9,7 +9,8 @@ void free_isec_eval(intersection_evaluation *isec_eval);
 
 bool initialise_isec_eval(intersection_evaluation *isec_eval);
 
-intersection_evaluation *simulate_traffic(strategy target_strategy, Chromosome* optimal_data,
-                                          char* strategy_name);
+intersection_evaluation *simulate_traffic(strategy target_strategy,
+                                          Chromosome *optimal_data,
+                                          char *strategy_name);
 
 #endif

@@ -72,7 +72,8 @@ bool initialise_isec_eval(intersection_evaluation *isec_eval) {
     return true;
 }
 
-intersection_evaluation *simulate_traffic(strategy target_strategy, Chromosome *optimal_data,
+intersection_evaluation *simulate_traffic(strategy target_strategy,
+                                          Chromosome *optimal_data,
                                           char *strategy_name) {
 #ifdef RPI
     init_gpio();
@@ -85,10 +86,10 @@ intersection_evaluation *simulate_traffic(strategy target_strategy, Chromosome *
                             .has_arrow = false,
                             .has_sensor = true,
                             .sensor_distance = get_radar()};
-#else // RPI
+#else   // RPI
     traffic_light light0 = {
         .clr = RED, .has_arrow = false, .has_sensor = false};
-#endif // RPI
+#endif  // RPI
 
     traffic_light light1 = {
         .clr = GREEN, .has_arrow = false, .has_sensor = false};
@@ -131,12 +132,14 @@ intersection_evaluation *simulate_traffic(strategy target_strategy, Chromosome *
     isec.state_index = INITIAL_STATE_INDEX;
 
     // Need to malloc since pointer is returned
-    intersection_evaluation *isec_eval = malloc(sizeof(intersection_evaluation));
+    intersection_evaluation *isec_eval =
+        malloc(sizeof(intersection_evaluation));
 
     // Return NULL if failed to allocate memory anywhere since
     // we can't do anything and need to ensure all files get closed
     if (isec_eval == NULL) {
-        fprintf(stderr, "Failed to allocate memory for intersection evaluation");
+        fprintf(stderr,
+                "Failed to allocate memory for intersection evaluation");
         return NULL;
     }
 
@@ -171,7 +174,8 @@ intersection_evaluation *simulate_traffic(strategy target_strategy, Chromosome *
 #endif  // RPI
 
         // NOTE: also deals with updating physical LEDs
-        update_lights_to_next_state(&isec, DT, &time_since_change, target_strategy,
+        update_lights_to_next_state(&isec, DT, &time_since_change,
+                                    target_strategy,
                                     optimal_data);  // takes a strategy
 
         for (int i = 0; i < NUM_ROADS; i++) {

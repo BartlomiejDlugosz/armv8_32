@@ -37,12 +37,13 @@ static bool amber_lights(intersection *isec) {
 }
 
 bool basic(intersection *isec, time_t time_since_change,
-                         Chromosome *optimal_data) {
-    return (amber_lights(isec) && time_since_change > TIME_TO_CHANGE_AMBER) || (time_since_change > TIME_TO_CHANGE_BASIC);
+           Chromosome *optimal_data) {
+    return (amber_lights(isec) && time_since_change > TIME_TO_CHANGE_AMBER) ||
+           (time_since_change > TIME_TO_CHANGE_BASIC);
 }
 
 bool basic_plus(intersection *isec, time_t time_since_change,
-                         Chromosome *optimal_data) {
+                Chromosome *optimal_data) {
     if (amber_lights(isec) && time_since_change > TIME_TO_CHANGE_AMBER) {
         return true;
     }
@@ -58,10 +59,9 @@ bool genetic_algorithm(intersection *isec, time_t time_since_change,
     if (amber_lights(isec) && (time_since_change > TIME_TO_CHANGE_AMBER)) {
         return true;
     }
-    return amber_lights(isec) ||
-        (optimal_data->durations[isec->state_index] *
-        sensor_significance(isec) <
-        time_since_change);
+    return amber_lights(isec) || (optimal_data->durations[isec->state_index] *
+                                      sensor_significance(isec) <
+                                  time_since_change);
 }
 
 strategy strategies[NUM_STRATEGIES] = {basic, basic_plus, genetic_algorithm,

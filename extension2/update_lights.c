@@ -5,10 +5,11 @@
 
 #ifdef RPI
 #include "show_leds.c"
-#endif // RPI
+#endif  // RPI
 
 bool update_lights_to_next_state(intersection *isec, time_t dt,
-                                 time_t *time_since_change, strategy target_strategy,
+                                 time_t *time_since_change,
+                                 strategy target_strategy,
                                  Chromosome *optimal_data) {
     if ((target_strategy)(isec, *time_since_change, optimal_data)) {
         isec->state_index = (isec->state_index + 1) % NUM_STATES;
@@ -17,12 +18,11 @@ bool update_lights_to_next_state(intersection *isec, time_t dt,
         }
 #ifdef RPI
         update_leds(isec->state_index);
-#endif // RPI
+#endif  // RPI
         *time_since_change = 0;
         return true;
     }
 
     *time_since_change += dt;
     return false;
-
 }

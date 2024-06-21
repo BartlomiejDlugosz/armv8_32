@@ -16,10 +16,10 @@ typedef bool (*strategy)(intersection *isec, time_t time_since_change,
                          Chromosome *optimal_data);
 
 bool basic(intersection *isec, time_t time_since_change,
-                         Chromosome *optimal_data);
+           Chromosome *optimal_data);
 
 bool basic_plus(intersection *isec, time_t time_since_change,
-                         Chromosome *optimal_data);
+                Chromosome *optimal_data);
 
 bool genetic_algorithm(intersection *isec, time_t time_since_change,
                        Chromosome *optimal_data);

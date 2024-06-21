@@ -60,21 +60,20 @@ int main(int argc, char** argv) {
             double total_average_time_stationary = 0;
             double total_maximum_time_stationary = 0;
 
-            // Simulates the given strategy a number of times and calculates an average
+            // Simulates the given strategy a number of times and calculates an
+            // average
             for (int j = 0; j < NUM_STRATEGY_CALLS; j++) {
-                intersection_evaluation* returned_evaluation =
-                    simulate_traffic(target_strategy, &optimal_data, strategy_name);
+                intersection_evaluation* returned_evaluation = simulate_traffic(
+                    target_strategy, &optimal_data, strategy_name);
                 if (returned_evaluation == NULL) {
                     fclose(output_file);
                     return EXIT_FAILURE;
                 }
 
                 total_average_time_stationary +=
-                    returned_evaluation
-                                 ->total_average_time_stationary;
+                    returned_evaluation->total_average_time_stationary;
                 total_maximum_time_stationary +=
-                    (double)returned_evaluation
-                                 ->total_maximum_time_stationary;
+                    (double)returned_evaluation->total_maximum_time_stationary;
                 // Free the malloced intersection
                 free_isec_eval(returned_evaluation);
             }
@@ -111,19 +110,17 @@ int main(int argc, char** argv) {
                 // Simulates the target strategy
                 strategy target_strategy = strategies[i];
 
-                intersection_evaluation* returned_evaluation =
-                    simulate_traffic(target_strategy, &optimal_data, strategy_name);
+                intersection_evaluation* returned_evaluation = simulate_traffic(
+                    target_strategy, &optimal_data, strategy_name);
                 if (returned_evaluation == NULL) {
                     fclose(output_file);
                     return EXIT_FAILURE;
                 }
 
                 double total_average_time_stationary =
-                    returned_evaluation
-                                 ->total_average_time_stationary;
+                    returned_evaluation->total_average_time_stationary;
                 double total_maximum_time_stationary =
-                    (double)returned_evaluation
-                                 ->total_maximum_time_stationary;
+                    (double)returned_evaluation->total_maximum_time_stationary;
 
                 free_isec_eval(returned_evaluation);
 
@@ -148,7 +145,8 @@ int main(int argc, char** argv) {
     }
 
     // Unknown command line arguments
-    fprintf(stderr,"Incorrect command line input. See README for details on inputs");
+    fprintf(stderr,
+            "Incorrect command line input. See README for details on inputs");
     fclose(output_file);
     return EXIT_FAILURE;
 }

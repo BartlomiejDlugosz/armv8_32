@@ -37,7 +37,8 @@ void evaluate_intersection(intersection_evaluation *isec_eval) {
             (double)isec_eval->road_evals[i]->total_time_stationary /
             (double)isec_eval->road_evals[i]->num_cars_crossed;
 
-        // Updates the longest time stationary throughout the entire intersection
+        // Updates the longest time stationary throughout the entire
+        // intersection
         if (isec_eval->road_evals[i]->maximum_time_stationary >
             isec_eval->total_maximum_time_stationary) {
             isec_eval->total_maximum_time_stationary =
@@ -49,5 +50,4 @@ void evaluate_intersection(intersection_evaluation *isec_eval) {
     // Calculate the average time stationary
     isec_eval->total_average_time_stationary =
         isec_eval->total_average_time_stationary / NUM_ROADS;
-
 }
