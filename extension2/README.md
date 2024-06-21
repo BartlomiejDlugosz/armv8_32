@@ -6,7 +6,7 @@ First use
 or 
 
 
-```make simulation_rpi``` for linking the gpio module
+```make simulation_rpi``` for linking the pigpio module
 
 then execute with
 
@@ -21,6 +21,6 @@ which can be made using
 and will appear in the graphing subdirectory.
 
 
-After running the simulation, the (random) wait times will be available in `output.txt`, whilst the assigned state durations are output to stout.
+After running the simulation, the (random) wait times will be available in `output.txt`, whilst the assigned state durations are output to stdout.
 
 
