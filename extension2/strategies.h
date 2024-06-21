@@ -24,7 +24,8 @@ bool basic_plus(intersection *isec, time_t time_since_change,
 bool genetic_algorithm(intersection *isec, time_t time_since_change,
                        Chromosome *optimal_data);
 
-
+extern strategy strategies[NUM_STRATEGIES];
+extern char *strategy_names[NUM_STRATEGIES];
 
 // takes in a number of parameters which are to be decided
 // note that the parameters need to be the same for all strategies
