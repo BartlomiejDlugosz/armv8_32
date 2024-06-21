@@ -7,16 +7,16 @@ CFLAGS  ?= -std=c17 -g\
 
 .PHONY: all clean
 
-all: simulate_traffic
+all: simulation
 
 clean:
-	$(RM) *.o simulate_traffic
+	$(RM) *.o simulation_traffic
 
-simulate_traffic: clean
-	gcc -Wall ./*.c -o simulate_traffic -lm -g --debug
+simulation:
+	gcc -Wall ./*.c -o simulation -lm -g --debug
 
-simulate_traffic_rpi: clean
-	gcc -Wall *.c -o simulate_traffic -lm -lpigpio -lrt -g --debug -D RPI
+simulation_rpi:
+	gcc -Wall *.c -o simulation -lm -lpigpio -lrt -g --debug -D RPI
 
 graphs:
 	cd graphing/ && python3 main.py
