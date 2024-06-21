@@ -11,10 +11,10 @@ typedef struct {
     bool has_arrow;
     bool arrow_lit;
     direction arrow;
-    bool has_sensor; // tells us if cars are waiting
-    int sensor_distance; // only use if has_sensor!
+    bool has_sensor;      // tells us if cars are waiting
+    int sensor_distance;  // only use if has_sensor!
 } traffic_light;
 
 void print_traffic_light(traffic_light *light);
 
-#endif // TRAFFIC_LIGHT_H
+#endif  // TRAFFIC_LIGHT_H

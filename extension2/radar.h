@@ -19,5 +19,5 @@
 double get_radar();
 void init_radar();
 
-#endif // RADAR_H
-#endif // RPI
+#endif  // RADAR_H
+#endif  // RPI

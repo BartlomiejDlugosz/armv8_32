@@ -35,6 +35,5 @@ void init_leds(void);
 void init_gpio(void);
 void terminate_gpio(void);
 
-
-#endif // SHOW_LEDS_H
-#endif // RPI
+#endif  // SHOW_LEDS_H
+#endif  // RPI

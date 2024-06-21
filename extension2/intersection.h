@@ -14,4 +14,4 @@ typedef struct {
 
 void print_intersection(intersection *isec);
 
-#endif // INTERSECTION_H
+#endif  // INTERSECTION_H

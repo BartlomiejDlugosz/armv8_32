@@ -16,15 +16,17 @@ void init_radar() {
 }
 
 // Used as a callback function when echo pin changes state
-static void updateTimer(int gpio, int level, uint32_t tick, void* timer) {
-    struct time_change *change_in_time = (struct time_change *) timer;
+static void updateTimer(int gpio, int level, uint32_t tick, void *timer) {
+    struct time_change *change_in_time = (struct time_change *)timer;
     // Make sure we are handling the echo pin
     if (gpio == ECHO_PIN) {
         if (level == RISING_EDGE_LEVEL) {
-            // If a rising edge then set the start to the current tick (microseconds)
+            // If a rising edge then set the start to the current tick
+            // (microseconds)
             change_in_time->start_time = tick;
         } else if (level == FALLING_EDGE_LEVEL) {
-            // If falling edge then set end time to the current tick (microseconds)
+            // If falling edge then set end time to the current tick
+            // (microseconds)
             change_in_time->end_time = tick;
         }
     }
@@ -60,4 +62,4 @@ double get_radar() {
     return distance;
 }
 
-#endif // RPI
+#endif  // RPI

@@ -15,7 +15,7 @@ typedef struct {
 
 void update_distances(road *update_road, time_t dt);
 
-car* remove_crossed(road* cur_road);
+car *remove_crossed(road *cur_road);
 
 bool maybe_add_car(road *update_road);
 
@@ -25,4 +25,4 @@ void free_all_cars(car *current_car);
 
 void print_road(road *rd);
 
-#endif // ROAD_H
+#endif  // ROAD_H

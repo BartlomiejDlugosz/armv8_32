@@ -4,7 +4,7 @@
 #include <stdlib.h>
 #include <stdint.h>
 
-#include <stdio.h> // debugging
+#include <stdio.h>  // debugging
 
 #include "traffic_light.h"
 #include "states.h"
@@ -18,10 +18,10 @@
 #ifdef RPI
 #include "radar.h"
 #include "show_leds.h"
-#endif // RPI
+#endif  // RPI
 
 #define N 4
-#define DT 1 // seconds
+#define DT 1  // seconds
 #define INITIAL_STATE_INDEX 0
 #define INITIAL_NUM_CARS 0
 #define MAX_ITERATIONS 100000
@@ -42,32 +42,57 @@
 #define ROAD2_FOLLOW_DIST (int)(ROAD2_SPEED_LIMIT / FOLLOW_DIST_SF)
 #define ROAD3_FOLLOW_DIST (int)(ROAD3_SPEED_LIMIT / FOLLOW_DIST_SF)
 
-
-
-intersection_evaluation* simulate_traffic(strategy s, Chromosome *optimal_data, char * strategy_name) {
-    #ifdef RPI
+intersection_evaluation *simulate_traffic(strategy s, Chromosome *optimal_data,
+                                          char *strategy_name) {
+#ifdef RPI
     init_gpio();
     init_leds();
     init_radar();
-    #endif // RPI
+#endif  // RPI
 
+// initialise all the structures
+#ifdef RPI
+    traffic_light light0 = {.clr = RED,
+                            .has_arrow = false,
+                            .has_sensor = true,
+                            .sensor_distance = get_radar()};
+#else
+    traffic_light light0 = {
+        .clr = RED, .has_arrow = false, .has_sensor = false};
+#endif
 
-    // initialise all the structures
-    #ifdef RPI
-    traffic_light light0 = {.clr = RED, .has_arrow = false, .has_sensor = true, .sensor_distance = get_radar() };
-    #else 
-    traffic_light light0 = {.clr = RED, .has_arrow = false, .has_sensor = false };
-    #endif
+    traffic_light light1 = {
+        .clr = GREEN, .has_arrow = false, .has_sensor = false};
+    traffic_light light2 = {
+        .clr = RED, .has_arrow = false, .has_sensor = false};
+    traffic_light light3 = {
+        .clr = GREEN, .has_arrow = false, .has_sensor = false};
 
-    traffic_light light1 = {.clr = GREEN, .has_arrow = false, .has_sensor = false};
-    traffic_light light2 = {.clr = RED, .has_arrow = false, .has_sensor = false};
-    traffic_light light3 = {.clr = GREEN, .has_arrow = false, .has_sensor = false};
+    road road0 = {.length = ROAD0_LENGTH,
+                  .speed_limit = ROAD0_SPEED_LIMIT,
+                  .follow_distance = ROAD0_FOLLOW_DIST,
+                  .head_car = NULL,
+                  .light = &light0,
+                  .num_cars = INITIAL_NUM_CARS};
+    road road1 = {.length = ROAD1_LENGTH,
+                  .speed_limit = ROAD1_SPEED_LIMIT,
+                  .follow_distance = ROAD1_FOLLOW_DIST,
+                  .head_car = NULL,
+                  .light = &light1,
+                  .num_cars = INITIAL_NUM_CARS};
+    road road2 = {.length = ROAD2_LENGTH,
+                  .speed_limit = ROAD2_SPEED_LIMIT,
+                  .follow_distance = ROAD2_FOLLOW_DIST,
+                  .head_car = NULL,
+                  .light = &light2,
+                  .num_cars = INITIAL_NUM_CARS};
+    road road3 = {.length = ROAD3_LENGTH,
+                  .speed_limit = ROAD3_SPEED_LIMIT,
+                  .follow_distance = ROAD3_FOLLOW_DIST,
+                  .head_car = NULL,
+                  .light = &light3,
+                  .num_cars = INITIAL_NUM_CARS};
 
-    road road0 = {.length = ROAD0_LENGTH, .speed_limit = ROAD0_SPEED_LIMIT, .follow_distance = ROAD0_FOLLOW_DIST , .head_car = NULL, .light = &light0, .num_cars = INITIAL_NUM_CARS };
-    road road1 = {.length = ROAD1_LENGTH, .speed_limit = ROAD1_SPEED_LIMIT, .follow_distance = ROAD1_FOLLOW_DIST , .head_car = NULL, .light = &light1, .num_cars = INITIAL_NUM_CARS };
-    road road2 = {.length = ROAD2_LENGTH, .speed_limit = ROAD2_SPEED_LIMIT, .follow_distance = ROAD2_FOLLOW_DIST , .head_car = NULL, .light = &light2, .num_cars = INITIAL_NUM_CARS };
-    road road3 = {.length = ROAD3_LENGTH, .speed_limit = ROAD3_SPEED_LIMIT, .follow_distance = ROAD3_FOLLOW_DIST , .head_car = NULL, .light = &light3, .num_cars = INITIAL_NUM_CARS };
-    
     intersection isec_struct;
     intersection *isec;
 
@@ -82,9 +107,10 @@ intersection_evaluation* simulate_traffic(strategy s, Chromosome *optimal_data, 
     road_evaluation road1_eval = {0};
     road_evaluation road2_eval = {0};
     road_evaluation road3_eval = {0};
-    
-//    intersection_evaluation isec_eval_struct;
-    intersection_evaluation *isec_eval = malloc(sizeof(intersection_evaluation));
+
+    //    intersection_evaluation isec_eval_struct;
+    intersection_evaluation *isec_eval =
+        malloc(sizeof(intersection_evaluation));
 
     if (isec_eval == NULL) {
         fprintf(stderr, "Unable to allocate memory");
@@ -98,9 +124,8 @@ intersection_evaluation* simulate_traffic(strategy s, Chromosome *optimal_data, 
     isec_eval->total_average_time_stationary = 0;
     isec_eval->total_maximum_time_stationary = 0;
 
-    
     // strategy s = basic_plus;
-    
+
     road *current_road;
     car *head_of_crossed;
 
@@ -117,12 +142,12 @@ intersection_evaluation* simulate_traffic(strategy s, Chromosome *optimal_data, 
     char f3name[50];
     sprintf(f3name, "./graphing/%s-road3.txt", strategy_name);
 
-    FILE *f0 = fopen(f0name, "w"); 
-    FILE *f1 = fopen(f1name, "w"); 
-    FILE *f2 = fopen(f2name, "w"); 
-    FILE *f3 = fopen(f3name, "w"); 
+    FILE *f0 = fopen(f0name, "w");
+    FILE *f1 = fopen(f1name, "w");
+    FILE *f2 = fopen(f2name, "w");
+    FILE *f3 = fopen(f3name, "w");
 
-    for (uint64_t iter = 0; iter < MAX_ITERATIONS; iter++) { // timestep
+    for (uint64_t iter = 0; iter < MAX_ITERATIONS; iter++) {  // timestep
         if (iter % 1000 == 0) {
             fprintf(f0, "%d,", isec->roads[0]->num_cars);
             fprintf(f1, "%d,", isec->roads[1]->num_cars);
@@ -130,38 +155,45 @@ intersection_evaluation* simulate_traffic(strategy s, Chromosome *optimal_data, 
             fprintf(f3, "%d,", isec->roads[3]->num_cars);
         }
 
-        #ifdef RPI
+#ifdef RPI
         update_leds(isec->state_index);
         isec->roads[0]->light->sensor_distance = get_radar();
-        #endif // RPI
+#endif  // RPI
 
         // NOTE: also deals with updating physical LEDs
-        update_lights_to_next_state(isec, DT, time_since_change, s, optimal_data); // takes a strategy
-        
+        update_lights_to_next_state(isec, DT, time_since_change, s,
+                                    optimal_data);  // takes a strategy
+
         for (int i = 0; i < NUM_ROADS; i++) {
             current_road = isec->roads[i];
 
-            update_distances(current_road, DT); // let cars roll forward if possible (note special case for first car)
-            head_of_crossed = remove_crossed(current_road); // pop off ANY cars which have passed stop line. return the number of cars that crossed
+            update_distances(current_road,
+                             DT);  // let cars roll forward if possible (note
+                                   // special case for first car)
+            head_of_crossed = remove_crossed(
+                current_road);  // pop off ANY cars which have passed stop line.
+                                // return the number of cars that crossed
             evaluate_road(head_of_crossed, isec_eval, i);
-            free_all_cars(head_of_crossed); // because we don't calculate best algo yet
+            free_all_cars(
+                head_of_crossed);  // because we don't calculate best algo yet
 
-            if (rand() < (RAND_MAX+1u) / N) {// perform with probability 1/N
-                maybe_add_car(current_road); // also checks sum < length of road
+            if (rand() < (RAND_MAX + 1u) / N) {  // perform with probability 1/N
+                maybe_add_car(
+                    current_road);  // also checks sum < length of road
             }
         }
 
-        #ifdef RPI
+#ifdef RPI
         sleep(DT);
-        #endif // RPI
+#endif  // RPI
     }
     evaluate_intersection(isec_eval);
     for (int i = 0; i < NUM_ROADS; i++) {
         free_all_cars(isec->roads[i]->head_car);
     }
-    #ifdef RPI
+#ifdef RPI
     terminate_gpio();
-    #endif // RPI
+#endif  // RPI
 
     fclose(f0);
     fclose(f1);

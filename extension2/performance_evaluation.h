@@ -15,8 +15,9 @@ typedef struct {
     time_t total_maximum_time_stationary;
 } intersection_evaluation;
 
-void evaluate_road(car *car_crossed, intersection_evaluation *isec_eval, int road_num);
+void evaluate_road(car *car_crossed, intersection_evaluation *isec_eval,
+                   int road_num);
 
 void evaluate_intersection(intersection_evaluation *isec_eval);
 
-#endif // PERFORMANCE_EVALUATION_H
+#endif  // PERFORMANCE_EVALUATION_H

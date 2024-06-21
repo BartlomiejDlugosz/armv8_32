@@ -6,7 +6,8 @@
 #include "intersection.h"
 #include "strategies.h"
 
+bool update_lights_to_next_state(intersection *isec, time_t dt,
+                                 time_t *time_since_change, strategy s,
+                                 Chromosome *optimal_data);
 
-bool update_lights_to_next_state(intersection *isec, time_t dt, time_t *time_since_change, strategy s, Chromosome *optimal_data);
-
-#endif // UPDATE_LIGHTS_H
+#endif  // UPDATE_LIGHTS_H
