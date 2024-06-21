@@ -49,6 +49,7 @@ static void evaluate_fitness(Chromosome *chromo, bool is_avg) {
         if (isec_eval == NULL) {
             // Failed to allocate memory
             // Undefined behaviour here so just return
+            fprintf(stderr, "Failed to simulate traffic");
             return;
         }
         if (is_avg) {

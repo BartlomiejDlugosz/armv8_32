@@ -63,6 +63,8 @@ bool initialise_isec_eval(intersection_evaluation *isec_eval) {
             fprintf(stderr, "Failed to allocate memory for roads");
             return false;
         }
+
+        memset(isec_eval->road_evals[i], 0, sizeof(road_evaluation));
     }
     isec_eval->total_average_time_stationary = 0;
     isec_eval->total_maximum_time_stationary = 0;
