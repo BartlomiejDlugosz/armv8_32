@@ -12,9 +12,6 @@
 // 1. intersection (to access lights and state)
 // 2. takes in the time since change
 
-char *strategy_names[NUM_STRATEGIES] = {
-    "Basic", "Basic Plus", "Genetic Algorithm Avg", "Genetic Algorithm Max"};
-
 typedef bool (*strategy)(intersection *isec, time_t time_since_change,
                          Chromosome *optimal_data);
 
@@ -27,8 +24,7 @@ bool basic_plus(intersection *isec, time_t time_since_change,
 bool genetic_algorithm(intersection *isec, time_t time_since_change,
                        Chromosome *optimal_data);
 
-strategy strategies[NUM_STRATEGIES] = {basic, basic_plus, genetic_algorithm,
-                                       genetic_algorithm};
+
 
 // takes in a number of parameters which are to be decided
 // note that the parameters need to be the same for all strategies

@@ -57,3 +57,8 @@ bool genetic_algorithm(intersection *isec, time_t time_since_change,
         sensor_significance(isec) <
         time_since_change);
 }
+
+strategy strategies[NUM_STRATEGIES] = {basic, basic_plus, genetic_algorithm,
+                                       genetic_algorithm};
+char *strategy_names[NUM_STRATEGIES] = {
+    "Basic", "Basic Plus", "Genetic Algorithm Avg", "Genetic Algorithm Max"};
